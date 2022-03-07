@@ -1,34 +1,51 @@
 // import { StatusBar } from "expo-status-bar";
-// import { StyleSheet, Text, View, SafeAreaView, ScrollView } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  StatusBar,
+  SafeAreaView,
+  ScrollView,
+} from "react-native";
+import ShoppingItem from "./ShoppingItem";
 
-// export default function App() {
-//   return (
-//     <View style={styles.container}>
-//       <Text style={styles.listHeader}>MyList</Text>
+export default function ShoppingList() {
+  const testItems = ["Item1", "Item2", "Item3"];
 
-//       <ScrollView>
-        
-//       </ScrollView>
-//     </View>
-//   );
-// }
+  const items = testItems.map((item, i) => {
+    if (i == testItems.length - 1) {
+      return <ShoppingItem text={item} isLastElement={true}></ShoppingItem>;
+    }
+    return <ShoppingItem text={item}></ShoppingItem>;
+  });
 
-// const styles = StyleSheet.create({
-//   container: {
-//     // flex: 1,
-//     backgroundColor: "#fff",
-//     margin: 5,
-//     // textAlign: "left",
-//     // alignItems: "left",
-//     // justifyContent: "center",
-//   },
-//   listHeader: {
-//     // flex: 1,
-//     backgroundColor: "#fff",
-//     textAlign: "left",
-//     fontSize: 30,
-//     marginLeft: 5,
-//     // alignItems: "left",
-//     // justifyContent: "center",
-//   },
-// });
+  return (
+    <View>
+      <Text style={styles.listHeader}>MyList</Text>
+      <ScrollView>{items}</ScrollView>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    // flex: 1,
+    // backgroundColor: "#fff",
+    // margin: 10,
+    // marginTop: StatusBar.currentHeight,
+    // textAlign: "left",
+    // alignItems: "left",
+    // justifyContent: "center",
+  },
+  listHeader: {
+    // flex: 1,
+    color: "#454a52",
+    backgroundColor: "#fff",
+    textAlign: "left",
+    fontSize: 40,
+    marginBottom: 10,
+    // marginLeft: 5,
+    // alignItems: "left",
+    // justifyContent: "center",
+  },
+});
