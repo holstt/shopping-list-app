@@ -10,13 +10,20 @@ import {
 import ShoppingItem from "./components/ShoppingItem";
 
 export default function App() {
+  const testItems = ["Item1", "Item2", "Item3"];
+
+  const items = testItems.map((item, i) => {
+    if (i == testItems.length - 1) {
+      return <ShoppingItem text={item} isLastElement={true}></ShoppingItem>;
+    }
+    return <ShoppingItem text={item}></ShoppingItem>;
+  });
+
   return (
     <View style={styles.container}>
       <Text style={styles.listHeader}>MyList</Text>
 
-      <ScrollView>
-        <ShoppingItem text="Item1"></ShoppingItem>
-      </ScrollView>
+      <ScrollView>{items}</ScrollView>
     </View>
   );
 }
@@ -33,6 +40,7 @@ const styles = StyleSheet.create({
   },
   listHeader: {
     // flex: 1,
+    color: "#454a52",
     backgroundColor: "#fff",
     textAlign: "left",
     fontSize: 40,
