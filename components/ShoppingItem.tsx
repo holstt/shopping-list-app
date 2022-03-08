@@ -9,36 +9,67 @@ import {
   ViewStyle,
 } from "react-native";
 
-interface Props {
+import { FontAwesome } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
+import { useState } from "react";
+
+// TODO
+// - Evt. icon size matcher ej med circle da ej kvadrat dim
+
+interface ItemProps {
   text: string;
+  // isChecked: boolean;
   isLastElement?: boolean;
 }
 
-export default function ShoppingItem({ text, isLastElement }: Props) {
-  return (
-    <View
-      style={[
-        styles.itemContainer,
-        isLastElement ? styles.itemContainerLast : styles.itemContainerRegular,
-      ]}
+export default function ShoppingItem({
+  text,
+  // isChecked,
+  isLastElement,
+}: ItemProps) {
+  const [isChecked, setIsChecked] = useState(false);
+
+  // Component?? ItemButton
+  const buttonChecked = (
+    <TouchableOpacity
+      // style={styles.buttonChecked}
+      onPress={() => setIsChecked((prevIsChecked) => !prevIsChecked)}
     >
-      <TouchableOpacity style={[styles.buttonDefault]} />
-      <Text style={styles.item}>{text}</Text>
+      <FontAwesome
+        // style={styles.buttonIcon}
+        name="check-circle"
+        size={29} // XXX: Dynamisk?
+        color="#2d7ffa"
+      />
+    </TouchableOpacity>
+  );
+
+  const itemContainerStyle = [
+    styles.itemContainer,
+    isLastElement ? styles.itemContainerLast : null,
+  ];
+
+  const buttonDefault = (
+    <TouchableOpacity
+      style={styles.buttonDefault}
+      onPress={() => setIsChecked((prevIsChecked) => !prevIsChecked)}
+    />
+  );
+  const itemTextStyle = [
+    styles.itemText,
+    isChecked ? styles.itemTextChecked : null,
+  ];
+  return (
+    <View style={itemContainerStyle}>
+      <View style={styles.buttonContainer}>
+        {isChecked ? buttonChecked : buttonDefault}
+      </View>
+      <Text style={itemTextStyle}>{text}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  // Add a bottom border to the last item in the list
-  itemContainerLast: {
-    borderBottomColor: "#d5d8e3",
-    // backgroundColor: "blue",
-  },
-  itemContainerRegular: {
-    // backgroundColor: "purple",
-    borderBottomColor: "transparent",
-  },
-
   itemContainer: {
     flexDirection: "row",
     borderTopColor: "#d5d8e3",
@@ -51,20 +82,61 @@ const styles = StyleSheet.create({
     paddingBottom: 7,
     paddingLeft: 5,
     borderWidth: 1,
+    borderBottomColor: "transparent",
+  },
+  // Add a bottom border to the last item in the list
+  itemContainerLast: {
+    // backgroundColor: "blue",
+    borderBottomColor: "#d5d8e3",
+    // borderWidth: 2,
+  },
+
+  buttonChecked: {
+    // backgroundColor: "red",
+    // borderColor: "red",
+    // borderWidth: 3,
+    // width: 25,
+    // height: 25,
+    // borderRadius: 99,
+    // paddingBottom: 5,
+    // alignItems: "center",
+    // justifyContent: "center",
+    // overflow: "visible",
+  },
+  buttonIcon: {
+    // backgroundColor: "black",
+    // position: "relative",
+    // // marginLeft: 5,
+    // // overflow: "hidden",
+    // overflow: "visible",
+  },
+  buttonContainer: {
+    width: 29,
+    height: 29,
+    // Center icon inside
+    alignItems: "center",
+    justifyContent: "center",
+    // backgroundColor: "green",
+    marginRight: 7,
+    // overflow: "visible",
   },
   buttonDefault: {
-    // backgroundColor: "#2d7ffa",
     borderColor: "#2d7ffa",
     borderWidth: 3,
-    width: 26,
-    height: 26,
+    // Fill container
+    width: "90%",
+    height: "90%",
     borderRadius: 99,
-    marginRight: 5,
+    // backgroundColor: "red",
   },
-  item: {
+  itemText: {
     // flex: 1,
     backgroundColor: "#fff",
     color: "#454a52",
     fontSize: 20,
+  },
+
+  itemTextChecked: {
+    textDecorationLine: "line-through",
   },
 });
