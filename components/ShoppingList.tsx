@@ -24,24 +24,11 @@ export default function ShoppingList() {
 }
 
 const styles = StyleSheet.create({
-  //   container: {
-  //     // flex: 1,
-  //     // backgroundColor: "#fff",
-  //     // margin: 10,
-  //     // marginTop: StatusBar.currentHeight,
-  //     // textAlign: "left",
-  //     // alignItems: "left",
-  //     // justifyContent: "center",
-  //   },
   listHeader: {
-    // flex: 1,
     color: "#454a52",
     backgroundColor: "#fff",
     textAlign: "left",
     fontSize: 40,
     marginBottom: 10,
-    // marginLeft: 5,
-    // alignItems: "left",
-    // justifyContent: "center",
   },
 });
