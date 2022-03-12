@@ -1,0 +1,12 @@
+{
+  "configurations": [
+    {
+      "name": "Attach to packager",
+      "cwd": "${workspaceFolder}",
+      "type": "reactnative",
+      "request": "attach",
+      "port": 8081, //Port number may be different in your machine
+      "sourceMaps": true
+    }
+  ]
+}

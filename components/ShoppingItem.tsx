@@ -12,25 +12,24 @@ import {
 import { useState } from "react";
 
 import ItemButton from "./ItemButton";
+import Item from "../models/Item";
 
 // TODO
 // - Evt. icon size matcher ej med circle da ej kvadrat dim
 
 interface ItemProps {
-  text: string;
-  // isChecked: boolean;
+  item: Item;
+  onPress: (index: number) => void;
   isLastElement?: boolean;
+  index: number;
 }
 
 export default function ShoppingItem({
-  text,
-  // isChecked,
+  item,
+  onPress,
   isLastElement,
+  index,
 }: ItemProps) {
-  const [isChecked, setIsChecked] = useState(false);
-
-  // Resolve button
-
   // Resolve styles
   const itemContainerStyle = [
     styles.itemContainer,
@@ -39,16 +38,16 @@ export default function ShoppingItem({
 
   const itemTextStyle = [
     styles.itemText,
-    isChecked ? styles.itemTextChecked : null,
+    item.isChecked ? styles.itemTextChecked : null,
   ];
 
   return (
     <View style={itemContainerStyle}>
       <ItemButton
-        isChecked={isChecked}
-        onPress={() => setIsChecked((prevIsChecked) => !prevIsChecked)}
+        isChecked={item.isChecked}
+        onPress={() => onPress(index)}
       ></ItemButton>
-      <Text style={itemTextStyle}>{text}</Text>
+      <Text style={itemTextStyle}>{item.title}</Text>
     </View>
   );
 }
