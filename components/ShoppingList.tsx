@@ -1,14 +1,19 @@
 // import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, ScrollView } from "react-native";
-import ShoppingItem from "./ShoppingItem";
+import ListItem from "./Item/ListItem";
 import Item from "../models/Item";
 import { useState } from "react";
+import Category from "../models/Category";
 
 interface ShoppingListProps {
   initialItems: Item[];
+  initialCategories: Category[];
 }
 
-export default function ShoppingList({ initialItems }: ShoppingListProps) {
+export default function ShoppingList({
+  initialItems,
+  initialCategories,
+}: ShoppingListProps) {
   let { unchecked, checked } = splitItems(initialItems);
 
   const [uncheckedItems, setUncheckedItems] = useState(unchecked);
@@ -61,12 +66,12 @@ export default function ShoppingList({ initialItems }: ShoppingListProps) {
   function createListComponent(items: Item[]) {
     return items.map((item, i) => {
       return (
-        <ShoppingItem
+        <ListItem
           key={item.id}
           item={item}
           isLastElement={i == items.length - 1}
           onPress={itemPressed}
-        ></ShoppingItem>
+        ></ListItem>
       );
     });
   }
