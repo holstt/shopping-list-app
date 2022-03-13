@@ -19,17 +19,17 @@ import Item from "../models/Item";
 
 interface ItemProps {
   item: Item;
-  onPress: (index: number) => void;
+  onPress: (index: string) => void;
   isLastElement?: boolean;
-  index: number;
+  // index: number;
 }
 
 export default function ShoppingItem({
   item,
   onPress,
   isLastElement,
-  index,
-}: ItemProps) {
+}: // index,
+ItemProps) {
   // Resolve styles
   const itemContainerStyle = [
     styles.itemContainer,
@@ -45,7 +45,7 @@ export default function ShoppingItem({
     <View style={itemContainerStyle}>
       <ItemButton
         isChecked={item.isChecked}
-        onPress={() => onPress(index)}
+        onPress={() => onPress(item.id)}
       ></ItemButton>
       <Text style={itemTextStyle}>{item.title}</Text>
     </View>

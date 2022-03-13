@@ -12,7 +12,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <ShoppingList itemsExisting={loadedItems}></ShoppingList>
+      <ShoppingList initialItems={loadedItems}></ShoppingList>
     </View>
   );
 }

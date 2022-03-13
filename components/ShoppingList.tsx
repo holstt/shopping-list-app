@@ -5,49 +5,78 @@ import Item from "../models/Item";
 import { useState } from "react";
 
 interface ShoppingListProps {
-  itemsExisting: Item[];
+  initialItems: Item[];
 }
 
-export default function ShoppingList({ itemsExisting }: ShoppingListProps) {
-  const [items, setItems] = useState(orderItems(itemsExisting));
+export default function ShoppingList({ initialItems }: ShoppingListProps) {
+  let { unchecked, checked } = splitItems(initialItems);
 
-  const itemPressed = (index: number) => {
-    setItems((prevItems) => {
-      const updatedItems = prevItems.map((item, i) =>
-        // Find and update pressed item.
-        i == index ? { ...item, isChecked: !item.isChecked } : item
-      );
-      return orderItems(updatedItems);
-    });
+  const [uncheckedItems, setUncheckedItems] = useState(unchecked);
+  const [checkedItems, setCheckedItems] = useState(checked);
+
+  const itemPressed = (id: string) => {
+    // console.log("pressed: " + id);
+
+    const items = uncheckedItems.concat(checkedItems);
+    const updatedItems = items.map((item, i) =>
+      // Find and update pressed item.
+      item.id == id ? { ...item, isChecked: !item.isChecked } : item
+    );
+    ({ unchecked, checked } = splitItems(updatedItems));
+
+    // console.log("unchecked: ");
+    // console.log(unchecked);
+
+    // console.log("checked: ");
+    // console.log(checked);
+    // console.log("checked: " + checked);
+    // XXX: Safe not using prev state?
+    setUncheckedItems(unchecked);
+    setCheckedItems(checked);
+
     // console.log(`ispressed: ${index} `);
   };
 
   // Create items.
-  const itemList = items.map((item, i) => {
-    return (
-      <ShoppingItem
-        key={i}
-        item={item}
-        index={i}
-        isLastElement={i == items.length - 1}
-        onPress={itemPressed}
-      ></ShoppingItem>
-    );
-  });
+  const itemListUnchecked = createListComponent(uncheckedItems);
+  const itemListChecked = createListComponent(checkedItems);
+
+  const itemListComponent = (
+    <View>
+      {itemListUnchecked}
+      {itemListChecked.length != 0 ? (
+        <Text style={styles.doneHeader}>Done</Text>
+      ) : null}
+      {itemListChecked}
+    </View>
+  );
 
   return (
     <View style={styles.container}>
       <Text style={styles.listHeader}>MyList</Text>
-      <ScrollView style={styles.itemList}>{itemList}</ScrollView>
+      <ScrollView style={styles.itemList}>{itemListComponent}</ScrollView>
     </View>
   );
+
+  function createListComponent(items: Item[]) {
+    return items.map((item, i) => {
+      return (
+        <ShoppingItem
+          key={item.id}
+          item={item}
+          isLastElement={i == items.length - 1}
+          onPress={itemPressed}
+        ></ShoppingItem>
+      );
+    });
+  }
 }
 
 // Reorder items. Put checked items at bottom
-function orderItems(items: Item[]) {
+function splitItems(items: Item[]) {
   const unchecked = items.filter((item) => !item.isChecked);
   const checked = items.filter((item) => item.isChecked);
-  return unchecked.concat(checked);
+  return { unchecked, checked };
 }
 
 const styles = StyleSheet.create({
@@ -66,9 +95,17 @@ const styles = StyleSheet.create({
     // borderWidth: 1,
     // height: "50%",
   },
+  doneHeader: {
+    color: "#464b53e6",
+    // backgroundColor: "#fff",
+    textAlign: "left",
+    fontSize: 20,
+    paddingTop: 15,
+    paddingBottom: 2,
+  },
   listHeader: {
     color: "#454a52",
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
     textAlign: "left",
     fontSize: 40,
     paddingBottom: 10,
