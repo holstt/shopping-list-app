@@ -8,6 +8,10 @@ interface ButtonProps {
 }
 
 export default function ItemButton({ isChecked, onPress }: ButtonProps) {
+  const buttonUnchecked = (
+    <TouchableOpacity style={styles.buttonDefault} onPress={onPress} />
+  );
+
   const buttonChecked = (
     <TouchableOpacity onPress={onPress}>
       <FontAwesome
@@ -17,11 +21,7 @@ export default function ItemButton({ isChecked, onPress }: ButtonProps) {
       />
     </TouchableOpacity>
   );
-
-  const buttonDefault = (
-    <TouchableOpacity style={styles.buttonDefault} onPress={onPress} />
-  );
-  const itemButton = isChecked ? buttonChecked : buttonDefault;
+  const itemButton = isChecked ? buttonChecked : buttonUnchecked;
 
   return <View style={styles.buttonContainer}>{itemButton}</View>;
 }

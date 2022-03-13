@@ -19,7 +19,7 @@ import Item from "../../models/Item";
 
 interface ItemProps {
   item: Item;
-  onPress: (index: string) => void;
+  onPress: (id: string) => void;
   isLastElement?: boolean;
   // index: number;
 }

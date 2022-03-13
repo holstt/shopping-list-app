@@ -3,11 +3,13 @@ import ShoppingList from "./components/ShoppingList";
 import Category from "./models/Category";
 import Item from "./models/Item";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 export default function App() {
   const loadedCategories = [
-    new Category("Category1", "red"),
-    new Category("Category2", "green"),
-    new Category("Category3", "blue"),
+    new Category("Category1", "#EB7474"),
+    new Category("Category2", "#1FDA6D"),
+    new Category("Category3", "#1F76DA"),
   ];
   // XXX: Indlæs fra local storage. UseEffect?
   const loadedItems = [
@@ -28,9 +30,9 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
-    borderColor: "red",
+    // borderColor: "red",
     // height: "100%",
-    borderWidth: 2,
+    // borderWidth: 2,
     padding: 10,
     paddingTop: StatusBar.currentHeight,
   },
