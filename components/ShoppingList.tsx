@@ -98,14 +98,21 @@ export default function ShoppingList({
   );
 }
 
-function createListComponent(items: Item[], itemPressed: (item: Item) => void) {
+// const onItemModified = (item : Item) => {
+
+// }
+
+function createListComponent(
+  items: Item[],
+  onItemPressed: (item: Item) => void
+) {
   return items.map((item, i) => {
     return (
       <ListItem
         key={item.id}
         item={item}
         isLastElement={i === items.length - 1}
-        onPress={itemPressed}
+        onPress={onItemPressed}
       ></ListItem>
     );
   });

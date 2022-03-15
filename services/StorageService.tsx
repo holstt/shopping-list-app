@@ -6,7 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const ITEM_STORE_KEY = "item";
 const CATEGORY_STORE_KEY = "category";
 
-// XXX: Lav StorageTestDataIntializer, GenericStorage/Storage
+// XXX: Lav StorageTestDataIntializer, GenericStorage/Storage, LocalStorage
 
 export default class StorageService {
   public static async loadCategories(): Promise<Category[]> {
@@ -17,8 +17,16 @@ export default class StorageService {
     return await this.loadMany<Item>(ITEM_STORE_KEY);
   }
 
+  public static async saveItem(item: Item) {
+    await this.save(ITEM_STORE_KEY, item.id, item);
+  }
+
+  public static async saveCategory(item: Item) {
+    await this.save(ITEM_STORE_KEY, item.id, item);
+  }
+
   public static async load<T>(store: string, id: string): Promise<T | null> {
-    const json = await AsyncStorage.getItem(store + ":" + id);
+    const json = await AsyncStorage.getItem(`${store}:${id}`);
     const item: T | null = json != null ? JSON.parse(json) : null;
 
     return item;
@@ -30,19 +38,15 @@ export default class StorageService {
     );
     const jsonObjects = await AsyncStorage.multiGet(keys);
 
-    // Remove objects with no value
-    const jsonObjectsWithValue: [string, string][] = jsonObjects.filter(
-      (o): o is [string, string] => !!o[1]
-    );
+    // // Remove objects with no value
+    // const jsonObjectsWithValue: [string, string][] = jsonObjects.filter(
+    //   (o): o is [string, string] => !!o[1]
+    // );
 
     // Make array of items from parsing value
-    const items: T[] = jsonObjectsWithValue.map((o) => JSON.parse(o[1]));
+    const items: T[] = jsonObjects.map((o) => (o[1] ? JSON.parse(o[1]) : null));
 
     return items;
-  }
-
-  public static async clearAllData() {
-    await AsyncStorage.clear();
   }
 
   public static async saveMany<T extends Entity>(store: string, objects: T[]) {
@@ -64,6 +68,11 @@ export default class StorageService {
     console.log("Object saved: " + key);
   }
 
+  public static async clearAllData() {
+    await AsyncStorage.clear();
+  }
+
+  // XXX: Flyttes
   public static async seedTestData() {
     // Don't seed test data if storage already contains data.
     if ((await AsyncStorage.getAllKeys()).length > 0) {

@@ -35,7 +35,7 @@ export default function App() {
     console.log("Loading data from local storage...");
     const existingItems = await StorageService.loadItems();
     console.log("Existing items: ");
-    console.log(existingItems);
+    // console.log(existingItems);
 
     const existingCategories = await StorageService.loadCategories();
 
@@ -45,19 +45,26 @@ export default function App() {
   };
 
   // XXX: On modify item?? således generic.  Child forestår ændring
-  const onItemPressed = (itemPressed: Item) => {
-    setItems((prevItems) =>
-      prevItems.map((item) =>
+  const onItemPressed = async (itemPressed: Item) => {
+    const saveAndUpdateItem = (item: Item) => {
+      const itemUpdated = { ...item, isChecked: !item.isChecked };
+      StorageService.saveItem(itemUpdated);
+      return itemUpdated;
+    };
+
+    setItems((prevItems) => {
+      // let itemUpdated: Item | null = null;
+      const newItems = prevItems.map((item) =>
         // Find and update pressed item.
-        item.id === itemPressed.id
-          ? { ...item, isChecked: !item.isChecked }
-          : item
-      )
-    );
+        item.id === itemPressed.id ? saveAndUpdateItem(item) : item
+      );
+      return newItems;
+    });
   };
 
-  const onAddNewItem = (item: Item) => {
-    setItems((prev) => [...prev, item]);
+  const onAddNewItem = async (itemAdded: Item) => {
+    await StorageService.saveItem(itemAdded);
+    setItems((prev) => [...prev, itemAdded]);
   };
 
   if (isLoading) {
