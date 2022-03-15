@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import ListItem from "./Item/ListItem";
 import Item from "../models/Item";
-import { useState, useRef, LegacyRef } from "react";
+import { useState, useRef, LegacyRef, useEffect } from "react";
 import Category from "../models/Category";
 import { Feather } from "@expo/vector-icons";
 
@@ -28,13 +28,18 @@ export default function ShoppingList({
 
   const [uncheckedItems, setUncheckedItems] = useState(unchecked);
   const [checkedItems, setCheckedItems] = useState(checked);
+  // Mode only active when input for add new item is visible
   const [isAddItemMode, setIsAddItemMode] = useState(false);
+
+  // useEffect(() => {
+  //   console.log("hello");
+  // }, []);
 
   const itemPressed = (id: string) => {
     const items = uncheckedItems.concat(checkedItems);
     const updatedItems = items.map((item, i) =>
       // Find and update pressed item.
-      item.id == id ? { ...item, isChecked: !item.isChecked } : item
+      item.id === id ? { ...item, isChecked: !item.isChecked } : item
     );
     ({ unchecked, checked } = splitItems(updatedItems));
     // XXX: Safe not using prev state?
@@ -87,7 +92,7 @@ export default function ShoppingList({
       ) : null}
 
       {itemListUnchecked}
-      {itemListChecked.length != 0 ? (
+      {itemListChecked.length !== 0 ? (
         <Text style={styles.doneHeader}>Done</Text>
       ) : null}
       {itemListChecked}

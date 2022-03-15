@@ -1,28 +1,63 @@
-import { StyleSheet, View, StatusBar } from "react-native";
+import { StyleSheet, View, StatusBar, Text } from "react-native";
 import ShoppingList from "./components/ShoppingList";
 import Category from "./models/Category";
 import Item from "./models/Item";
+import AppLoading from "expo-app-loading";
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useEffect, useState } from "react";
+import StorageService from "./services/StorageService";
+
+if (__DEV__) {
+  import("./ReactotronConfig").then(() => console.log("Reactotron Configured"));
+}
+
+interface Entity {
+  id: string;
+}
 
 export default function App() {
-  const loadedCategories = [
-    new Category("Category1", "#EB7474"),
-    new Category("Category2", "#1FDA6D"),
-    new Category("Category3", "#1F76DA"),
-  ];
-  // XXX: Indlæs fra local storage. UseEffect?
-  const loadedItems = [
-    new Item("Item1", true, loadedCategories[0]),
-    new Item("Item2", false, loadedCategories[1]),
-    new Item("Item3", false, null),
-  ];
+  const [items, setItems] = useState<Item[]>();
+  const [categories, setCategories] = useState<Category[]>();
+
+  const loadDataFromLocalStorage = async () => {
+    console.log("Loading data from local storage...");
+    const existingItems = await StorageService.loadItems();
+    const existingCategories = await StorageService.loadCategories();
+
+    existingItems ? setItems(existingItems) : null;
+    existingCategories ? setCategories(existingCategories) : null;
+    console.log("Data loaded!");
+  };
+
+  // useEffect(() => {
+  const loadData = async () => {
+    if (__DEV__) {
+      // Seed test data in dev environment
+      await StorageService.seedTestData();
+    }
+
+    await loadDataFromLocalStorage();
+  };
+
+  //   // tslint:disable-next-line: no-floating-promises
+  //   loadData();
+  // }, []);
+
+  if (!items || !categories) {
+    return (
+      <AppLoading
+        startAsync={loadData}
+        onFinish={() => console.log("done")}
+        onError={console.warn}
+      />
+    );
+  }
 
   return (
     <View style={styles.container}>
       <ShoppingList
-        initialItems={loadedItems}
-        initialCategories={loadedCategories}
+        initialItems={items}
+        initialCategories={categories}
       ></ShoppingList>
     </View>
   );

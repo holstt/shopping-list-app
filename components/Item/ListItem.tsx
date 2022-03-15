@@ -21,7 +21,6 @@ interface ItemProps {
   item: Item;
   onPress: (id: string) => void;
   isLastElement?: boolean;
-  // index: number;
 }
 
 export default function ListItem({
