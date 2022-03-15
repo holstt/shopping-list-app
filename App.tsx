@@ -24,6 +24,7 @@ export default function App() {
   const loadData = async () => {
     if (__DEV__) {
       // Seed test data in dev environment
+      // await StorageService.clearAllData();
       await StorageService.seedTestData();
     }
 
@@ -33,9 +34,10 @@ export default function App() {
   const loadDataFromLocalStorage = async () => {
     console.log("Loading data from local storage...");
     const existingItems = await StorageService.loadItems();
-    const existingCategories = await StorageService.loadCategories();
+    console.log("Existing items: ");
+    console.log(existingItems);
 
-    console.log("Existing items: " + existingItems);
+    const existingCategories = await StorageService.loadCategories();
 
     existingItems ? setItems(existingItems) : null;
     existingCategories ? setCategories(existingCategories) : null;

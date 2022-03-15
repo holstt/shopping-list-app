@@ -3,44 +3,73 @@ import Entity from "../models/Entity";
 import Item from "../models/Item";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// XXX: Bør opdeles i test seeder og generic storage service
-const ITEM_KEY = "items";
-const CATEGORIES_KEY = "items";
+const ITEM_STORE_KEY = "item";
+const CATEGORY_STORE_KEY = "category";
+
+// XXX: Lav StorageTestDataIntializer, GenericStorage/Storage
 
 export default class StorageService {
-  public static async loadItems() {
-    return this.loadData(ITEM_KEY);
+  public static async loadCategories(): Promise<Category[]> {
+    return await this.loadMany<Category>(CATEGORY_STORE_KEY);
   }
 
-  public static async loadCategories() {
-    return this.loadData(CATEGORIES_KEY);
+  public static async loadItems(): Promise<Item[]> {
+    return await this.loadMany<Item>(ITEM_STORE_KEY);
   }
 
-  public static async loadData(key: string) {
-    // try {
-    const jsonValue = await AsyncStorage.getItem(key);
-    const object = jsonValue != null ? JSON.parse(jsonValue) : null;
-    // } catch(e) {
-    //   // read error
-    // }
+  public static async load<T>(store: string, id: string): Promise<T | null> {
+    const json = await AsyncStorage.getItem(store + ":" + id);
+    const item: T | null = json != null ? JSON.parse(json) : null;
 
-    console.log("Object loaded: " + key);
-    return object;
+    return item;
+  }
+
+  public static async loadMany<T>(storeKey: string): Promise<T[]> {
+    const keys = (await AsyncStorage.getAllKeys()).filter((k) =>
+      k.startsWith(storeKey)
+    );
+    const jsonObjects = await AsyncStorage.multiGet(keys);
+
+    // Remove objects with no value
+    const jsonObjectsWithValue: [string, string][] = jsonObjects.filter(
+      (o): o is [string, string] => !!o[1]
+    );
+
+    // Make array of items from parsing value
+    const items: T[] = jsonObjectsWithValue.map((o) => JSON.parse(o[1]));
+
+    return items;
+  }
+
+  public static async clearAllData() {
+    await AsyncStorage.clear();
+  }
+
+  public static async saveMany<T extends Entity>(store: string, objects: T[]) {
+    const makeKey = (id: string) => store + ":" + id;
+    const keyValuePairs = objects.map((o) => [
+      makeKey(o.id),
+      JSON.stringify(o),
+    ]);
+
+    await AsyncStorage.multiSet(keyValuePairs);
   }
 
   // tslint:disable-next-line: no-any
-  public static async storeObject(key: string, object: any) {
-    // try {
+  public static async save(store: string, id: string, object: any) {
+    const key = store + ":" + id;
     const jsonValue = JSON.stringify(object);
     await AsyncStorage.setItem(key, jsonValue);
-    // } catch(e) {
-    //   // save error
-    // }
 
     console.log("Object saved: " + key);
   }
 
   public static async seedTestData() {
+    // Don't seed test data if storage already contains data.
+    if ((await AsyncStorage.getAllKeys()).length > 0) {
+      return;
+    }
+
     console.log("Seeding test data....");
     const testCategories = [
       new Category("Category1", "#EB7474"),
@@ -54,23 +83,8 @@ export default class StorageService {
       new Item("Item3", false, null),
     ];
 
-    await this.storeObject("categories", testCategories);
-    await this.storeObject("items", testItems);
+    await this.saveMany(CATEGORY_STORE_KEY, testCategories);
+    await this.saveMany(ITEM_STORE_KEY, testItems);
     console.log("Test data seeded!");
-  }
-
-  public static async storeMany<T extends [[string, [any]]]>(objects: T) {
-    try {
-      console.log("Storing objects: " + objects.length);
-      const jsonValues = objects.map((o) => [o[0], JSON.stringify(o[1])]);
-      await AsyncStorage.multiSet(jsonValues);
-    } catch (e) {
-      // XXX: Vis popup til user! Men ikke her
-      console.log(
-        "An error occured while saving objects with keys: " +
-          objects.map((o) => o[0])
-      );
-      console.log(e);
-    }
   }
 }
