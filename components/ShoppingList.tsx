@@ -16,59 +16,41 @@ import Category from "../models/Category";
 import { Feather } from "@expo/vector-icons";
 
 interface ShoppingListProps {
-  initialItems: Item[];
-  initialCategories: Category[];
+  items: Item[];
+  categories: Category[];
+  onAddNewItem(item: Item): void;
+  onItemPressed(item: Item): void;
 }
 
 export default function ShoppingList({
-  initialItems,
-  initialCategories,
+  items,
+  categories,
+  onAddNewItem,
+  onItemPressed,
 }: ShoppingListProps) {
-  let { unchecked, checked } = splitItems(initialItems);
-
-  const [uncheckedItems, setUncheckedItems] = useState(unchecked);
-  const [checkedItems, setCheckedItems] = useState(checked);
   // Mode only active when input for add new item is visible
   const [isAddItemMode, setIsAddItemMode] = useState(false);
-
-  // useEffect(() => {
-  //   console.log("hello");
-  // }, []);
-
-  const itemPressed = (id: string) => {
-    const items = uncheckedItems.concat(checkedItems);
-    const updatedItems = items.map((item, i) =>
-      // Find and update pressed item.
-      item.id === id ? { ...item, isChecked: !item.isChecked } : item
-    );
-    ({ unchecked, checked } = splitItems(updatedItems));
-    // XXX: Safe not using prev state?
-    setUncheckedItems(unchecked);
-    setCheckedItems(checked);
-  };
+  const textInputRef = useRef<TextInput | null>();
 
   // Create items.
-  const itemListUnchecked = createListComponent(uncheckedItems, itemPressed);
-  const itemListChecked = createListComponent(checkedItems, itemPressed);
-
-  const textInputRef = useRef<TextInput | null>();
+  const { unchecked, checked } = splitItems(items);
+  const itemListUncheckedComponent = createListComponent(
+    unchecked,
+    onItemPressed
+  );
+  const itemListCheckedComponent = createListComponent(checked, onItemPressed);
 
   // Handle item submitted
   const onSubmitEditing = (
     event: NativeSyntheticEvent<TextInputSubmitEditingEventData>
   ) => {
-    // console.log("Submitted:");
-    // console.log(event?.nativeEvent?.text);
-
     // Do nothing if empty text
     if (!event?.nativeEvent?.text || "") return;
 
     // Clear text input after item submitted
-    setUncheckedItems((prev) => [
-      new Item(event.nativeEvent.text, false),
-      ...prev,
-    ]);
     textInputRef?.current?.clear();
+    // Notify and pass new item to parent
+    onAddNewItem(new Item(event.nativeEvent.text, false));
   };
 
   // XXX: Skal i component
@@ -80,22 +62,20 @@ export default function ShoppingList({
           autoFocus={true}
           // Keep focus even after submit
           blurOnSubmit={false}
+          // Turn off add item mode if not focused on input
           onBlur={() => setIsAddItemMode(false)}
-          // onFocus={() => setIsAddItemMode(true)}
           ref={(ref) => (textInputRef.current = ref)}
           style={styles.inputField}
           onSubmitEditing={onSubmitEditing}
-          // value={""}
           placeholder="Add Item"
-          // keyboardType="default"
         />
       ) : null}
 
-      {itemListUnchecked}
-      {itemListChecked.length !== 0 ? (
+      {itemListUncheckedComponent}
+      {itemListCheckedComponent.length !== 0 ? (
         <Text style={styles.doneHeader}>Done</Text>
       ) : null}
-      {itemListChecked}
+      {itemListCheckedComponent}
     </View>
   );
 
@@ -108,8 +88,6 @@ export default function ShoppingList({
           style={styles.plusButton}
           // Button activates Add Item Mode
           onPress={() => {
-            console.log(textInputRef?.current);
-            // textInputRef?.current?.focus();
             setIsAddItemMode(true);
           }}
         >
@@ -120,13 +98,13 @@ export default function ShoppingList({
   );
 }
 
-function createListComponent(items: Item[], itemPressed: (id: string) => void) {
+function createListComponent(items: Item[], itemPressed: (item: Item) => void) {
   return items.map((item, i) => {
     return (
       <ListItem
         key={item.id}
         item={item}
-        isLastElement={i == items.length - 1}
+        isLastElement={i === items.length - 1}
         onPress={itemPressed}
       ></ListItem>
     );

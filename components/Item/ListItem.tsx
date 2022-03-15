@@ -19,7 +19,7 @@ import Item from "../../models/Item";
 
 interface ItemProps {
   item: Item;
-  onPress: (id: string) => void;
+  onPress: (item: Item) => void;
   isLastElement?: boolean;
 }
 
@@ -44,7 +44,7 @@ ItemProps) {
     <View style={container}>
       <ItemButton
         isChecked={item.isChecked}
-        onPress={() => onPress(item.id)}
+        onPress={() => onPress(item)}
       ></ItemButton>
       <Text style={itemTextStyle}>{item.title}</Text>
       <View
