@@ -14,16 +14,17 @@ import Item from "../models/Item";
 import { useState, useRef, LegacyRef, useEffect } from "react";
 import Category from "../models/Category";
 import { Feather } from "@expo/vector-icons";
+import ItemList from "../models/ItemList";
 
 interface ShoppingListProps {
-  items: Item[];
+  itemList: ItemList;
   categories: Category[];
   onAddNewItem(item: Item): void;
   onItemPressed(item: Item): void;
 }
 
-export default function ShoppingList({
-  items,
+export default function ListView({
+  itemList,
   categories,
   onAddNewItem,
   onItemPressed,
@@ -32,8 +33,10 @@ export default function ShoppingList({
   const [isAddItemMode, setIsAddItemMode] = useState(false);
   const textInputRef = useRef<TextInput | null>();
 
+  console.log("Recieved: " + itemList);
+
   // Create items.
-  const { unchecked, checked } = splitItems(items);
+  const { unchecked, checked } = splitItems(itemList.items);
   const itemListUncheckedComponent = createListComponent(
     unchecked,
     onItemPressed
@@ -81,7 +84,7 @@ export default function ShoppingList({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.listHeader}>MyList</Text>
+      <Text style={styles.listHeader}>{itemList.title}</Text>
       <ScrollView style={styles.listStyles}>{itemListComponent}</ScrollView>
       {!isAddItemMode ? (
         <TouchableOpacity
