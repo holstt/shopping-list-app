@@ -8,6 +8,7 @@ import {
   TextInput,
   NativeSyntheticEvent,
   TextInputSubmitEditingEventData,
+  GestureResponderEvent,
 } from "react-native";
 import ListItem from "./Item/ListItem";
 import Item from "../models/Item";
@@ -15,25 +16,35 @@ import { useState, useRef, LegacyRef, useEffect } from "react";
 import Category from "../models/Category";
 import { Feather } from "@expo/vector-icons";
 import ItemList from "../models/ItemList";
+import { FontAwesome } from "@expo/vector-icons";
 
 interface ShoppingListProps {
   itemList: ItemList;
   categories: Category[];
   onAddNewItem(item: Item): void;
   onItemPressed(item: Item): void;
+  onViewNextList(event: GestureResponderEvent): void;
+  onViewPrevList(event: GestureResponderEvent): void;
+  hasNextList: boolean;
+  hasPrevList: boolean;
 }
 
 export default function ListView({
   itemList,
   categories,
   onAddNewItem,
+  onViewNextList,
+  onViewPrevList,
+  hasNextList,
+  hasPrevList,
   onItemPressed,
 }: ShoppingListProps) {
   // Mode only active when input for add new item is visible
   const [isAddItemMode, setIsAddItemMode] = useState(false);
   const textInputRef = useRef<TextInput | null>();
 
-  console.log("Recieved: " + itemList);
+  // console.log("has prev: " + hasPrevList);
+  // console.log("has next: " + hasNextList);
 
   // Create items.
   const { unchecked, checked } = splitItems(itemList.items);
@@ -84,7 +95,25 @@ export default function ListView({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.listHeader}>{itemList.title}</Text>
+      <View style={styles.listHeaderContainer}>
+        <Text style={styles.listHeader}>{itemList.title}</Text>
+        {/* XXX: Flyt i button component */}
+        <View style={styles.upDownButtonContainer}>
+          <TouchableOpacity onPress={onViewPrevList}>
+            <FontAwesome
+              name="chevron-up"
+              style={[styles.logo, !hasPrevList ? styles.logoDisabled : null]}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <FontAwesome
+              onPress={onViewNextList}
+              name="chevron-down"
+              style={[styles.logo, !hasNextList ? styles.logoDisabled : null]}
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
       <ScrollView style={styles.listStyles}>{itemListComponent}</ScrollView>
       {!isAddItemMode ? (
         <TouchableOpacity
@@ -128,6 +157,11 @@ function splitItems(items: Item[]) {
   return { unchecked, checked };
 }
 
+// Colors
+const lightGrey = "#464b53e6";
+const darkGrey = "#454a52";
+const lightGreyDisabled = "#464b5366";
+
 const styles = StyleSheet.create({
   container: {
     // borderColor: "blue",
@@ -138,7 +172,7 @@ const styles = StyleSheet.create({
     // XXX: Evt. global style for dette og item text
     paddingTop: 7,
     paddingBottom: 7,
-    color: "#454a52",
+    color: darkGrey,
     fontSize: 20,
   },
   listStyles: {
@@ -146,8 +180,6 @@ const styles = StyleSheet.create({
     // borderWidth: 1,
   },
   plusButton: {
-    // borderWidth: 2,
-    // borderColor: "#74ABEB",
     backgroundColor: "#2473E9",
     height: 70,
     width: 70,
@@ -164,19 +196,39 @@ const styles = StyleSheet.create({
   //   // borderWidth: 1,
   //   // height: "50%",
   // },
+  listHeaderContainer: {
+    flexDirection: "row",
+    marginLeft: 5,
+  },
+
+  listHeader: {
+    color: darkGrey,
+    // backgroundColor: "#fff",
+    textAlign: "left",
+    fontSize: 40,
+    paddingBottom: 10,
+    // marginLeft: 12,
+  },
+  upDownButtonContainer: {
+    // backgroundColor: "red",
+    marginLeft: "auto",
+  },
+  logo: {
+    fontSize: 26,
+    color: lightGrey,
+    // backgroundColor: "red",
+    // borderWidth: 2,
+    // borderColor: "black",
+  },
+  logoDisabled: {
+    color: lightGreyDisabled,
+  },
   doneHeader: {
-    color: "#464b53e6",
+    color: lightGrey,
     // backgroundColor: "#fff",
     textAlign: "left",
     fontSize: 20,
     paddingTop: 15,
     paddingBottom: 2,
-  },
-  listHeader: {
-    color: "#454a52",
-    // backgroundColor: "#fff",
-    textAlign: "left",
-    fontSize: 40,
-    paddingBottom: 10,
   },
 });

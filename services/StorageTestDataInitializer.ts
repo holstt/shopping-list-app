@@ -25,11 +25,20 @@ export default class StorageTestDataInitializer {
       new Item("Item2", true, testCategories[1]),
       new Item("Item3", false, null),
     ];
-    const itemLists = [new ItemList("My Test List", testItems)];
+
+    const testItems2 = [
+      new Item("Item11", false, testCategories[0]),
+      new Item("Item22", true, testCategories[2]),
+      new Item("Item33", true, null),
+    ];
+    const itemLists = [
+      new ItemList("My First List", testItems, 0),
+      new ItemList("My Other List", testItems2, 1),
+    ];
 
     // XXX: Ensure singleton?
     const appData = new AppData(itemLists[0].id);
-
+    await StorageService.saveAppData(appData);
     await StorageService.saveCategories(testCategories);
     await StorageService.saveItemLists(itemLists);
     console.log("Test data seeded!");
