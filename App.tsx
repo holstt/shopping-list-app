@@ -11,19 +11,14 @@ import ItemList from "./models/ItemList";
 
 // Use Reactotron dev tool
 if (__DEV__) {
+  // tslint:disable-next-line: no-floating-promises
   import("./ReactotronConfig").then(() => console.log("Reactotron Configured"));
-}
-
-interface Entity {
-  id: string;
 }
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
-  // const [items, setItems] = useState<Item[]>([]);
   const [itemLists, setItemLists] = useState<ItemList[]>([]);
   const [activeListIndex, setActiveListIndex] = useState(0);
-  // const [activeItemList, setActiveItemList] = useState<ItemList | null>(null);
 
   console.log("Active list index: " + activeListIndex);
 
@@ -32,7 +27,7 @@ export default function App() {
   const loadData = async () => {
     if (__DEV__) {
       // Seed test data in dev environment
-      // await StorageService.clearAllData();
+      await StorageService.clearAllData();
       await StorageTestDataInitializer.seedTestData();
     }
 
@@ -47,11 +42,7 @@ export default function App() {
     let existingItemLists = await StorageService.loadItemLists();
 
     // Ensure order.
-    existingItemLists = existingItemLists.sort((e) => e.index);
-
-    console.log("Existing lists loaded: " + existingItemLists.length);
-
-    // console.log("Existing items: " + existingItemLists);
+    existingItemLists.sort((a, b) => (a.index > b.index ? 1 : -1));
 
     // Handle no existing lists...
     if (existingItemLists.length === 0) {
@@ -63,41 +54,14 @@ export default function App() {
       appData.lastActiveListId = firstList.id;
     }
 
-    // // Find active list.
-    // let lastActiveList: ItemList | null = null;
-    // if (!appData.lastActiveListId) {
-    //   console.log("No last active list id found");
-    //   // Select first of existing lists
-    //   lastActiveList = existingItemLists[0];
-    //   appData.lastActiveListId = lastActiveList.id;
-    // } else {
-    //   // Find the last active list among existing.
-    //   const result = existingItemLists.find(
-    //     (e) => e.id === appData.lastActiveListId
-    //   );
-    //   if (!!result) {
-    //     lastActiveList = result;
-    //   } else {
-    //     throw new Error("Unable to set active list");
-    //   }
-    // }
-
-    // const otherExistingItemLists = existingItemLists.filter(
-    //   (e) => e.id !== appData.lastActiveListId
-    // );
     const existingCategories = await StorageService.loadCategories();
-
-    // console.log(existingItems);
-
-    // existingItems ? setItems(existingItems) : null;
-    // setActiveItemList(lastActiveList);
     setItemLists(existingItemLists);
     setCategories(existingCategories);
     console.log("Data loaded!");
   };
 
   const addItemToList = (list: ItemList, item: Item) => {
-    const updatedList: ItemList = { ...list, items: [...list.items, item] };
+    const updatedList: ItemList = { ...list, items: [item, ...list.items] };
     // tslint:disable-next-line: no-floating-promises
     StorageService.saveItemList(updatedList);
     return updatedList;
@@ -113,19 +77,29 @@ export default function App() {
     });
   };
 
-  if (isLoading) {
-    return (
-      <AppLoading
-        startAsync={loadData}
-        onFinish={() => setIsLoading(false)}
-        onError={console.warn}
-      />
-    );
-  }
+  // XXX: Genbrug fra onAddItem
+  const onEditItem = async (itemEdited: Item) => {
+    setItemLists((prev) => {
+      return prev.map((prevList, index) =>
+        index === activeListIndex
+          ? editItemInList(prevList, itemEdited)
+          : prevList
+      );
+    });
+  };
 
-  // if (!activeItemList) {
-  //   throw new Error("No active item list");
-  // }
+  const editItemInList = (list: ItemList, itemToEdit: Item) => {
+    const updatedList: ItemList = {
+      ...list,
+      items: list.items.map((item) =>
+        item.id === itemToEdit.id ? itemToEdit : item
+      ),
+    };
+
+    // tslint:disable-next-line: no-floating-promises
+    StorageService.saveItemList(updatedList);
+    return updatedList;
+  };
 
   const onViewPrevList = () => {
     console.log("Moving to prev list");
@@ -183,28 +157,43 @@ export default function App() {
     return updatedList;
   };
 
+  if (isLoading) {
+    return (
+      <AppLoading
+        startAsync={loadData}
+        onFinish={() => setIsLoading(false)}
+        onError={console.warn}
+      />
+    );
+  }
+
   return (
     <View style={styles.container}>
       <ListView
         itemList={itemLists[activeListIndex]}
         categories={categories}
-        onItemPressed={onItemPressed}
+        onCheckButtonPressed={onItemPressed}
         onAddNewItem={onAddNewItem}
+        onEditItem={onEditItem}
         onViewPrevList={onViewPrevList}
         onViewNextList={onViewNextList}
-        hasPrevList={activeListIndex - 1 >= 0}
-        // hasNextList={activeListIndex + 1 < itemLists.length}
-        hasNextList={activeListIndex + 1 <= itemLists.length - 1}
+        hasPrevList={hasPrevList()}
+        hasNextList={hasNextList()}
       ></ListView>
     </View>
   );
+
+  function hasNextList(): boolean {
+    return activeListIndex + 1 <= itemLists.length - 1;
+  }
+
+  function hasPrevList(): boolean {
+    return activeListIndex - 1 >= 0;
+  }
 }
 
 const styles = StyleSheet.create({
   container: {
-    // borderColor: "red",
-    // height: "100%",
-    // borderWidth: 2,
     padding: 10,
     paddingTop: StatusBar.currentHeight,
   },

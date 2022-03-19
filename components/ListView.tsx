@@ -16,13 +16,15 @@ import { useState, useRef, LegacyRef, useEffect } from "react";
 import Category from "../models/Category";
 import { Feather } from "@expo/vector-icons";
 import ItemList from "../models/ItemList";
-import { FontAwesome } from "@expo/vector-icons";
+import colors from "../Colors";
+import UpDownButton from "./UpDownButton";
 
 interface ShoppingListProps {
   itemList: ItemList;
   categories: Category[];
   onAddNewItem(item: Item): void;
-  onItemPressed(item: Item): void;
+  onEditItem(item: Item): void;
+  onCheckButtonPressed(item: Item): void;
   onViewNextList(event: GestureResponderEvent): void;
   onViewPrevList(event: GestureResponderEvent): void;
   hasNextList: boolean;
@@ -33,29 +35,39 @@ export default function ListView({
   itemList,
   categories,
   onAddNewItem,
+  onEditItem,
   onViewNextList,
   onViewPrevList,
   hasNextList,
   hasPrevList,
-  onItemPressed,
+  onCheckButtonPressed,
 }: ShoppingListProps) {
   // Mode only active when input for add new item is visible
   const [isAddItemMode, setIsAddItemMode] = useState(false);
+  const [isEditItemMode, setIsEditItemMode] = useState(false);
   const textInputRef = useRef<TextInput | null>();
+  // XXX: Egen comp??
+  const [currentEditItem, setCurrentEditItem] = useState<Item | null>(null);
 
-  // console.log("has prev: " + hasPrevList);
-  // console.log("has next: " + hasNextList);
+  const onItemPress = (item: Item) => {
+    setIsEditItemMode(true);
+    setCurrentEditItem(item);
+  };
 
+  let items: Item[] | null = null;
+  // Item should be hidden from list if it is being edited.
+  if (isEditItemMode) {
+    items = itemList.items.filter((item) => item.id !== currentEditItem?.id);
+  } else {
+    items = itemList.items;
+  }
   // Create items.
-  const { unchecked, checked } = splitItems(itemList.items);
-  const itemListUncheckedComponent = createListComponent(
-    unchecked,
-    onItemPressed
-  );
-  const itemListCheckedComponent = createListComponent(checked, onItemPressed);
+  const { unchecked, checked } = splitItems(items);
+  const itemListUncheckedComponent = createListComponent(unchecked);
+  const itemListCheckedComponent = createListComponent(checked);
 
   // Handle item submitted
-  const onSubmitEditing = (
+  const onSubmitAddItem = (
     event: NativeSyntheticEvent<TextInputSubmitEditingEventData>
   ) => {
     // Do nothing if empty text
@@ -67,24 +79,65 @@ export default function ListView({
     onAddNewItem(new Item(event.nativeEvent.text, false));
   };
 
+  // XXX: Genbrug fra add item func
+  const onSubmitEditItem = (
+    event: NativeSyntheticEvent<TextInputSubmitEditingEventData>
+  ) => {
+    // Do nothing if empty text
+    if (!event?.nativeEvent?.text || "" || !currentEditItem) return;
+
+    // Clear text input after item submitted
+    textInputRef?.current?.clear();
+    // Notify and pass edit item to parent
+    onEditItem({ ...currentEditItem, title: event.nativeEvent.text });
+  };
+
+  // XXX: Skal i component
+  // Resolve input
+  const inputComponent = isAddItemMode ? (
+    <TextInput
+      style={styles.inputField}
+      placeholder="Add Item"
+      // Focus from start
+      autoFocus={true}
+      // Keep focus even after submit
+      blurOnSubmit={false}
+      // Turn off add item mode if not focused on input
+      onBlur={() => setIsAddItemMode(false)}
+      ref={(ref) => (textInputRef.current = ref)}
+      onSubmitEditing={onSubmitAddItem}
+    />
+  ) : isEditItemMode ? (
+    <TextInput
+      style={styles.inputField}
+      // Focus from start
+      autoFocus={true}
+      defaultValue={currentEditItem?.title}
+      // Turn off add item mode if not focused on input
+      onBlur={() => setIsEditItemMode(false)}
+      onSubmitEditing={onSubmitEditItem}
+    />
+  ) : null;
+
+  function createListComponent(fromItems: Item[]) {
+    return fromItems.map((item, i) => {
+      return (
+        <ListItem
+          key={item.id}
+          item={item}
+          isLastElement={i === fromItems.length - 1}
+          onCheckButtonPress={onCheckButtonPressed}
+          onItemPress={onItemPress}
+        ></ListItem>
+      );
+    });
+  }
+
   // XXX: Skal i component
   const itemListComponent = (
+    // Add input field
     <View>
-      {isAddItemMode ? (
-        <TextInput
-          // Focus from start
-          autoFocus={true}
-          // Keep focus even after submit
-          blurOnSubmit={false}
-          // Turn off add item mode if not focused on input
-          onBlur={() => setIsAddItemMode(false)}
-          ref={(ref) => (textInputRef.current = ref)}
-          style={styles.inputField}
-          onSubmitEditing={onSubmitEditing}
-          placeholder="Add Item"
-        />
-      ) : null}
-
+      {inputComponent}
       {itemListUncheckedComponent}
       {itemListCheckedComponent.length !== 0 ? (
         <Text style={styles.doneHeader}>Done</Text>
@@ -97,24 +150,14 @@ export default function ListView({
     <View style={styles.container}>
       <View style={styles.listHeaderContainer}>
         <Text style={styles.listHeader}>{itemList.title}</Text>
-        {/* XXX: Flyt i button component */}
-        <View style={styles.upDownButtonContainer}>
-          <TouchableOpacity onPress={onViewPrevList}>
-            <FontAwesome
-              name="chevron-up"
-              style={[styles.logo, !hasPrevList ? styles.logoDisabled : null]}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <FontAwesome
-              onPress={onViewNextList}
-              name="chevron-down"
-              style={[styles.logo, !hasNextList ? styles.logoDisabled : null]}
-            />
-          </TouchableOpacity>
-        </View>
+        <UpDownButton
+          onButtonUp={onViewPrevList}
+          onButtonDown={onViewNextList}
+          hasPrevList={hasPrevList}
+          hasNextList={hasNextList}
+        ></UpDownButton>
       </View>
-      <ScrollView style={styles.listStyles}>{itemListComponent}</ScrollView>
+      <ScrollView>{itemListComponent}</ScrollView>
       {!isAddItemMode ? (
         <TouchableOpacity
           style={styles.plusButton}
@@ -130,26 +173,6 @@ export default function ListView({
   );
 }
 
-// const onItemModified = (item : Item) => {
-
-// }
-
-function createListComponent(
-  items: Item[],
-  onItemPressed: (item: Item) => void
-) {
-  return items.map((item, i) => {
-    return (
-      <ListItem
-        key={item.id}
-        item={item}
-        isLastElement={i === items.length - 1}
-        onPress={onItemPressed}
-      ></ListItem>
-    );
-  });
-}
-
 // Reorder items. Put checked items at bottom
 function splitItems(items: Item[]) {
   const unchecked = items.filter((item) => !item.isChecked);
@@ -157,27 +180,16 @@ function splitItems(items: Item[]) {
   return { unchecked, checked };
 }
 
-// Colors
-const lightGrey = "#464b53e6";
-const darkGrey = "#454a52";
-const lightGreyDisabled = "#464b5366";
-
 const styles = StyleSheet.create({
   container: {
-    // borderColor: "blue",
-    // borderWidth: 1,
     height: "100%",
   },
   inputField: {
     // XXX: Evt. global style for dette og item text
     paddingTop: 7,
     paddingBottom: 7,
-    color: darkGrey,
+    color: colors.darkGrey,
     fontSize: 20,
-  },
-  listStyles: {
-    // borderColor: "green",
-    // borderWidth: 1,
   },
   plusButton: {
     backgroundColor: "#2473E9",
@@ -191,41 +203,18 @@ const styles = StyleSheet.create({
     right: 0,
     margin: 6,
   },
-  // itemList: {
-  //   borderColor: "yellow",
-  //   // borderWidth: 1,
-  //   // height: "50%",
-  // },
   listHeaderContainer: {
     flexDirection: "row",
     marginLeft: 5,
   },
-
   listHeader: {
-    color: darkGrey,
-    // backgroundColor: "#fff",
+    color: colors.darkGrey,
     textAlign: "left",
     fontSize: 40,
     paddingBottom: 10,
-    // marginLeft: 12,
-  },
-  upDownButtonContainer: {
-    // backgroundColor: "red",
-    marginLeft: "auto",
-  },
-  logo: {
-    fontSize: 26,
-    color: lightGrey,
-    // backgroundColor: "red",
-    // borderWidth: 2,
-    // borderColor: "black",
-  },
-  logoDisabled: {
-    color: lightGreyDisabled,
   },
   doneHeader: {
-    color: lightGrey,
-    // backgroundColor: "#fff",
+    color: colors.lightGrey,
     textAlign: "left",
     fontSize: 20,
     paddingTop: 15,

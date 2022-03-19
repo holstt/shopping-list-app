@@ -20,6 +20,13 @@ export default class StorageTestDataInitializer {
       new Category("Category3", "#1F76DA"),
     ];
 
+    // Default library of items
+    const library = [
+      new Item("LibItem1", false, testCategories[0]),
+      new Item("LibItem2", true, testCategories[1]),
+      new Item("LibItem3", false, testCategories[2]),
+    ];
+
     const testItems = [
       new Item("Item1", false, testCategories[0]),
       new Item("Item2", true, testCategories[1]),
@@ -36,7 +43,6 @@ export default class StorageTestDataInitializer {
       new ItemList("My Other List", testItems2, 1),
     ];
 
-    // XXX: Ensure singleton?
     const appData = new AppData(itemLists[0].id);
     await StorageService.saveAppData(appData);
     await StorageService.saveCategories(testCategories);

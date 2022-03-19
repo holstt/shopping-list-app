@@ -7,7 +7,7 @@ interface ButtonProps {
   onPress(): void;
 }
 
-export default function ItemButton({ isChecked, onPress }: ButtonProps) {
+export default function CheckButton({ isChecked, onPress }: ButtonProps) {
   const buttonUnchecked = (
     <TouchableOpacity style={styles.buttonDefault} onPress={onPress} />
   );

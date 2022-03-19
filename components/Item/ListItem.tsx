@@ -11,7 +11,7 @@ import {
 
 import { useState } from "react";
 
-import ItemButton from "./ItemButton";
+import CheckButton from "./CheckButton";
 import Item from "../../models/Item";
 
 // TODO
@@ -19,16 +19,17 @@ import Item from "../../models/Item";
 
 interface ItemProps {
   item: Item;
-  onPress: (item: Item) => void;
+  onCheckButtonPress: (item: Item) => void;
+  onItemPress: (item: Item) => void;
   isLastElement?: boolean;
 }
 
 export default function ListItem({
   item,
-  onPress,
+  onCheckButtonPress,
+  onItemPress,
   isLastElement,
-}: // index,
-ItemProps) {
+}: ItemProps) {
   // Resolve styles
   const container = [
     styles.containerBase,
@@ -42,23 +43,29 @@ ItemProps) {
 
   return (
     <View style={container}>
-      <ItemButton
+      <CheckButton
         isChecked={item.isChecked}
-        onPress={() => onPress(item)}
-      ></ItemButton>
-      <Text style={itemTextStyle}>{item.title}</Text>
-      <View
-        style={[
-          styles.categoryColor,
-          { backgroundColor: item.category?.color },
-        ]}
-      ></View>
+        onPress={() => onCheckButtonPress(item)}
+      ></CheckButton>
+      <TouchableOpacity
+        style={styles.itemTextButton}
+        onPress={() => onItemPress(item)}
+      >
+        <Text style={itemTextStyle}>{item.title}</Text>
+        <View
+          style={[
+            styles.categoryColor,
+            { backgroundColor: item.category?.color },
+          ]}
+        ></View>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   containerBase: {
+    // backgroundColor: "red",
     flexDirection: "row",
     borderTopColor: "#d5d8e3",
     alignItems: "center",
@@ -79,30 +86,21 @@ const styles = StyleSheet.create({
     color: "#454a52",
     fontSize: 20,
   },
+  itemTextButton: {
+    flex: 1,
+    // backgroundColor: "lightgrey",
+    flexDirection: "row",
+    height: "100%",
+  },
 
   itemTextChecked: {
     textDecorationLine: "line-through",
   },
   categoryColor: {
     marginLeft: "auto",
-    // backgroundColor: "#9F9EA28A",
+    backgroundColor: "red",
     borderTopLeftRadius: 8,
     borderBottomLeftRadius: 8,
     width: 13,
-    // marginTop: -14,
-    // paddingTop: 7,
-    height: "100%",
-    // borderColor: "red",
-    // borderWidth: 1,
-    // justifyContent: "space-around",
-    // alignSelf: "flex-end",
-    // position: "absolute",
-    // textAlign: "right",
-    // float: "right",
-
-    // top: 0,
-
-    // color: "red",
-    // borderColor: "red",
   },
 });
