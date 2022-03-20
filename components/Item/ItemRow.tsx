@@ -39,7 +39,6 @@ export default function ItemRow({
   isLastElement,
   onDeleteItem,
 }: ItemProps) {
-  // console.log(onDeleteItem);
   // Resolve styles
   const container = [
     styles.containerBase,
@@ -52,7 +51,6 @@ export default function ItemRow({
   ];
 
   const onDeleteButtonPress = (event: GestureResponderEvent) => {
-    console.log("delete");
     onDeleteItem(item);
   };
 

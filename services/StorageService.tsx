@@ -10,6 +10,7 @@ const ITEM_STORE_KEY = "item";
 const CATEGORY_STORE_KEY = "category";
 const ITEM_LIST_STORE_KEY = "itemList";
 const APP_DATA_STORE_KEY = "appData";
+const LIBRARY_DATA_STORE_KEY = "library";
 
 // XXX: Lav StorageTestDataIntializer, GenericStorage/Storage, LocalStorage
 
@@ -39,8 +40,6 @@ export default class StorageService {
       k.startsWith(APP_DATA_STORE_KEY)
     );
 
-    // console.log("Found app data keys: ");
-    // console.log(keys);
     if (keys.length > 1) {
       throw new Error("Multiple AppData in storage");
     }

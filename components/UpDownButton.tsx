@@ -10,8 +10,8 @@ import { FontAwesome } from "@expo/vector-icons";
 interface Props {
   onButtonDown(event: GestureResponderEvent): void;
   onButtonUp(event: GestureResponderEvent): void;
-  hasNextList: boolean;
   hasPrevList: boolean;
+  hasNextList: boolean;
 }
 
 export default function UpDownButton({

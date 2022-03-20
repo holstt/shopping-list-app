@@ -20,7 +20,6 @@ import UpDownButton from "./UpDownButton";
 
 interface ShoppingListProps {
   itemList: ItemList;
-  categories: Category[];
   onAddNewItem(item: Item): void;
   onEditItem(item: Item): void;
   onDeleteItem(item: Item): void;
@@ -33,7 +32,6 @@ interface ShoppingListProps {
 
 export default function ListView({
   itemList,
-  categories,
   onAddNewItem,
   onEditItem,
   onViewNextList,
@@ -49,8 +47,6 @@ export default function ListView({
   const textInputRef = useRef<TextInput | null>();
   // XXX: Egen comp??
   const [currentEditItem, setCurrentEditItem] = useState<Item | null>(null);
-
-  console.log(onDeleteItem);
 
   const onItemPress = (item: Item) => {
     setIsEditItemMode(true);
