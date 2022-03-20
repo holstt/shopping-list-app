@@ -37,7 +37,6 @@ export default function App() {
   // XXX: Abstraheres - custom hook?
   const loadDataFromLocalStorage = async () => {
     console.log("Loading data from local storage...");
-    // const existingItems = await StorageService.loadItems();
     const appData = await StorageService.loadAppData();
     let existingItemLists = await StorageService.loadItemLists();
 
@@ -94,6 +93,27 @@ export default function App() {
       items: list.items.map((item) =>
         item.id === itemToEdit.id ? itemToEdit : item
       ),
+    };
+
+    // tslint:disable-next-line: no-floating-promises
+    StorageService.saveItemList(updatedList);
+    return updatedList;
+  };
+
+  const onDeleteItem = (itemDeleted: Item) => {
+    setItemLists((prev) => {
+      return prev.map((prevList, index) =>
+        index === activeListIndex
+          ? deleteItemInList(prevList, itemDeleted)
+          : prevList
+      );
+    });
+  };
+
+  const deleteItemInList = (list: ItemList, itemToDelete: Item) => {
+    const updatedList: ItemList = {
+      ...list,
+      items: list.items.filter((item) => item.id !== itemToDelete.id),
     };
 
     // tslint:disable-next-line: no-floating-promises
@@ -166,6 +186,7 @@ export default function App() {
       />
     );
   }
+  console.log(onDeleteItem);
 
   return (
     <View style={styles.container}>
@@ -179,6 +200,7 @@ export default function App() {
         onViewNextList={onViewNextList}
         hasPrevList={hasPrevList()}
         hasNextList={hasNextList()}
+        onDeleteItem={onDeleteItem}
       ></ListView>
     </View>
   );

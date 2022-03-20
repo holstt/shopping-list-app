@@ -1,4 +1,3 @@
-// import { StatusBar } from "expo-status-bar";
 import {
   StyleSheet,
   Text,
@@ -10,7 +9,7 @@ import {
   TextInputSubmitEditingEventData,
   GestureResponderEvent,
 } from "react-native";
-import ListItem from "./Item/ListItem";
+import ItemRow from "./Item/ItemRow";
 import Item from "../models/Item";
 import { useState, useRef, LegacyRef, useEffect } from "react";
 import Category from "../models/Category";
@@ -24,6 +23,7 @@ interface ShoppingListProps {
   categories: Category[];
   onAddNewItem(item: Item): void;
   onEditItem(item: Item): void;
+  onDeleteItem(item: Item): void;
   onCheckButtonPressed(item: Item): void;
   onViewNextList(event: GestureResponderEvent): void;
   onViewPrevList(event: GestureResponderEvent): void;
@@ -38,6 +38,7 @@ export default function ListView({
   onEditItem,
   onViewNextList,
   onViewPrevList,
+  onDeleteItem,
   hasNextList,
   hasPrevList,
   onCheckButtonPressed,
@@ -48,6 +49,8 @@ export default function ListView({
   const textInputRef = useRef<TextInput | null>();
   // XXX: Egen comp??
   const [currentEditItem, setCurrentEditItem] = useState<Item | null>(null);
+
+  console.log(onDeleteItem);
 
   const onItemPress = (item: Item) => {
     setIsEditItemMode(true);
@@ -63,8 +66,8 @@ export default function ListView({
   }
   // Create items.
   const { unchecked, checked } = splitItems(items);
-  const itemListUncheckedComponent = createListComponent(unchecked);
-  const itemListCheckedComponent = createListComponent(checked);
+  const itemListUncheckedComponent = renderListComponent(unchecked);
+  const itemListCheckedComponent = renderListComponent(checked);
 
   // Handle item submitted
   const onSubmitAddItem = (
@@ -119,16 +122,17 @@ export default function ListView({
     />
   ) : null;
 
-  function createListComponent(fromItems: Item[]) {
+  function renderListComponent(fromItems: Item[]) {
     return fromItems.map((item, i) => {
       return (
-        <ListItem
+        <ItemRow
           key={item.id}
           item={item}
           isLastElement={i === fromItems.length - 1}
           onCheckButtonPress={onCheckButtonPressed}
           onItemPress={onItemPress}
-        ></ListItem>
+          onDeleteItem={onDeleteItem}
+        ></ItemRow>
       );
     });
   }
@@ -147,7 +151,10 @@ export default function ListView({
   );
 
   return (
-    <View style={styles.container}>
+    <View
+      style={styles.container}
+      // onTouchEnd={() => console.log("hej!")}
+    >
       <View style={styles.listHeaderContainer}>
         <Text style={styles.listHeader}>{itemList.title}</Text>
         <UpDownButton
@@ -183,6 +190,7 @@ function splitItems(items: Item[]) {
 const styles = StyleSheet.create({
   container: {
     height: "100%",
+    // backgroundColor: "blue",
   },
   inputField: {
     // XXX: Evt. global style for dette og item text
