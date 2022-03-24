@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Alert,
 } from "react-native";
 import { useEffect, useState } from "react";
 
@@ -22,11 +23,11 @@ export default function ListLibraryScreen({ route, navigation }: Props) {
     route.params.initItemLists
   );
 
-  const onDeleteList = (listId: string) => {
+  const onDeleteList = (list: ItemList) => {
     setItemLists((prev) => {
       // tslint:disable-next-line: no-floating-promises
-      StorageService.deleteItemList(listId);
-      return prev.filter((item) => item.id !== listId);
+      StorageService.deleteItemList(list.id);
+      return prev.filter((item) => item.id !== list.id);
     });
   };
 

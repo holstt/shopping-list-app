@@ -50,9 +50,9 @@ export default function ItemRow({
     item.isChecked ? styles.itemTextChecked : null,
   ];
 
-  const onRemoveButtonPress = (event: GestureResponderEvent) => {
-    onRemoveItem(item.id);
-  };
+  // const onRemoveButtonPress = (event: GestureResponderEvent) => {
+  //   onRemoveItem(item.id);
+  // };
 
   const renderSwipeToDelete = (
     progressAnimatedValue: Animated.AnimatedInterpolation,
@@ -61,8 +61,8 @@ export default function ItemRow({
     return (
       <View style={styles.swipedRow}>
         <Animated.View>
-          <TouchableOpacity onPress={onRemoveButtonPress}>
-            <Text style={styles.deleteButtonText}>Remove</Text>
+          <TouchableOpacity onPress={() => onRemoveItem(item.id)}>
+            <Text style={styles.removeButtonText}>Remove</Text>
           </TouchableOpacity>
         </Animated.View>
       </View>
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   // deleteButton: {
   //   color: "red",
   // },
-  deleteButtonText: {
+  removeButtonText: {
     color: "white",
     padding: 10,
     fontSize: 15,

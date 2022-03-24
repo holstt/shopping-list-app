@@ -2,13 +2,9 @@ import {
   StyleSheet,
   Text,
   View,
-  SafeAreaView,
-  ScrollView,
-  Button,
   TouchableOpacity,
-  ViewStyle,
   Animated,
-  GestureResponderEvent,
+  Alert,
 } from "react-native";
 
 import {
@@ -16,11 +12,11 @@ import {
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
 
-import React, { useState } from "react";
+import React, { useRef } from "react";
 import ItemList from "../models/ItemList";
 
 interface Props {
-  onDeleteButtonPress: (listId: string) => void;
+  onDeleteButtonPress: (list: ItemList) => void;
   onListPress: (list: ItemList) => void;
   list: ItemList;
   isLastElement?: boolean;
@@ -34,11 +30,29 @@ export default function ListRow({
   list,
   isLastElement,
 }: Props) {
+  const swipableRowRef = useRef<Swipeable | null>(null);
+
   // Resolve styles
   const container = [
     styles.containerBase,
     isLastElement ? styles.containerLast : null,
   ];
+
+  const confirmDelete = (listToDelete: ItemList) => {
+    return Alert.alert(
+      `Are you sure you want to delete the list '${listToDelete.title}' permanently?`,
+      "",
+      [
+        {
+          text: "Yes",
+          onPress: () => {
+            onDeleteButtonPress(listToDelete);
+          },
+        },
+        { text: "No", onPress: () => swipableRowRef.current?.close() },
+      ]
+    );
+  };
 
   const renderSwipeToDelete = (
     progressAnimatedValue: Animated.AnimatedInterpolation,
@@ -47,7 +61,7 @@ export default function ListRow({
     return (
       <View style={styles.swipedRow}>
         <Animated.View>
-          <TouchableOpacity onPress={() => onDeleteButtonPress(list.id)}>
+          <TouchableOpacity onPress={() => confirmDelete(list)}>
             <Text style={styles.removeButtonText}>Delete</Text>
           </TouchableOpacity>
         </Animated.View>
@@ -57,7 +71,10 @@ export default function ListRow({
 
   return (
     <GestureHandlerRootView>
-      <Swipeable renderRightActions={renderSwipeToDelete}>
+      <Swipeable
+        ref={(ref) => (swipableRowRef.current = ref)}
+        renderRightActions={renderSwipeToDelete}
+      >
         <View style={container}>
           <TouchableOpacity
             style={styles.listTextButton}

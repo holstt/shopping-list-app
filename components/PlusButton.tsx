@@ -7,11 +7,7 @@ interface Props {
 
 export default function PlusButton({ onPress }: Props) {
   return (
-    <TouchableOpacity
-      style={styles.plusButton}
-      // Button activates Add Item Mode
-      onPress={onPress}
-    >
+    <TouchableOpacity style={styles.plusButton} onPress={onPress}>
       <Feather name="plus" size={33} color="white" />
     </TouchableOpacity>
   );

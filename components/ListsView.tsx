@@ -19,7 +19,7 @@ import colors from "../Colors";
 import { Feather } from "@expo/vector-icons";
 
 interface Props {
-  onDeleteList: (listId: string) => void;
+  onDeleteList: (list: ItemList) => void;
   onAddList: (item: ItemList) => void;
   onEditList: (item: ItemList) => void;
   itemLists: ItemList[];
@@ -33,7 +33,6 @@ export default function ListsView({
 }: Props) {
   const [isEditListMode, setIsEditListMode] = useState(false);
   const [currentEditList, setCurrentEditList] = useState<ItemList | null>(null);
-  const textInputRef = useRef<TextInput | null>();
   const [isAddItemMode, setIsAddItemMode] = useState(false);
 
   const onListPress = (list: ItemList) => {
@@ -48,8 +47,6 @@ export default function ListsView({
     // Do nothing if empty text
     if (!event?.nativeEvent?.text || "" || !currentEditList) return;
 
-    // Clear text input after item submitted
-    textInputRef?.current?.clear();
     // Notify and pass edit item to parent
     onEditList({ ...currentEditList, title: event.nativeEvent.text });
   };
@@ -66,8 +63,6 @@ export default function ListsView({
     // Do nothing if empty text
     if (!event?.nativeEvent?.text || "") return;
 
-    // Clear text input after item submitted
-    textInputRef?.current?.clear();
     // Notify and pass new item to parent
     onAddList(new ItemList(event.nativeEvent.text, [], itemLists.length));
   };
