@@ -1,5 +1,4 @@
 import uuid from "react-native-uuid";
-import ItemList from "./models/ItemList";
 
 // XXX: Ensure singleton?
 

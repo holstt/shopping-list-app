@@ -29,7 +29,7 @@ interface ItemProps {
   onCheckButtonPress: (item: Item) => void;
   onItemPress: (item: Item) => void;
   isLastElement?: boolean;
-  onDeleteItem: (item: Item) => void;
+  onRemoveItem: (itemId: string) => void;
 }
 
 export default function ItemRow({
@@ -37,7 +37,7 @@ export default function ItemRow({
   onCheckButtonPress,
   onItemPress,
   isLastElement,
-  onDeleteItem,
+  onRemoveItem,
 }: ItemProps) {
   // Resolve styles
   const container = [
@@ -50,8 +50,8 @@ export default function ItemRow({
     item.isChecked ? styles.itemTextChecked : null,
   ];
 
-  const onDeleteButtonPress = (event: GestureResponderEvent) => {
-    onDeleteItem(item);
+  const onRemoveButtonPress = (event: GestureResponderEvent) => {
+    onRemoveItem(item.id);
   };
 
   const renderSwipeToDelete = (
@@ -61,8 +61,8 @@ export default function ItemRow({
     return (
       <View style={styles.swipedRow}>
         <Animated.View>
-          <TouchableOpacity onPress={onDeleteButtonPress}>
-            <Text style={styles.deleteButtonText}>Delete</Text>
+          <TouchableOpacity onPress={onRemoveButtonPress}>
+            <Text style={styles.deleteButtonText}>Remove</Text>
           </TouchableOpacity>
         </Animated.View>
       </View>

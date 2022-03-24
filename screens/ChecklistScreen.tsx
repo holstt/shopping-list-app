@@ -5,19 +5,11 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
-import ListView from "../components/ListView";
-import Category from "../models/Category";
+import ChecklistView from "../components/ChecklistView";
 import Item from "../models/Item";
-import AppLoading from "expo-app-loading";
-
 import { useEffect, useState } from "react";
 import StorageService from "../services/StorageService";
-import StorageTestDataInitializer from "../services/StorageTestDataInitializer";
 import ItemList from "../models/ItemList";
-import { NavigationContainer } from "@react-navigation/native";
-import { FontAwesome } from "@expo/vector-icons";
-import { MaterialIcons } from "@expo/vector-icons";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import {
   createNativeStackNavigator,
@@ -79,20 +71,20 @@ export default function CheckListScreen({ navigation, route }: Props) {
     return updatedList;
   };
 
-  const onDeleteItem = (itemDeleted: Item) => {
+  const onDeleteItem = (itemToDelete: string) => {
     setItemLists((prev) => {
       return prev.map((prevList, index) =>
         index === activeListIndex
-          ? deleteItemInList(prevList, itemDeleted)
+          ? deleteItemInList(prevList, itemToDelete)
           : prevList
       );
     });
   };
 
-  const deleteItemInList = (list: ItemList, itemToDelete: Item) => {
+  const deleteItemInList = (list: ItemList, itemToDeleteId: string) => {
     const updatedList: ItemList = {
       ...list,
-      items: list.items.filter((item) => item.id !== itemToDelete.id),
+      items: list.items.filter((item) => item.id !== itemToDeleteId),
     };
 
     // tslint:disable-next-line: no-floating-promises
@@ -158,7 +150,7 @@ export default function CheckListScreen({ navigation, route }: Props) {
 
   return (
     <View style={styles.container}>
-      <ListView
+      <ChecklistView
         itemList={itemLists[activeListIndex]}
         onCheckButtonPressed={onItemPressed}
         onAddNewItem={onAddNewItem}
@@ -168,7 +160,7 @@ export default function CheckListScreen({ navigation, route }: Props) {
         hasPrevList={hasPrevList()}
         hasNextList={hasNextList()}
         onDeleteItem={onDeleteItem}
-      ></ListView>
+      ></ChecklistView>
     </View>
   );
 

@@ -11,18 +11,17 @@ import {
 } from "react-native";
 import ItemRow from "./Item/ItemRow";
 import Item from "../models/Item";
-import { useState, useRef, LegacyRef, useEffect } from "react";
-import Category from "../models/Category";
-import { Feather } from "@expo/vector-icons";
+import { useState, useRef, useEffect } from "react";
 import ItemList from "../models/ItemList";
 import colors from "../Colors";
 import UpDownButton from "./UpDownButton";
+import PlusButton from "./PlusButton";
 
 interface ShoppingListProps {
   itemList: ItemList;
   onAddNewItem(item: Item): void;
   onEditItem(item: Item): void;
-  onDeleteItem(item: Item): void;
+  onDeleteItem(itemId: string): void;
   onCheckButtonPressed(item: Item): void;
   onViewNextList(event: GestureResponderEvent): void;
   onViewPrevList(event: GestureResponderEvent): void;
@@ -30,7 +29,7 @@ interface ShoppingListProps {
   hasPrevList: boolean;
 }
 
-export default function ListView({
+export default function ChecklistView({
   itemList,
   onAddNewItem,
   onEditItem,
@@ -127,7 +126,7 @@ export default function ListView({
           isLastElement={i === fromItems.length - 1}
           onCheckButtonPress={onCheckButtonPressed}
           onItemPress={onItemPress}
-          onDeleteItem={onDeleteItem}
+          onRemoveItem={onDeleteItem}
         ></ItemRow>
       );
     });
@@ -162,15 +161,7 @@ export default function ListView({
       </View>
       <ScrollView>{itemListComponent}</ScrollView>
       {!isAddItemMode ? (
-        <TouchableOpacity
-          style={styles.plusButton}
-          // Button activates Add Item Mode
-          onPress={() => {
-            setIsAddItemMode(true);
-          }}
-        >
-          <Feather name="plus" size={33} color="white" />
-        </TouchableOpacity>
+        <PlusButton onPress={() => setIsAddItemMode(true)}></PlusButton>
       ) : null}
     </View>
   );
@@ -195,18 +186,7 @@ const styles = StyleSheet.create({
     color: colors.darkGrey,
     fontSize: 20,
   },
-  plusButton: {
-    backgroundColor: "#2473E9",
-    height: 70,
-    width: 70,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 50,
-    position: "absolute",
-    bottom: 0,
-    right: 0,
-    margin: 6,
-  },
+
   listHeaderContainer: {
     flexDirection: "row",
     marginLeft: 5,

@@ -31,6 +31,10 @@ export default class StorageService {
     await this.save(ITEM_LIST_STORE_KEY, itemList);
   }
 
+  public static async deleteItemList(id: string) {
+    await this.delete(ITEM_LIST_STORE_KEY, id);
+  }
+
   public static async saveItemLists(itemList: ItemList[]) {
     await this.saveMany<ItemList>(ITEM_LIST_STORE_KEY, itemList);
   }
@@ -112,6 +116,13 @@ export default class StorageService {
     ]);
 
     await AsyncStorage.multiSet(keyValuePairs);
+  }
+
+  public static async delete(store: string, id: string) {
+    const key = store + ":" + id;
+    await AsyncStorage.removeItem(key);
+
+    console.log("Object deleted: " + key);
   }
 
   // tslint:disable-next-line: no-any

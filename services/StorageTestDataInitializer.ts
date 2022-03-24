@@ -2,7 +2,7 @@ import Category from "../models/Category";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Item from "../models/Item";
 import StorageService from "./StorageService";
-import ListView from "../components/ListView";
+import ChecklistView from "../components/ChecklistView";
 import ItemList from "../models/ItemList";
 import AppData from "../AppData";
 

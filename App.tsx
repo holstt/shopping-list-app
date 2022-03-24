@@ -1,4 +1,4 @@
-import ListView from "./components/ListView";
+import ChecklistView from "./components/ChecklistView";
 import Category from "./models/Category";
 import Item from "./models/Item";
 import AppLoading from "expo-app-loading";
@@ -116,6 +116,7 @@ export default function App() {
         <Tab.Screen
           name="ListLibraryScreen"
           component={ListLibraryScreen}
+          initialParams={{ initItemLists: itemLists }}
           options={{
             title: "Lists",
             tabBarIcon: ({ focused, color, size }) => (
