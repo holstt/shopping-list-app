@@ -32,8 +32,10 @@ export default class StorageTestDataInitializer {
       "#FED3F1",
       "#FFB3C8",
       "#EB7474",
+      "#FC6C85",
       "#1FDA6D",
       "#1F76DA",
+      "#CC99FF",
     ];
 
     // Default library of items

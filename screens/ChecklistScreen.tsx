@@ -96,13 +96,11 @@ export default function CheckListScreen({ navigation, route }: Props) {
   };
 
   const onViewPrevList = () => {
-    console.log("Moving to prev list");
-
     setActiveListIndex((prev) => {
       const newIndex = prev - 1;
+
       // Ensure has next list
       if (newIndex < 0) {
-        console.log("No more");
         return prev;
       }
       return newIndex;
@@ -111,13 +109,11 @@ export default function CheckListScreen({ navigation, route }: Props) {
 
   // XXX: Genbrug prev func
   const onViewNextList = () => {
-    // console.log("Moving to next list");
     setActiveListIndex((prev) => {
       const newIndex = prev + 1;
-      // console.log(newIndex);
+
       // Ensure has next list
       if (newIndex > itemLists.length - 1) {
-        console.log("No more");
         return prev;
       }
       return newIndex;

@@ -3,7 +3,6 @@ import {
   Text,
   View,
   ScrollView,
-  TouchableOpacity,
   TextInput,
   NativeSyntheticEvent,
   TextInputSubmitEditingEventData,
@@ -11,14 +10,13 @@ import {
 } from "react-native";
 import ItemRow from "./Item/ItemRow";
 import Item from "../models/Item";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import ItemList from "../models/ItemList";
 import colors from "../Colors";
 import UpDownButton from "./UpDownButton";
 import PlusButton from "./PlusButton";
 import Category from "../models/Category";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
-import CategoryButton from "./CategoryButton";
+import CategoryPicker from "./CategoryPicker";
 
 interface ShoppingListProps {
   itemList: ItemList;
@@ -51,9 +49,11 @@ export default function ChecklistView({
   const textInputRef = useRef<TextInput | null>();
   // XXX: Egen comp??
   const [currentEditItem, setCurrentEditItem] = useState<Item | null>(null);
-
-  const [currentAddItemCategory, setCurrentEditItemCategory] =
+  const [currentEditItemCategory, setCurrentEditItemCategory] =
     useState<Category | null>(null);
+
+  // useEffect(() =>{
+  // }, [isAddItemMode, ]);
 
   let items: Item[] | null = null;
   // Item should be hidden from list if it is being edited.
@@ -63,9 +63,118 @@ export default function ChecklistView({
     items = itemList.items;
   }
 
+  // When an item is pressed
   const onItemPress = (item: Item) => {
+    // XXX: Setting multiple states?
     setIsEditItemMode(true);
     setCurrentEditItem(item);
+    setCurrentEditItemCategory(item.category);
+  };
+
+  const onCategoryPress = (category: Category) => {
+    // If category pressed is same as current, then remove the category
+    setCurrentEditItemCategory((prev) =>
+      prev?.id !== category.id ? category : null
+    );
+  };
+
+  const onAddItemModeEnded = () => {
+    setIsAddItemMode(false);
+    setCurrentEditItemCategory(null);
+  };
+
+  const onEditItemModeEnded = () => {
+    setIsEditItemMode(false);
+    setCurrentEditItem(null);
+    setCurrentEditItemCategory(null);
+  };
+
+  // Handle item submitted
+  const onSubmitAddItem = (
+    event: NativeSyntheticEvent<TextInputSubmitEditingEventData>
+  ) => {
+    // Do nothing if empty text
+    if (!event?.nativeEvent?.text || "") return;
+
+    // Clear text input after item submitted
+    textInputRef?.current?.clear();
+    // Notify and pass new item to parent
+    onAddNewItem(
+      new Item(event.nativeEvent.text, false, currentEditItemCategory)
+    );
+  };
+
+  // XXX: Genbrug fra add item func
+  const onSubmitEditItem = (
+    event: NativeSyntheticEvent<TextInputSubmitEditingEventData>
+  ) => {
+    // Do nothing if empty text
+    if (!event?.nativeEvent?.text || "" || !currentEditItem) return;
+
+    // Clear text input after item submitted
+    textInputRef?.current?.clear();
+    // Notify and pass edit item to parent
+    onEditItem({
+      ...currentEditItem,
+      title: event.nativeEvent.text,
+      category: currentEditItemCategory,
+    });
+  };
+
+  const addInput = (
+    <TextInput
+      style={styles.inputField}
+      placeholder="Add Item"
+      // Focus from start
+      autoFocus={true}
+      // Keep focus even after submit
+      blurOnSubmit={false}
+      // Turn off add item mode if not focused on input
+      onBlur={onAddItemModeEnded}
+      ref={(ref) => (textInputRef.current = ref)}
+      onSubmitEditing={onSubmitAddItem}
+    />
+  );
+
+  const editInput = (
+    <TextInput
+      style={styles.inputField}
+      // Focus from start
+      autoFocus={true}
+      defaultValue={currentEditItem?.title}
+      // Turn off add item mode if not focused on input
+      onBlur={onEditItemModeEnded}
+      onSubmitEditing={onSubmitEditItem}
+    />
+  );
+
+  const renderInputType = (inputType: JSX.Element) => {
+    return (
+      <View>
+        <View style={styles.inputContainer}>
+          {inputType}
+          {currentEditItemCategory && (
+            <View
+              style={[
+                styles.categoryColorRectangle,
+                { backgroundColor: currentEditItemCategory?.color },
+              ]}
+            ></View>
+          )}
+        </View>
+        <CategoryPicker
+          categories={categories}
+          onCategoryPress={onCategoryPress}
+        ></CategoryPicker>
+      </View>
+    );
+  };
+
+  const renderInputComponent = () => {
+    return (
+      (isAddItemMode && renderInputType(addInput)) ||
+      (isEditItemMode && renderInputType(editInput))
+    );
   };
 
   const renderListComponent = (fromItems: Item[]) => {
@@ -81,98 +190,6 @@ export default function ChecklistView({
         ></ItemRow>
       );
     });
-  };
-
-  // Handle item submitted
-  const onSubmitAddItem = (
-    event: NativeSyntheticEvent<TextInputSubmitEditingEventData>
-  ) => {
-    // Do nothing if empty text
-    if (!event?.nativeEvent?.text || "") return;
-
-    // Clear text input after item submitted
-    textInputRef?.current?.clear();
-    // Notify and pass new item to parent
-    onAddNewItem(
-      new Item(event.nativeEvent.text, false, currentAddItemCategory)
-    );
-  };
-
-  // XXX: Genbrug fra add item func
-  const onSubmitEditItem = (
-    event: NativeSyntheticEvent<TextInputSubmitEditingEventData>
-  ) => {
-    // Do nothing if empty text
-    if (!event?.nativeEvent?.text || "" || !currentEditItem) return;
-
-    // Clear text input after item submitted
-    textInputRef?.current?.clear();
-    // Notify and pass edit item to parent
-    onEditItem({ ...currentEditItem, title: event.nativeEvent.text });
-  };
-
-  const onCategoryPress = (category: Category) => {
-    setCurrentEditItemCategory(category);
-  };
-
-  const categoryButtons = (
-    <ScrollView keyboardShouldPersistTaps="always" horizontal={true}>
-      <View style={styles.categoryPickerContainer}>
-        {categories.map((cat) => (
-          <CategoryButton
-            key={cat.id}
-            onPress={onCategoryPress}
-            category={cat}
-          ></CategoryButton>
-        ))}
-      </View>
-    </ScrollView>
-  );
-
-  function renderInputComponent() {
-    return isAddItemMode ? (
-      <View>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.inputField}
-            placeholder="Add Item"
-            // Focus from start
-            autoFocus={true}
-            // Keep focus even after submit
-            blurOnSubmit={false}
-            // Turn off add item mode if not focused on input
-            onBlur={() => setIsAddItemMode(false)}
-            ref={(ref) => (textInputRef.current = ref)}
-            onSubmitEditing={onSubmitAddItem}
-          />
-          {currentAddItemCategory && (
-            // <View style={[styles.categoryColor]}></View>
-            <View
-              style={[
-                styles.categoryColor,
-                { backgroundColor: currentAddItemCategory?.color },
-              ]}
-            ></View>
-          )}
-        </View>
-        {categoryButtons}
-      </View>
-    ) : isEditItemMode ? (
-      <TextInput
-        style={styles.inputField}
-        // Focus from start
-        autoFocus={true}
-        defaultValue={currentEditItem?.title}
-        // Turn off add item mode if not focused on input
-        onBlur={onEditItemModeEnded}
-        onSubmitEditing={onSubmitEditItem}
-      />
-    ) : null;
-  }
-
-  const onEditItemModeEnded = () => {
-    setIsEditItemMode(false);
-    setCurrentEditItem(null);
   };
 
   // Create items.
@@ -255,26 +272,7 @@ const styles = StyleSheet.create({
     paddingTop: 15,
     paddingBottom: 2,
   },
-  // XXX: I component
-  categoryPickerContainer: {
-    flexDirection: "row",
-    marginBottom: 20,
-    marginTop: 10,
-  },
-  categoryCircle: {
-    borderRadius: 50,
-    height: 70,
-    width: 70,
-    backgroundColor: "red",
-    marginRight: 5,
-    color: "#FFF6F4",
-    flex: 1,
-    fontSize: 14,
-    padding: 10,
-    textAlign: "center",
-    textAlignVertical: "center",
-  },
-  categoryColor: {
+  categoryColorRectangle: {
     // backgroundColor: "blue",
     marginLeft: "auto",
     borderTopLeftRadius: 8,
@@ -282,7 +280,6 @@ const styles = StyleSheet.create({
     width: 13,
     marginTop: 7,
     marginBottom: 7,
-    // height: 14,
   },
   inputContainer: {
     flexDirection: "row",

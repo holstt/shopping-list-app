@@ -41,11 +41,12 @@ export default function App() {
   // XXX: Lægges i context/global store
   const [itemLists, setItemLists] = useState<ItemList[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [items, setItems] = useState<Item[]>([]);
 
   const loadData = async () => {
     if (__DEV__) {
       // Seed test data in dev environment
-      await StorageService.clearAllData();
+      // await StorageService.clearAllData();
       await StorageTestDataInitializer.seedTestData();
     }
 
@@ -90,7 +91,6 @@ export default function App() {
   const Tab = createBottomTabNavigator<RootStackParamList>();
 
   return (
-    // <View>
     <NavigationContainer>
       <Tab.Navigator
         initialRouteName="ChecklistScreen"
@@ -130,6 +130,7 @@ export default function App() {
         <Tab.Screen
           name="ItemLibraryScreen"
           component={ListLibraryScreen}
+          initialParams={{ initItems: items }}
           options={{
             title: "Items",
             tabBarIcon: ({ focused, color, size }) => (
@@ -153,7 +154,6 @@ export default function App() {
         />
       </Tab.Navigator>
     </NavigationContainer>
-    // </View>
   );
 }
 
