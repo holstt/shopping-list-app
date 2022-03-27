@@ -18,6 +18,22 @@ export default class StorageTestDataInitializer {
       new Category("Category1", "#EB7474"),
       new Category("Category2", "#1FDA6D"),
       new Category("Category3", "#1F76DA"),
+      new Category("Fruit and Vegetables", "green"),
+      new Category("Meat", "red"),
+      new Category("Bread", "orange"),
+      new Category("Bread", "orange"),
+    ];
+
+    const testColors = [
+      "#C9F1C6",
+      "#C4D5FE",
+      "#FFFEE3",
+      "#C9F4FE",
+      "#FED3F1",
+      "#FFB3C8",
+      "#EB7474",
+      "#1FDA6D",
+      "#1F76DA",
     ];
 
     // Default library of items

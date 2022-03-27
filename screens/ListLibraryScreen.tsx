@@ -1,19 +1,11 @@
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { RootStackParamList } from "../types";
 
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  Alert,
-} from "react-native";
-import { useEffect, useState } from "react";
+import { StyleSheet } from "react-native";
+import { useState } from "react";
 
 import ItemList from "../models/ItemList";
 import ListsView from "../components/ListsView";
-import Item from "../models/Item";
 import StorageService from "../services/StorageService";
 
 type Props = BottomTabScreenProps<RootStackParamList, "ListLibraryScreen">;

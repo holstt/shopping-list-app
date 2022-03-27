@@ -21,10 +21,13 @@ import {
   BottomTabNavigationProp,
 } from "@react-navigation/bottom-tabs";
 import { RootStackParamList } from "../types";
+import Category from "../models/Category";
 
 type Props = BottomTabScreenProps<RootStackParamList, "ChecklistScreen">;
 
 export default function CheckListScreen({ navigation, route }: Props) {
+  // XXX: Skal komme fra context...
+  const [categories] = useState<Category[]>(route.params.initCategories);
   const [itemLists, setItemLists] = useState<ItemList[]>(
     route.params.initItemLists
   );
@@ -151,6 +154,7 @@ export default function CheckListScreen({ navigation, route }: Props) {
   return (
     <View style={styles.container}>
       <ChecklistView
+        categories={categories}
         itemList={itemLists[activeListIndex]}
         onCheckButtonPressed={onItemPressed}
         onAddNewItem={onAddNewItem}

@@ -105,7 +105,10 @@ export default function App() {
         <Tab.Screen
           name="ChecklistScreen"
           component={ChecklistScreen}
-          initialParams={{ initItemLists: itemLists }}
+          initialParams={{
+            initItemLists: itemLists,
+            initCategories: categories,
+          }}
           options={{
             title: "Shopping",
             tabBarIcon: ({ focused, color, size }) => (

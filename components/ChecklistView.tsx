@@ -16,9 +16,13 @@ import ItemList from "../models/ItemList";
 import colors from "../Colors";
 import UpDownButton from "./UpDownButton";
 import PlusButton from "./PlusButton";
+import Category from "../models/Category";
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import CategoryButton from "./CategoryButton";
 
 interface ShoppingListProps {
   itemList: ItemList;
+  categories: Category[];
   onAddNewItem(item: Item): void;
   onEditItem(item: Item): void;
   onDeleteItem(itemId: string): void;
@@ -39,6 +43,7 @@ export default function ChecklistView({
   hasNextList,
   hasPrevList,
   onCheckButtonPressed,
+  categories,
 }: ShoppingListProps) {
   // Mode only active when input for add new item is visible
   const [isAddItemMode, setIsAddItemMode] = useState(false);
@@ -47,10 +52,8 @@ export default function ChecklistView({
   // XXX: Egen comp??
   const [currentEditItem, setCurrentEditItem] = useState<Item | null>(null);
 
-  const onItemPress = (item: Item) => {
-    setIsEditItemMode(true);
-    setCurrentEditItem(item);
-  };
+  const [currentAddItemCategory, setCurrentEditItemCategory] =
+    useState<Category | null>(null);
 
   let items: Item[] | null = null;
   // Item should be hidden from list if it is being edited.
@@ -59,10 +62,26 @@ export default function ChecklistView({
   } else {
     items = itemList.items;
   }
-  // Create items.
-  const { unchecked, checked } = splitItems(items);
-  const itemListUncheckedComponent = renderListComponent(unchecked);
-  const itemListCheckedComponent = renderListComponent(checked);
+
+  const onItemPress = (item: Item) => {
+    setIsEditItemMode(true);
+    setCurrentEditItem(item);
+  };
+
+  const renderListComponent = (fromItems: Item[]) => {
+    return fromItems.map((item, i) => {
+      return (
+        <ItemRow
+          key={item.id}
+          item={item}
+          isLastElement={i === fromItems.length - 1}
+          onCheckButtonPress={onCheckButtonPressed}
+          onItemPress={onItemPress}
+          onRemoveItem={onDeleteItem}
+        ></ItemRow>
+      );
+    });
+  };
 
   // Handle item submitted
   const onSubmitAddItem = (
@@ -74,7 +93,9 @@ export default function ChecklistView({
     // Clear text input after item submitted
     textInputRef?.current?.clear();
     // Notify and pass new item to parent
-    onAddNewItem(new Item(event.nativeEvent.text, false));
+    onAddNewItem(
+      new Item(event.nativeEvent.text, false, currentAddItemCategory)
+    );
   };
 
   // XXX: Genbrug fra add item func
@@ -90,53 +111,82 @@ export default function ChecklistView({
     onEditItem({ ...currentEditItem, title: event.nativeEvent.text });
   };
 
+  const onCategoryPress = (category: Category) => {
+    setCurrentEditItemCategory(category);
+  };
+
+  const categoryButtons = (
+    <ScrollView keyboardShouldPersistTaps="always" horizontal={true}>
+      <View style={styles.categoryPickerContainer}>
+        {categories.map((cat) => (
+          <CategoryButton
+            key={cat.id}
+            onPress={onCategoryPress}
+            category={cat}
+          ></CategoryButton>
+        ))}
+      </View>
+    </ScrollView>
+  );
+
+  function renderInputComponent() {
+    return isAddItemMode ? (
+      <View>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.inputField}
+            placeholder="Add Item"
+            // Focus from start
+            autoFocus={true}
+            // Keep focus even after submit
+            blurOnSubmit={false}
+            // Turn off add item mode if not focused on input
+            onBlur={() => setIsAddItemMode(false)}
+            ref={(ref) => (textInputRef.current = ref)}
+            onSubmitEditing={onSubmitAddItem}
+          />
+          {currentAddItemCategory && (
+            // <View style={[styles.categoryColor]}></View>
+            <View
+              style={[
+                styles.categoryColor,
+                { backgroundColor: currentAddItemCategory?.color },
+              ]}
+            ></View>
+          )}
+        </View>
+        {categoryButtons}
+      </View>
+    ) : isEditItemMode ? (
+      <TextInput
+        style={styles.inputField}
+        // Focus from start
+        autoFocus={true}
+        defaultValue={currentEditItem?.title}
+        // Turn off add item mode if not focused on input
+        onBlur={onEditItemModeEnded}
+        onSubmitEditing={onSubmitEditItem}
+      />
+    ) : null;
+  }
+
+  const onEditItemModeEnded = () => {
+    setIsEditItemMode(false);
+    setCurrentEditItem(null);
+  };
+
+  // Create items.
+  const { unchecked, checked } = splitItems(items);
+  const itemListUncheckedComponent = renderListComponent(unchecked);
+  const itemListCheckedComponent = renderListComponent(checked);
+
   // XXX: Skal i component
   // Resolve input
-  const inputComponent = isAddItemMode ? (
-    <TextInput
-      style={styles.inputField}
-      placeholder="Add Item"
-      // Focus from start
-      autoFocus={true}
-      // Keep focus even after submit
-      blurOnSubmit={false}
-      // Turn off add item mode if not focused on input
-      onBlur={() => setIsAddItemMode(false)}
-      ref={(ref) => (textInputRef.current = ref)}
-      onSubmitEditing={onSubmitAddItem}
-    />
-  ) : isEditItemMode ? (
-    <TextInput
-      style={styles.inputField}
-      // Focus from start
-      autoFocus={true}
-      defaultValue={currentEditItem?.title}
-      // Turn off add item mode if not focused on input
-      onBlur={() => setIsEditItemMode(false)}
-      onSubmitEditing={onSubmitEditItem}
-    />
-  ) : null;
-
-  function renderListComponent(fromItems: Item[]) {
-    return fromItems.map((item, i) => {
-      return (
-        <ItemRow
-          key={item.id}
-          item={item}
-          isLastElement={i === fromItems.length - 1}
-          onCheckButtonPress={onCheckButtonPressed}
-          onItemPress={onItemPress}
-          onRemoveItem={onDeleteItem}
-        ></ItemRow>
-      );
-    });
-  }
+  const inputComponent = renderInputComponent();
 
   // XXX: Skal i component
   const itemListComponent = (
-    // Add input field
     <View>
-      {inputComponent}
       {itemListUncheckedComponent}
       {itemListCheckedComponent.length !== 0 ? (
         <Text style={styles.doneHeader}>Done</Text>
@@ -146,38 +196,39 @@ export default function ChecklistView({
   );
 
   return (
-    <View
-      style={styles.container}
-      // onTouchEnd={() => console.log("hej!")}
-    >
+    <View style={styles.container}>
       <View style={styles.listHeaderContainer}>
-        <Text style={styles.listHeader}>{itemList.title}</Text>
+        <Text numberOfLines={1} style={styles.listHeader}>
+          {itemList.title}
+        </Text>
         <UpDownButton
           onButtonUp={onViewPrevList}
           onButtonDown={onViewNextList}
-          hasPrevList={hasPrevList}
-          hasNextList={hasNextList}
+          isUpButtonEnabled={hasPrevList}
+          isDownButtonEnabled={hasNextList}
         ></UpDownButton>
       </View>
+
+      {inputComponent}
+
       <ScrollView>{itemListComponent}</ScrollView>
       {!isAddItemMode ? (
         <PlusButton onPress={() => setIsAddItemMode(true)}></PlusButton>
       ) : null}
     </View>
   );
-}
 
-// Reorder items. Put checked items at bottom
-function splitItems(items: Item[]) {
-  const unchecked = items.filter((item) => !item.isChecked);
-  const checked = items.filter((item) => item.isChecked);
-  return { unchecked, checked };
+  // Reorder items. Put checked items at bottom
+  function splitItems(items: Item[]) {
+    const unchecked = items.filter((item) => !item.isChecked);
+    const checked = items.filter((item) => item.isChecked);
+    return { unchecked, checked };
+  }
 }
 
 const styles = StyleSheet.create({
   container: {
     height: "100%",
-    // backgroundColor: "blue",
   },
   inputField: {
     // XXX: Evt. global style for dette og item text
@@ -203,5 +254,37 @@ const styles = StyleSheet.create({
     fontSize: 20,
     paddingTop: 15,
     paddingBottom: 2,
+  },
+  // XXX: I component
+  categoryPickerContainer: {
+    flexDirection: "row",
+    marginBottom: 20,
+    marginTop: 10,
+  },
+  categoryCircle: {
+    borderRadius: 50,
+    height: 70,
+    width: 70,
+    backgroundColor: "red",
+    marginRight: 5,
+    color: "#FFF6F4",
+    flex: 1,
+    fontSize: 14,
+    padding: 10,
+    textAlign: "center",
+    textAlignVertical: "center",
+  },
+  categoryColor: {
+    // backgroundColor: "blue",
+    marginLeft: "auto",
+    borderTopLeftRadius: 8,
+    borderBottomLeftRadius: 8,
+    width: 13,
+    marginTop: 7,
+    marginBottom: 7,
+    // height: 14,
+  },
+  inputContainer: {
+    flexDirection: "row",
   },
 });

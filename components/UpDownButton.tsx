@@ -10,28 +10,31 @@ import { FontAwesome } from "@expo/vector-icons";
 interface Props {
   onButtonDown(event: GestureResponderEvent): void;
   onButtonUp(event: GestureResponderEvent): void;
-  hasPrevList: boolean;
-  hasNextList: boolean;
+  isUpButtonEnabled: boolean;
+  isDownButtonEnabled: boolean;
 }
 
 export default function UpDownButton({
   onButtonUp,
   onButtonDown,
-  hasPrevList,
-  hasNextList,
+  isUpButtonEnabled,
+  isDownButtonEnabled,
 }: Props) {
   return (
     <View style={styles.upDownButtonContainer}>
-      <TouchableOpacity onPress={onButtonUp} disabled={!hasPrevList}>
+      <TouchableOpacity onPress={onButtonUp} disabled={!isUpButtonEnabled}>
         <FontAwesome
           name="chevron-up"
-          style={[styles.logo, !hasPrevList ? styles.logoDisabled : null]}
+          style={[styles.logo, !isUpButtonEnabled ? styles.logoDisabled : null]}
         />
       </TouchableOpacity>
-      <TouchableOpacity onPress={onButtonDown} disabled={!hasNextList}>
+      <TouchableOpacity onPress={onButtonDown} disabled={!isDownButtonEnabled}>
         <FontAwesome
           name="chevron-down"
-          style={[styles.logo, !hasNextList ? styles.logoDisabled : null]}
+          style={[
+            styles.logo,
+            !isDownButtonEnabled ? styles.logoDisabled : null,
+          ]}
         />
       </TouchableOpacity>
     </View>

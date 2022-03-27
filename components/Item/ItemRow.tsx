@@ -96,20 +96,6 @@ export default function ItemRow({
 }
 
 const styles = StyleSheet.create({
-  swipedRow: {
-    backgroundColor: "#FF0000",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  // deleteButton: {
-  //   color: "red",
-  // },
-  removeButtonText: {
-    color: "white",
-    padding: 10,
-    fontSize: 15,
-  },
-
   containerBase: {
     // backgroundColor: "lightgrey",
     flexDirection: "row",
@@ -142,9 +128,24 @@ const styles = StyleSheet.create({
   itemTextChecked: {
     textDecorationLine: "line-through",
   },
+
+  swipedRow: {
+    backgroundColor: "#FF0000",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  // deleteButton: {
+  //   color: "red",
+  // },
+  removeButtonText: {
+    color: "white",
+    padding: 10,
+    fontSize: 15,
+  },
+
   categoryColor: {
     marginLeft: "auto",
-    backgroundColor: "red",
+    // backgroundColor: "red",
     borderTopLeftRadius: 8,
     borderBottomLeftRadius: 8,
     width: 13,
