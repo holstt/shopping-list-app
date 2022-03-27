@@ -1,25 +1,11 @@
-import {
-  StyleSheet,
-  View,
-  StatusBar,
-  Text,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, View } from "react-native";
 import ChecklistView from "../components/Checklist/ChecklistView";
 import ListItem from "../models/ListItem";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import StorageService from "../services/StorageService";
 import ItemList from "../models/ItemList";
 
-import {
-  createNativeStackNavigator,
-  NativeStackScreenProps,
-} from "@react-navigation/native-stack";
-import {
-  createBottomTabNavigator,
-  BottomTabScreenProps,
-  BottomTabNavigationProp,
-} from "@react-navigation/bottom-tabs";
+import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { RootStackParamList } from "../types";
 import Category from "../models/Category";
 

@@ -30,6 +30,7 @@ import { RootStackParamList } from "./types";
 import ListLibraryScreen from "./screens/ListLibraryScreen";
 import LibraryItem from "./models/LibraryItem";
 import ItemLibraryScreen from "./screens/ItemLibraryScreen";
+import CategoryLibraryScreen from "./screens/CategoryLibraryScreen";
 
 // Use Reactotron dev tool
 if (__DEV__) {
@@ -148,7 +149,8 @@ export default function App() {
         />
         <Tab.Screen
           name="CategoryLibraryScreen"
-          component={ListLibraryScreen}
+          component={CategoryLibraryScreen}
+          initialParams={{ categories }}
           options={{
             title: "Categories",
             tabBarIcon: ({ focused, color, size }) => (
