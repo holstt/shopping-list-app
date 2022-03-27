@@ -19,15 +19,15 @@ import {
 import React, { useState } from "react";
 
 import CheckButton from "./CheckButton";
-import Item from "../../models/Item";
+import ListItem from "../../models/ListItem";
 
 // TODO
 // - Evt. icon size matcher ej med circle da ej kvadrat dim
 
 interface ItemProps {
-  item: Item;
-  onCheckButtonPress: (item: Item) => void;
-  onItemPress: (item: Item) => void;
+  item: ListItem;
+  onCheckButtonPress: (item: ListItem) => void;
+  onItemPress: (item: ListItem) => void;
   isLastElement?: boolean;
   onRemoveItem: (itemId: string) => void;
 }
@@ -49,10 +49,6 @@ export default function ItemRow({
     styles.itemTextBase,
     item.isChecked ? styles.itemTextChecked : null,
   ];
-
-  // const onRemoveButtonPress = (event: GestureResponderEvent) => {
-  //   onRemoveItem(item.id);
-  // };
 
   const renderSwipeToDelete = (
     progressAnimatedValue: Animated.AnimatedInterpolation,
@@ -84,7 +80,7 @@ export default function ItemRow({
             <Text style={itemTextStyle}>{item.title}</Text>
             <View
               style={[
-                styles.categoryColor,
+                styles.categoryColorRectangle,
                 { backgroundColor: item.category?.color },
               ]}
             ></View>
@@ -143,7 +139,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
 
-  categoryColor: {
+  categoryColorRectangle: {
     marginLeft: "auto",
     // backgroundColor: "red",
     borderTopLeftRadius: 8,

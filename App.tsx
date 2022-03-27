@@ -1,6 +1,6 @@
-import ChecklistView from "./components/ChecklistView";
+import ChecklistView from "./components/Checklist/ChecklistView";
 import Category from "./models/Category";
-import Item from "./models/Item";
+import ListItem from "./models/ListItem";
 import AppLoading from "expo-app-loading";
 
 import {
@@ -28,6 +28,8 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import ChecklistScreen from "./screens/ChecklistScreen";
 import { RootStackParamList } from "./types";
 import ListLibraryScreen from "./screens/ListLibraryScreen";
+import LibraryItem from "./models/LibraryItem";
+import ItemLibraryScreen from "./screens/ItemLibraryScreen";
 
 // Use Reactotron dev tool
 if (__DEV__) {
@@ -41,12 +43,12 @@ export default function App() {
   // XXX: Lægges i context/global store
   const [itemLists, setItemLists] = useState<ItemList[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [items, setItems] = useState<Item[]>([]);
+  const [libraryItems, setLibraryItems] = useState<LibraryItem[]>([]);
 
   const loadData = async () => {
     if (__DEV__) {
       // Seed test data in dev environment
-      // await StorageService.clearAllData();
+      await StorageService.clearAllData();
       await StorageTestDataInitializer.seedTestData();
     }
 
@@ -59,9 +61,6 @@ export default function App() {
     const appData = await StorageService.loadAppData();
     let existingItemLists = await StorageService.loadItemLists();
 
-    // Ensure order.
-    existingItemLists.sort((a, b) => (a.index > b.index ? 1 : -1));
-
     // Handle no existing lists...
     if (existingItemLists.length === 0) {
       console.log(
@@ -72,9 +71,12 @@ export default function App() {
       appData.lastActiveListId = firstList.id;
     }
 
+    // Ensure order.
     const existingCategories = await StorageService.loadCategories();
+    const existingLibraryItems = await StorageService.loadLibraryItems();
     setItemLists(existingItemLists);
     setCategories(existingCategories);
+    setLibraryItems(existingLibraryItems);
     console.log("Data loaded!");
   };
 
@@ -89,7 +91,6 @@ export default function App() {
   }
 
   const Tab = createBottomTabNavigator<RootStackParamList>();
-
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -129,8 +130,11 @@ export default function App() {
         />
         <Tab.Screen
           name="ItemLibraryScreen"
-          component={ListLibraryScreen}
-          initialParams={{ initItems: items }}
+          component={ItemLibraryScreen}
+          initialParams={{
+            initItems: libraryItems,
+            initCategories: categories,
+          }}
           options={{
             title: "Items",
             tabBarIcon: ({ focused, color, size }) => (

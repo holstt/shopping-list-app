@@ -12,7 +12,7 @@ import {
 import PlusButton from "./PlusButton";
 
 import { useState, useRef, useEffect } from "react";
-import Item from "../models/Item";
+import ListItem from "../models/ListItem";
 import ItemList from "../models/ItemList";
 import ListRow from "./ListRow";
 import colors from "../Colors";

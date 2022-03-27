@@ -1,42 +1,56 @@
 import Category from "../models/Category";
 import Entity from "../models/Entity";
-import Item from "../models/Item";
+import ListItem from "../models/ListItem";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ItemList from "../models/ItemList";
 import AppData from "../AppData";
 import { overlay } from "reactotron-react-native";
+import LibraryItem from "../models/LibraryItem";
 
-const ITEM_STORE_KEY = "item";
+const ITEM_STORE_KEY = "listItem";
 const CATEGORY_STORE_KEY = "category";
 const ITEM_LIST_STORE_KEY = "itemList";
 const APP_DATA_STORE_KEY = "appData";
-const LIBRARY_DATA_STORE_KEY = "library";
+const LIBRARY_DATA_STORE_KEY = "libraryItem";
 
 // XXX: Lav StorageTestDataIntializer, GenericStorage/Storage, LocalStorage
 
 export default class StorageService {
   public static async loadCategories(): Promise<Category[]> {
-    return await this.loadMany<Category>(CATEGORY_STORE_KEY);
+    const list = await this.loadMany<Category>(CATEGORY_STORE_KEY);
+    return list.sort((a, b) => (a.index > b.index ? 1 : -1));
   }
-
-  public static async loadItems(): Promise<Item[]> {
-    return await this.loadMany<Item>(ITEM_STORE_KEY);
-  }
-
   public static async loadItemLists(): Promise<ItemList[]> {
-    return await this.loadMany<ItemList>(ITEM_LIST_STORE_KEY);
+    const list = await this.loadMany<ItemList>(ITEM_LIST_STORE_KEY);
+    return list.sort((a, b) => (a.index > b.index ? 1 : -1));
+  }
+
+  public static async loadListItems(): Promise<ListItem[]> {
+    return await this.loadMany<ListItem>(ITEM_STORE_KEY);
+  }
+
+  public static async loadLibraryItems(): Promise<LibraryItem[]> {
+    return await this.loadMany<LibraryItem>(LIBRARY_DATA_STORE_KEY);
   }
 
   public static async saveItemList(itemList: ItemList) {
     await this.save(ITEM_LIST_STORE_KEY, itemList);
   }
 
-  public static async deleteItemList(id: string) {
-    await this.delete(ITEM_LIST_STORE_KEY, id);
+  public static async saveLibraryItem(libraryItem: LibraryItem) {
+    await this.save(LIBRARY_DATA_STORE_KEY, libraryItem);
   }
 
   public static async saveItemLists(itemList: ItemList[]) {
     await this.saveMany<ItemList>(ITEM_LIST_STORE_KEY, itemList);
+  }
+
+  public static async deleteLibraryItem(id: string) {
+    await this.delete(LIBRARY_DATA_STORE_KEY, id);
+  }
+
+  public static async deleteItemList(id: string) {
+    await this.delete(ITEM_LIST_STORE_KEY, id);
   }
 
   public static async loadAppData(): Promise<AppData> {
@@ -68,18 +82,22 @@ export default class StorageService {
     await this.save(APP_DATA_STORE_KEY, appData);
   }
 
-  public static async saveItem(item: Item) {
+  public static async saveItem(item: ListItem) {
     await this.save(ITEM_STORE_KEY, item);
   }
-  public static async saveItems(items: Item[]) {
+  public static async saveItems(items: ListItem[]) {
     await this.saveMany(ITEM_STORE_KEY, items);
   }
 
-  public static async saveCategory(item: Item) {
-    await this.save(CATEGORY_STORE_KEY, item);
+  public static async saveCategory(category: Category) {
+    await this.save(CATEGORY_STORE_KEY, category);
   }
   public static async saveCategories(categories: Category[]) {
     await this.saveMany(CATEGORY_STORE_KEY, categories);
+  }
+
+  public static async saveLibraryItems(items: LibraryItem[]) {
+    await this.saveMany(LIBRARY_DATA_STORE_KEY, items);
   }
 
   // If client have the key.

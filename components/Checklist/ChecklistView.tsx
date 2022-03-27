@@ -8,23 +8,23 @@ import {
   TextInputSubmitEditingEventData,
   GestureResponderEvent,
 } from "react-native";
-import ItemRow from "./Item/ItemRow";
-import Item from "../models/Item";
+import ItemRow from "./ItemRow";
+import ListItem from "../../models/ListItem";
 import { useState, useRef } from "react";
-import ItemList from "../models/ItemList";
-import colors from "../Colors";
+import ItemList from "../../models/ItemList";
+import colors from "../../Colors";
 import UpDownButton from "./UpDownButton";
-import PlusButton from "./PlusButton";
-import Category from "../models/Category";
-import CategoryPicker from "./CategoryPicker";
+import PlusButton from "../PlusButton";
+import Category from "../../models/Category";
+import CategoryPicker from "../Category/CategoryPicker";
 
 interface ShoppingListProps {
   itemList: ItemList;
   categories: Category[];
-  onAddNewItem(item: Item): void;
-  onEditItem(item: Item): void;
+  onAddNewItem(item: ListItem): void;
+  onEditItem(item: ListItem): void;
   onDeleteItem(itemId: string): void;
-  onCheckButtonPressed(item: Item): void;
+  onCheckButtonPressed(item: ListItem): void;
   onViewNextList(event: GestureResponderEvent): void;
   onViewPrevList(event: GestureResponderEvent): void;
   hasNextList: boolean;
@@ -48,14 +48,11 @@ export default function ChecklistView({
   const [isEditItemMode, setIsEditItemMode] = useState(false);
   const textInputRef = useRef<TextInput | null>();
   // XXX: Egen comp??
-  const [currentEditItem, setCurrentEditItem] = useState<Item | null>(null);
+  const [currentEditItem, setCurrentEditItem] = useState<ListItem | null>(null);
   const [currentEditItemCategory, setCurrentEditItemCategory] =
     useState<Category | null>(null);
 
-  // useEffect(() =>{
-  // }, [isAddItemMode, ]);
-
-  let items: Item[] | null = null;
+  let items: ListItem[] | null = null;
   // Item should be hidden from list if it is being edited.
   if (isEditItemMode) {
     items = itemList.items.filter((item) => item.id !== currentEditItem?.id);
@@ -64,7 +61,7 @@ export default function ChecklistView({
   }
 
   // When an item is pressed
-  const onItemPress = (item: Item) => {
+  const onItemPress = (item: ListItem) => {
     // XXX: Setting multiple states?
     setIsEditItemMode(true);
     setCurrentEditItem(item);
@@ -100,7 +97,10 @@ export default function ChecklistView({
     textInputRef?.current?.clear();
     // Notify and pass new item to parent
     onAddNewItem(
-      new Item(event.nativeEvent.text, false, currentEditItemCategory)
+      ListItem.fromNonLibraryItem(
+        event.nativeEvent.text,
+        currentEditItemCategory
+      )
     );
   };
 
@@ -177,7 +177,7 @@ export default function ChecklistView({
     );
   };
 
-  const renderListComponent = (fromItems: Item[]) => {
+  const renderListComponent = (fromItems: ListItem[]) => {
     return fromItems.map((item, i) => {
       return (
         <ItemRow
@@ -227,7 +227,6 @@ export default function ChecklistView({
       </View>
 
       {inputComponent}
-
       <ScrollView>{itemListComponent}</ScrollView>
       {!isAddItemMode ? (
         <PlusButton onPress={() => setIsAddItemMode(true)}></PlusButton>
@@ -236,9 +235,9 @@ export default function ChecklistView({
   );
 
   // Reorder items. Put checked items at bottom
-  function splitItems(items: Item[]) {
-    const unchecked = items.filter((item) => !item.isChecked);
-    const checked = items.filter((item) => item.isChecked);
+  function splitItems(itemsToSplit: ListItem[]) {
+    const unchecked = itemsToSplit.filter((item) => !item.isChecked);
+    const checked = itemsToSplit.filter((item) => item.isChecked);
     return { unchecked, checked };
   }
 }

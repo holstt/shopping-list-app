@@ -1,20 +1,16 @@
 import uuid from "react-native-uuid";
 import Category from "./Category";
 
-export default class Item {
+// Represents an item part of the shared item library.
+// A LibraryItem can act as a reference for multiple ListItem
+export default class LibraryItem {
   id: string;
   title: string;
-  isChecked: boolean;
   category: Category | null;
 
-  constructor(
-    title: string,
-    isChecked: boolean,
-    category: Category | null = null
-  ) {
+  constructor(title: string, category: Category | null = null) {
     this.id = uuid.v4().toString();
     this.title = title;
-    this.isChecked = isChecked;
     this.category = category;
   }
 }

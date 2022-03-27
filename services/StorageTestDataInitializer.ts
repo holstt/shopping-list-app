@@ -1,10 +1,11 @@
 import Category from "../models/Category";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Item from "../models/Item";
+import ListItem from "../models/ListItem";
 import StorageService from "./StorageService";
-import ChecklistView from "../components/ChecklistView";
+import ChecklistView from "../components/Checklist/ChecklistView";
 import ItemList from "../models/ItemList";
 import AppData from "../AppData";
+import LibraryItem from "../models/LibraryItem";
 
 export default class StorageTestDataInitializer {
   public static async seedTestData() {
@@ -15,13 +16,13 @@ export default class StorageTestDataInitializer {
 
     console.log("Seeding test data....");
     const testCategories = [
-      new Category("Category1", "#EB7474"),
-      new Category("Category2", "#1FDA6D"),
-      new Category("Category3", "#1F76DA"),
-      new Category("Fruit and Vegetables", "green"),
-      new Category("Meat", "red"),
-      new Category("Bread", "orange"),
-      new Category("Bread", "orange"),
+      new Category("Category1", "#EB7474", 0),
+      new Category("Category2", "#1FDA6D", 1),
+      new Category("Category3", "#1F76DA", 2),
+      new Category("Fruit and Vegetables", "green", 3),
+      new Category("Meat", "red", 4),
+      new Category("Bread", "orange", 5),
+      new Category("Bread", "orange", 6),
     ];
 
     const testColors = [
@@ -39,22 +40,25 @@ export default class StorageTestDataInitializer {
     ];
 
     // Default library of items
-    const library = [
-      new Item("LibItem1", false, testCategories[0]),
-      new Item("LibItem2", true, testCategories[1]),
-      new Item("LibItem3", false, testCategories[2]),
+    const testLibraryItems = [
+      new LibraryItem("LibItem1", testCategories[0]),
+      new LibraryItem("LibItem2", testCategories[1]),
+      new LibraryItem("LibItem3", testCategories[2]),
+      new LibraryItem("LibItem4", testCategories[3]),
+      new LibraryItem("LibItem5", testCategories[4]),
     ];
+    await StorageService.saveLibraryItems(testLibraryItems);
 
     const testItems = [
-      new Item("Item1", false, testCategories[0]),
-      new Item("Item2", true, testCategories[1]),
-      new Item("Item3", false, null),
+      ListItem.fromNonLibraryItem("Item1", testCategories[0]),
+      ListItem.fromNonLibraryItem("Item2", testCategories[1]),
+      ListItem.fromNonLibraryItem("Item3"),
     ];
 
     const testItems2 = [
-      new Item("Item11", false, testCategories[0]),
-      new Item("Item22", true, testCategories[2]),
-      new Item("Item33", true, null),
+      ListItem.fromNonLibraryItem("Item11", testCategories[0]),
+      ListItem.fromNonLibraryItem("Item22", testCategories[2]),
+      ListItem.fromNonLibraryItem("Item33", null),
     ];
     const itemLists = [
       new ItemList("My First List", testItems, 0),

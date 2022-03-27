@@ -52,12 +52,5 @@ export default function ListLibraryScreen({ route, navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    // alignItems: "center",
-    // justifyContent: "center",
-    // backgroundColor: "red",
-    borderColor: "blue",
-    borderWidth: 3,
-  },
+  container: {},
 });

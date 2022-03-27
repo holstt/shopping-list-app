@@ -5,8 +5,8 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
-import ChecklistView from "../components/ChecklistView";
-import Item from "../models/Item";
+import ChecklistView from "../components/Checklist/ChecklistView";
+import ListItem from "../models/ListItem";
 import { useEffect, useState } from "react";
 import StorageService from "../services/StorageService";
 import ItemList from "../models/ItemList";
@@ -33,14 +33,14 @@ export default function CheckListScreen({ navigation, route }: Props) {
   );
   const [activeListIndex, setActiveListIndex] = useState(0);
 
-  const addItemToList = (list: ItemList, item: Item) => {
+  const addItemToList = (list: ItemList, item: ListItem) => {
     const updatedList: ItemList = { ...list, items: [item, ...list.items] };
     // tslint:disable-next-line: no-floating-promises
     StorageService.saveItemList(updatedList);
     return updatedList;
   };
 
-  const onAddNewItem = async (itemAdded: Item) => {
+  const onAddNewItem = async (itemAdded: ListItem) => {
     setItemLists((prev) => {
       return prev.map((prevList, index) =>
         index === activeListIndex
@@ -51,7 +51,7 @@ export default function CheckListScreen({ navigation, route }: Props) {
   };
 
   // XXX: Genbrug fra onAddItem
-  const onEditItem = async (itemEdited: Item) => {
+  const onEditItem = async (itemEdited: ListItem) => {
     setItemLists((prev) => {
       return prev.map((prevList, index) =>
         index === activeListIndex
@@ -61,7 +61,7 @@ export default function CheckListScreen({ navigation, route }: Props) {
     });
   };
 
-  const editItemInList = (list: ItemList, itemToEdit: Item) => {
+  const editItemInList = (list: ItemList, itemToEdit: ListItem) => {
     const updatedList: ItemList = {
       ...list,
       items: list.items.map((item) =>
@@ -121,7 +121,7 @@ export default function CheckListScreen({ navigation, route }: Props) {
   };
 
   // XXX: On modify item?? således generic.  Child forestår ændring
-  const onItemPressed = (itemPressed: Item) => {
+  const onItemPressed = (itemPressed: ListItem) => {
     setItemLists((prev) => {
       return prev.map((prevList, index) =>
         index === activeListIndex
@@ -131,7 +131,7 @@ export default function CheckListScreen({ navigation, route }: Props) {
     });
   };
 
-  const updateItemInList = (prevList: ItemList, updatedItem: Item) => {
+  const updateItemInList = (prevList: ItemList, updatedItem: ListItem) => {
     // let itemUpdated: Item | null = null;
     const newItems = prevList.items.map((item) =>
       // Find and update pressed item.
