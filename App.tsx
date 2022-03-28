@@ -31,6 +31,7 @@ import ListLibraryScreen from "./screens/ListLibraryScreen";
 import LibraryItem from "./models/LibraryItem";
 import ItemLibraryScreen from "./screens/ItemLibraryScreen";
 import CategoryLibraryScreen from "./screens/CategoryLibraryScreen";
+import LibraryItemsContextProvider from "./context/LibraryItemsContextProvider";
 
 // Use Reactotron dev tool
 if (__DEV__) {
@@ -44,7 +45,7 @@ export default function App() {
   // XXX: Lægges i context/global store
   const [itemLists, setItemLists] = useState<ItemList[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [libraryItems, setLibraryItems] = useState<LibraryItem[]>([]);
+  const [initLibraryItems, setInitLibraryItems] = useState<LibraryItem[]>([]);
 
   const loadData = async () => {
     if (__DEV__) {
@@ -55,6 +56,8 @@ export default function App() {
 
     await loadDataFromLocalStorage();
   };
+
+  // let existingLibraryItems: LibraryItem[] | null = null;
 
   // XXX: Abstraheres - custom hook?
   const loadDataFromLocalStorage = async () => {
@@ -67,7 +70,7 @@ export default function App() {
       console.log(
         "No existing items found in local storage. Creating initial list."
       );
-      const firstList = new ItemList("My First List", [], 0);
+      const firstList = new ItemList("Default List", [], 0);
       existingItemLists = [firstList];
       appData.lastActiveListId = firstList.id;
     }
@@ -75,9 +78,11 @@ export default function App() {
     // Ensure order.
     const existingCategories = await StorageService.loadCategories();
     const existingLibraryItems = await StorageService.loadLibraryItems();
+    // console.log(existingLibraryItems.length);
+
     setItemLists(existingItemLists);
     setCategories(existingCategories);
-    setLibraryItems(existingLibraryItems);
+    setInitLibraryItems(existingLibraryItems);
     console.log("Data loaded!");
   };
 
@@ -91,75 +96,82 @@ export default function App() {
     );
   }
 
+  // if (!existingLibraryItems) {
+  //   // console.log(existingLibraryItems?.length);
+  //   throw new Error("Data not loaded.");
+  // }
+
   const Tab = createBottomTabNavigator<RootStackParamList>();
   return (
-    <NavigationContainer>
-      <Tab.Navigator
-        initialRouteName="ChecklistScreen"
-        sceneContainerStyle={styles.container}
-        screenOptions={{
-          headerShown: false,
-          tabBarStyle: {
-            paddingBottom: 2,
-          },
-        }}
-      >
-        <Tab.Screen
-          name="ChecklistScreen"
-          component={ChecklistScreen}
-          initialParams={{
-            initItemLists: itemLists,
-            initCategories: categories,
+    <LibraryItemsContextProvider initLibraryItems={initLibraryItems}>
+      <NavigationContainer>
+        <Tab.Navigator
+          initialRouteName="ChecklistScreen"
+          sceneContainerStyle={styles.container}
+          screenOptions={{
+            headerShown: false,
+            tabBarStyle: {
+              paddingBottom: 2,
+            },
           }}
-          options={{
-            title: "Shopping",
-            tabBarIcon: ({ focused, color, size }) => (
-              <FontAwesome name="check-circle" size={size} color={color} />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="ListLibraryScreen"
-          component={ListLibraryScreen}
-          initialParams={{ initItemLists: itemLists }}
-          options={{
-            title: "Lists",
-            tabBarIcon: ({ focused, color, size }) => (
-              <FontAwesome name="list-ul" size={size} color={color} />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="ItemLibraryScreen"
-          component={ItemLibraryScreen}
-          initialParams={{
-            initItems: libraryItems,
-            initCategories: categories,
-          }}
-          options={{
-            title: "Items",
-            tabBarIcon: ({ focused, color, size }) => (
-              <MaterialCommunityIcons
-                name="library-shelves"
-                size={size}
-                color={color}
-              />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="CategoryLibraryScreen"
-          component={CategoryLibraryScreen}
-          initialParams={{ categories }}
-          options={{
-            title: "Categories",
-            tabBarIcon: ({ focused, color, size }) => (
-              <MaterialIcons name="category" size={size} color={color} />
-            ),
-          }}
-        />
-      </Tab.Navigator>
-    </NavigationContainer>
+        >
+          <Tab.Screen
+            name="ChecklistScreen"
+            component={ChecklistScreen}
+            initialParams={{
+              initItemLists: itemLists,
+              initCategories: categories,
+            }}
+            options={{
+              title: "Shopping",
+              tabBarIcon: ({ focused, color, size }) => (
+                <FontAwesome name="check-circle" size={size} color={color} />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="ListLibraryScreen"
+            component={ListLibraryScreen}
+            initialParams={{ initItemLists: itemLists }}
+            options={{
+              title: "Lists",
+              tabBarIcon: ({ focused, color, size }) => (
+                <FontAwesome name="list-ul" size={size} color={color} />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="ItemLibraryScreen"
+            component={ItemLibraryScreen}
+            initialParams={{
+              // initItems: libraryItems,
+              initCategories: categories,
+            }}
+            options={{
+              title: "Items",
+              tabBarIcon: ({ focused, color, size }) => (
+                <MaterialCommunityIcons
+                  name="library-shelves"
+                  size={size}
+                  color={color}
+                />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="CategoryLibraryScreen"
+            component={CategoryLibraryScreen}
+            initialParams={{ categories }}
+            options={{
+              title: "Categories",
+              tabBarIcon: ({ focused, color, size }) => (
+                <MaterialIcons name="category" size={size} color={color} />
+              ),
+            }}
+          />
+        </Tab.Navigator>
+      </NavigationContainer>
+    </LibraryItemsContextProvider>
   );
 }
 

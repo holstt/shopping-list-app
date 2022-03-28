@@ -1,29 +1,26 @@
-import { useRef, useState } from "react";
+import { ReactElement, useRef, useState } from "react";
 import {
   StyleSheet,
   Text,
   View,
   ScrollView,
-  TouchableOpacity,
   TextInput,
   NativeSyntheticEvent,
   TextInputSubmitEditingEventData,
-  GestureResponderEvent,
 } from "react-native";
 import PlusButton from "./PlusButton";
 
 import LibraryItem from "../models/LibraryItem";
 import LibraryItemRow from "./LibraryItemRow";
-import ListRow from "./ListRow";
 import colors from "../Colors";
 import Category from "../models/Category";
-import CategoryPicker from "./Category/CategoryPicker";
+import ListInput from "./ListInput";
 
 interface Props {
   items: LibraryItem[];
   categories: Category[];
 
-  onDeleteItem: (list: LibraryItem) => void;
+  onDeleteItem: (itemId: string) => void;
   onAddItem: (item: LibraryItem) => void;
   onEditItem: (item: LibraryItem) => void;
 }
@@ -133,61 +130,44 @@ export default function ItemLibraryView({
     />
   );
 
-  const renderInputType = (inputType: JSX.Element) => {
-    return (
-      <View>
-        <View style={styles.inputContainer}>
-          {inputType}
-          {currentEditItemCategory && (
-            <View
-              style={[
-                styles.categoryColorRectangle,
-                { backgroundColor: currentEditItemCategory?.color },
-              ]}
-            ></View>
-          )}
-        </View>
-        <CategoryPicker
-          categories={categories}
-          onCategoryPress={onCategoryPress}
-        ></CategoryPicker>
-      </View>
-    );
-  };
+  const inputComponent =
+    (isAddItemMode && (
+      <ListInput
+        inputComponent={addItemInput}
+        categories={categories}
+        onCategoryPress={onCategoryPress}
+        showCategory={currentEditItemCategory}
+      ></ListInput>
+    )) ||
+    (isEditItemMode && (
+      <ListInput
+        inputComponent={editItemInput}
+        categories={categories}
+        onCategoryPress={onCategoryPress}
+        showCategory={currentEditItemCategory}
+      ></ListInput>
+    ));
 
-  const renderInputComponent = () => {
-    return (
-      (isAddItemMode && renderInputType(addItemInput)) ||
-      (isEditItemMode && renderInputType(editItemInput))
-    );
-  };
-
-  // XXX: Skal i component
-  // Resolve input
-  const inputComponent = renderInputComponent();
+  const itemsComponent = items.map((item, index) => (
+    <LibraryItemRow
+      onDeleteButtonPress={(itemToDelete) => onDeleteItem(itemToDelete.id)}
+      onItemPress={onItemPress}
+      isLastElement={index === items.length - 1}
+      item={item}
+      key={item.id}
+    ></LibraryItemRow>
+  ));
 
   return (
     <View style={styles.container}>
       <Text style={styles.listHeader}>Items</Text>
       {inputComponent}
-      <ScrollView>{renderItems()}</ScrollView>
+      <ScrollView>{itemsComponent}</ScrollView>
       {!isAddItemMode ? (
         <PlusButton onPress={() => setIsAddItemMode(true)}></PlusButton>
       ) : null}
     </View>
   );
-
-  function renderItems() {
-    return items.map((item, index) => (
-      <LibraryItemRow
-        onDeleteButtonPress={onDeleteItem}
-        onItemPress={onItemPress}
-        isLastElement={index === items.length - 1}
-        item={item}
-        key={item.id}
-      ></LibraryItemRow>
-    ));
-  }
 }
 
 const styles = StyleSheet.create({
@@ -201,23 +181,12 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
     color: colors.darkGrey,
   },
-  categoryColorRectangle: {
-    // backgroundColor: "blue",
-    marginLeft: "auto",
-    borderTopLeftRadius: 8,
-    borderBottomLeftRadius: 8,
-    width: 13,
-    marginTop: 7,
-    marginBottom: 7,
-  },
+
   inputField: {
     // XXX: Evt. global style for dette og item text
     paddingTop: 7,
     paddingBottom: 7,
     color: colors.darkGrey,
     fontSize: 20,
-  },
-  inputContainer: {
-    flexDirection: "row",
   },
 });
