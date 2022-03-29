@@ -4,7 +4,7 @@ import {
   TouchableOpacity,
   GestureResponderEvent,
 } from "react-native";
-import colors from "../../Colors";
+import colors from "../../config/colors";
 import { FontAwesome } from "@expo/vector-icons";
 
 interface Props {

@@ -14,7 +14,7 @@ interface InitStateProps {
 
 // Loads the initial app state from local storage
 export default function useLocalStorageData() {
-  const [isDoneLoading, setIsDoneLoading] = useState(false);
+  const [isReady, setIsReady] = useState(false);
   const [data, setDataState] = useState<InitStateProps>();
   const [appData, setAppData] = useState<AppData | null>(null);
 
@@ -38,9 +38,9 @@ export default function useLocalStorageData() {
     });
 
     setAppData(await StorageService.loadAppData());
-    setIsDoneLoading(true);
+    setIsReady(true);
     console.log("Data loaded!");
   };
 
-  return { loadData, isDoneLoading, data, appData, setAppData };
+  return { loadData, isReady, data, appData, setAppData };
 }

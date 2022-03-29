@@ -1,7 +1,7 @@
 import React, { createContext, useState, ReactNode, Dispatch } from "react";
 import ItemList from "../models/ItemList";
 
-interface ItemListContextProps {
+interface ItemListState {
   addItemList: (list: ItemList) => void;
   updateItemList: (list: ItemList) => void;
   deleteItemList: (list: string) => void;
@@ -14,7 +14,7 @@ interface ItemListContextProps {
 }
 
 // Give initial empty values to avoid not null. // XXX: Fix senere med library
-export const ItemListsContext = createContext<ItemListContextProps>({
+export const ItemListsContext = createContext<ItemListState>({
   // appData: { id: "", lastActiveListId: "" }, // XXX: Væk med det
   // tslint:disable-next-line: no-empty
   addItemList: () => {},

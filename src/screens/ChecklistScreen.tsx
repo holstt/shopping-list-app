@@ -17,8 +17,8 @@ import colors from "../Colors";
 import UpDownButton from "../components/Checklist/UpDownButton";
 import PlusButton from "../components/common/Input/PlusButton";
 import Category from "../models/Category";
-import { CategoriesContext } from "../context/CategoriesContext";
-import { ItemListsContext } from "../context/ItemListsContext";
+import { CategoriesContext } from "../state/CategoriesContext";
+import { ItemListsContext } from "../state/ItemListsContext";
 import ListInput from "../components/common/Input/ListInput";
 
 type Props = BottomTabScreenProps<RootStackParamList, "ChecklistScreen">;

@@ -15,7 +15,7 @@ import { useState, useContext } from "react";
 import ItemList from "../models/ItemList";
 import ListRow from "../components/ListLibrary/ListRow";
 import colors from "../Colors";
-import { ItemListsContext } from "../context/ItemListsContext";
+import { ItemListsContext } from "../state/ItemListsContext";
 
 type Props = BottomTabScreenProps<RootStackParamList, "ListLibraryScreen">;
 

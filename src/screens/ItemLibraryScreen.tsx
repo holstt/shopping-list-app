@@ -1,8 +1,8 @@
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { RootStackParamList } from "../types";
 import Category from "../models/Category";
-import { LibraryItemsContext } from "../context/LibraryItemsContext";
-import { CategoriesContext } from "../context/CategoriesContext";
+import { LibraryItemsContext } from "../state/LibraryItemsContext";
+import { CategoriesContext } from "../state/CategoriesContext";
 import { useContext, useRef, useState } from "react";
 import {
   StyleSheet,

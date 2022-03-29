@@ -7,7 +7,7 @@ import ItemList from "../models/ItemList";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { RootStackParamList } from "../types";
 import Category from "../models/Category";
-import { CategoriesContext } from "../context/CategoriesContext";
+import { CategoriesContext } from "../state/CategoriesContext";
 
 type Props = BottomTabScreenProps<RootStackParamList, "CategoryLibraryScreen">;
 
