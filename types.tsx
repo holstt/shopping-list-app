@@ -4,9 +4,9 @@ import ItemList from "./models/ItemList";
 import LibraryItem from "./models/LibraryItem";
 
 export type RootStackParamList = {
-  ChecklistScreen: { initItemLists: ItemList[]; initCategories: Category[] }; // XXX: Skal komme fra context
-  ListLibraryScreen: { initItemLists: ItemList[] };
+  ChecklistScreen: {}; // XXX: Skal komme fra context
+  ListLibraryScreen: {};
   // ItemLibraryScreen: { initItems: LibraryItem[]; initCategories: Category[] };
-  ItemLibraryScreen: { initCategories: Category[] };
-  CategoryLibraryScreen: { categories: Category[] }; // XXX: Skal komme fra context
+  ItemLibraryScreen: {};
+  CategoryLibraryScreen: {}; // XXX: Skal komme fra context
 };

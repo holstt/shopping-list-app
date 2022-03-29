@@ -1,6 +1,6 @@
 import { StyleSheet, View, ScrollView } from "react-native";
-import Category from "../models/Category";
-import CategoryButton from "./CategoryButton";
+import Category from "../../../models/Category";
+import CategorySelectButton from "./CategorySelectButton";
 
 interface Props {
   categories: Category[];
@@ -13,11 +13,11 @@ export default function CategoryPicker({ categories, onCategoryPress }: Props) {
     <ScrollView keyboardShouldPersistTaps="always" horizontal={true}>
       <View style={styles.categoryPickerContainer}>
         {categories.map((cat) => (
-          <CategoryButton
+          <CategorySelectButton
             key={cat.id}
             onPress={onCategoryPress}
             category={cat}
-          ></CategoryButton>
+          ></CategorySelectButton>
         ))}
       </View>
     </ScrollView>

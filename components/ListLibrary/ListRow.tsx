@@ -13,7 +13,7 @@ import {
 } from "react-native-gesture-handler";
 
 import React, { useRef } from "react";
-import ItemList from "../models/ItemList";
+import ItemList from "../../models/ItemList";
 
 interface Props {
   onDeleteButtonPress: (list: ItemList) => void;

@@ -1,31 +1,31 @@
 import { ReactElement } from "react";
 import { StyleSheet, View } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
-import Category from "../models/Category";
-import CategoryPicker from "./Category/CategoryPicker";
+import Category from "../../../models/Category";
+import CategoryPicker from "./CategoryPicker";
 
 interface Props {
   categories: Category[];
   onCategoryPress: (category: Category) => void;
-  showCategory: Category | null;
+  categoryToDisplay: Category | null;
   inputComponent: ReactElement<TextInput>;
 }
 
 export default function ListInput({
   categories,
   onCategoryPress,
-  showCategory,
+  categoryToDisplay,
   inputComponent,
 }: Props) {
   return (
     <View>
       <View style={styles.inputContainer}>
         {inputComponent}
-        {showCategory && ( // XXX: Component?
+        {categoryToDisplay && ( // XXX: Component?
           <View
             style={[
               styles.categoryColorRectangle,
-              { backgroundColor: showCategory.color },
+              { backgroundColor: categoryToDisplay.color },
             ]}
           ></View>
         )}

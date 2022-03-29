@@ -2,7 +2,6 @@ import Category from "../models/Category";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ListItem from "../models/ListItem";
 import StorageService from "./StorageService";
-import ChecklistView from "../components/Checklist/ChecklistView";
 import ItemList from "../models/ItemList";
 import AppData from "../AppData";
 import LibraryItem from "../models/LibraryItem";
@@ -61,8 +60,8 @@ export default class StorageTestDataInitializer {
       ListItem.fromNonLibraryItem("Item33", null),
     ];
     const itemLists = [
-      new ItemList("My First List", testItems, 0),
-      new ItemList("My Other List", testItems2, 1),
+      new ItemList("ShoppingList1", testItems, 0),
+      new ItemList("ShoppingList2", testItems2, 1),
     ];
 
     const appData = new AppData(itemLists[0].id);

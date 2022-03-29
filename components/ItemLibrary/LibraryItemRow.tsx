@@ -12,7 +12,7 @@ import {
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
 
-import LibraryItem from "../models/LibraryItem";
+import LibraryItem from "../../models/LibraryItem";
 
 import React, { useRef } from "react";
 // import ItemList from "../models/ItemList";
@@ -32,8 +32,6 @@ export default function ListRow({
   isLastElement,
 }: Props) {
   const swipableRowRef = useRef<Swipeable | null>(null);
-
-  // console.log(item.category);
 
   // Resolve styles
   const container = [

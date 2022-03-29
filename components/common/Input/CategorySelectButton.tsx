@@ -1,12 +1,12 @@
 import { StyleSheet, TouchableOpacity, Text } from "react-native";
-import Category from "../../models/Category";
+import Category from "../../../models/Category";
 
 interface Props {
   onPress: (category: Category) => void;
   category: Category;
 }
 
-export default function CategoryButton({ onPress, category }: Props) {
+export default function CategorySelectButton({ onPress, category }: Props) {
   return (
     <TouchableOpacity
       style={[styles.button, { backgroundColor: category.color }]}

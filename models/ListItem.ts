@@ -10,7 +10,7 @@ export default class ListItem {
   category: Category | null;
   isChecked: boolean;
   // Reference to the library item this item is based on (if any).
-  libraryItemId: string | null; // XXX: Evt. find bedre løsning.
+  libraryItemRefenceId: string | null; // XXX: Evt. find bedre løsning.
 
   static fromLibraryItem(libraryItem: LibraryItem): ListItem {
     return new ListItem(
@@ -18,6 +18,13 @@ export default class ListItem {
       libraryItem.category,
       libraryItem.id
     );
+  }
+
+  updateLibraryItemReference(libraryItem: LibraryItem) {
+    // Update all props dependent on library item // XXX: Find bedre løsning
+    this.title = libraryItem.title;
+    this.category = libraryItem.category;
+    this.id = libraryItem.id;
   }
 
   static fromNonLibraryItem(title: string, category: Category | null = null) {
@@ -33,6 +40,6 @@ export default class ListItem {
     this.isChecked = false;
     this.title = title;
     this.category = category;
-    this.libraryItemId = libraryItemId;
+    this.libraryItemRefenceId = libraryItemId;
   }
 }
