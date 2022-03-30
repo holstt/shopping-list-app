@@ -1,9 +1,10 @@
-// {
-//   "extends": "expo/tsconfig.base",
-//   "compilerOptions": {
-//     "strict": true,
-//     "noImplicitAny": true,
-//     "module": "esnext"
-//   }
-// }
-// // 
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "alwaysStrict": true,
+    "noImplicitAny": true,
+    "allowJs": false,
+    "module": "esnext"
+  }
+}

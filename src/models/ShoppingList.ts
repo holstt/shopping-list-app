@@ -1,8 +1,7 @@
 import ListItem from "./ListItem";
 import uuid from "react-native-uuid";
 
-// XXX: Checklist/ShoppingList?
-export default class ItemList {
+export default class ShoppingList {
   id: string;
   title: string;
   items: ListItem[];

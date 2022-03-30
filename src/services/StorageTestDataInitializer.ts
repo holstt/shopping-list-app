@@ -2,7 +2,7 @@ import Category from "../models/Category";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ListItem from "../models/ListItem";
 import StorageService from "./StorageService";
-import ItemList from "../models/ItemList";
+import ShoppingList from "../models/ShoppingList";
 import AppData from "../AppData";
 import LibraryItem from "../models/LibraryItem";
 
@@ -49,19 +49,20 @@ export default class StorageTestDataInitializer {
     await StorageService.saveLibraryItems(testLibraryItems);
 
     const testItems = [
-      ListItem.fromNonLibraryItem("Item1", testCategories[0]),
-      ListItem.fromNonLibraryItem("Item2", testCategories[1]),
-      ListItem.fromNonLibraryItem("Item3"),
+      ListItem.fromNew("Item1", testCategories[0]),
+      ListItem.fromNew("Item2", testCategories[1]),
+      ListItem.fromNew("Item3"),
+      ListItem.fromLibraryItem(testLibraryItems[0]), // XXX: Test dette!
     ];
 
     const testItems2 = [
-      ListItem.fromNonLibraryItem("Item11", testCategories[0]),
-      ListItem.fromNonLibraryItem("Item22", testCategories[2]),
-      ListItem.fromNonLibraryItem("Item33", null),
+      ListItem.fromNew("Item11", testCategories[0]),
+      ListItem.fromNew("Item22", testCategories[2]),
+      ListItem.fromNew("Item33", null),
     ];
     const itemLists = [
-      new ItemList("ShoppingList1", testItems, 0),
-      new ItemList("ShoppingList2", testItems2, 1),
+      new ShoppingList("ShoppingList1", testItems, 0),
+      new ShoppingList("ShoppingList2", testItems2, 1),
     ];
 
     const appData = new AppData(itemLists[0].id);

@@ -1,4 +1,5 @@
 import uuid from "react-native-uuid";
+import StorageService from "./services/StorageService";
 
 // XXX: Ensure singleton?
 

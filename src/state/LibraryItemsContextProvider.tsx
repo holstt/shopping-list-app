@@ -18,14 +18,14 @@ export default function LibraryItemsContextProvider({
   // XXX: Genalisér. Samme logik som ListsView
   const addLibraryItem = (itemToAdd: LibraryItem) =>
     setLibraryItems((prev) => {
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       StorageService.saveLibraryItem(itemToAdd);
       return [...prev, itemToAdd];
     });
 
   const editLibraryItem = (itemToEdit: LibraryItem) =>
     setLibraryItems((prev) => {
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       StorageService.saveLibraryItem(itemToEdit);
       return prev.map((item) =>
         item.id === itemToEdit.id ? itemToEdit : item
@@ -34,7 +34,7 @@ export default function LibraryItemsContextProvider({
 
   const deleteLibraryItem = (itemToDeleteId: string) =>
     setLibraryItems((prev) => {
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       StorageService.deleteLibraryItem(itemToDeleteId);
       return prev.filter((item) => item.id !== itemToDeleteId);
     });

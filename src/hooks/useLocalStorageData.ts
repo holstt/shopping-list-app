@@ -2,12 +2,12 @@ import Category from "../models/Category";
 import { useState } from "react";
 import StorageService from "../services/StorageService";
 import StorageTestDataInitializer from "../services/StorageTestDataInitializer";
-import ItemList from "../models/ItemList";
+import ShoppingList from "../models/ShoppingList";
 import LibraryItem from "../models/LibraryItem";
 import AppData from "../AppData";
 
 interface InitStateProps {
-  itemLists: ItemList[];
+  itemLists: ShoppingList[];
   categories: Category[];
   libraryItems: LibraryItem[];
 }

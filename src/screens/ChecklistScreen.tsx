@@ -1,5 +1,4 @@
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
-import { RootStackParamList } from "../types";
 
 import {
   StyleSheet,
@@ -13,13 +12,14 @@ import {
 import ItemRow from "../components/Checklist/ItemRow";
 import ListItem from "../models/ListItem";
 import { useState, useRef, useContext } from "react";
-import colors from "../Colors";
+import colors from "../config/colors";
 import UpDownButton from "../components/Checklist/UpDownButton";
 import PlusButton from "../components/common/Input/PlusButton";
 import Category from "../models/Category";
 import { CategoriesContext } from "../state/CategoriesContext";
 import { ItemListsContext } from "../state/ItemListsContext";
 import ListInput from "../components/common/Input/ListInput";
+import { RootStackParamList } from "../RootNavigator";
 
 type Props = BottomTabScreenProps<RootStackParamList, "ChecklistScreen">;
 
@@ -124,10 +124,7 @@ export default function CheckListScreen({ navigation, route }: Props) {
 
     // Notify and pass new item to parent
     addItemToList(
-      ListItem.fromNonLibraryItem(
-        event.nativeEvent.text,
-        currentEditItemCategory
-      )
+      ListItem.fromNew(event.nativeEvent.text, currentEditItemCategory)
     );
   };
 

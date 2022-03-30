@@ -8,7 +8,7 @@ import RootNavigator from "./src/RootNavigator";
 
 // Use Reactotron dev tool
 if (__DEV__) {
-  // tslint:disable-next-line: no-floating-promises
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   import("./ReactotronConfig").then(() => console.log("Reactotron Configured"));
 }
 
@@ -25,7 +25,7 @@ export default function App() {
       }
 
       const newData = { ...prev, lastActiveListId: id };
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       StorageService.saveAppData(newData);
 
       return newData;

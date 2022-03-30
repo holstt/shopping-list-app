@@ -1,5 +1,4 @@
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
-import { RootStackParamList } from "../types";
 import {
   Text,
   View,
@@ -12,10 +11,11 @@ import {
 import PlusButton from "../components/common/Input/PlusButton";
 
 import { useState, useContext } from "react";
-import ItemList from "../models/ItemList";
+import ItemList from "../models/ShoppingList";
 import ListRow from "../components/ListLibrary/ListRow";
-import colors from "../Colors";
+import colors from "../config/colors";
 import { ItemListsContext } from "../state/ItemListsContext";
+import { RootStackParamList } from "../RootNavigator";
 
 type Props = BottomTabScreenProps<RootStackParamList, "ListLibraryScreen">;
 

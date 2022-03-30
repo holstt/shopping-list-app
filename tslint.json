@@ -1,8 +1,0 @@
-{
-  "extends": "tslint:recommended",
-  "rules": {
-    "no-floating-promises": true,
-    "no-any": true,
-    "no-console": false
-  }
-}

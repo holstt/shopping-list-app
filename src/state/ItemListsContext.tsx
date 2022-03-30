@@ -1,18 +1,18 @@
 import React, { createContext, useState, ReactNode, Dispatch } from "react";
-import ItemList from "../models/ItemList";
+import ShoppingList from "../models/ShoppingList";
 
 interface ItemListState {
-  addItemList: (list: ItemList) => void;
-  updateItemList: (list: ItemList) => void;
+  addItemList: (list: ShoppingList) => void;
+  updateItemList: (list: ShoppingList) => void;
   deleteItemList: (list: string) => void;
-  itemLists: ItemList[];
-  activeItemList: ItemList;
+  itemLists: ShoppingList[];
+  activeItemList: ShoppingList;
   hasPrevList: boolean;
   hasNextList: boolean;
   goToNextList: () => void;
   goToPrevList: () => void;
+  reload: () => void;
 }
-
 // Give initial empty values to avoid not null. // XXX: Fix senere med library
 export const ItemListsContext = createContext<ItemListState>({
   // appData: { id: "", lastActiveListId: "" }, // XXX: Væk med det
@@ -31,4 +31,5 @@ export const ItemListsContext = createContext<ItemListState>({
   goToPrevList: () => {},
   // tslint:disable-next-line: no-empty
   goToNextList: () => {},
+  reload: () => {},
 });

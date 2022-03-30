@@ -2,7 +2,7 @@ import Category from "../models/Category";
 import Entity from "../models/Entity";
 import ListItem from "../models/ListItem";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import ItemList from "../models/ItemList";
+import ShoppingList from "../models/ShoppingList";
 import AppData from "../AppData";
 import { overlay } from "reactotron-react-native";
 import LibraryItem from "../models/LibraryItem";
@@ -13,6 +13,18 @@ const ITEM_LIST_STORE_KEY = "itemList";
 const APP_DATA_STORE_KEY = "appData";
 const LIBRARY_DATA_STORE_KEY = "libraryItem";
 
+async function writeToDb2() {
+  // asynchronously write to DB
+}
+writeToDb2(); // <- note we have no await here but probably the user intended to await on this!
+
+async function writeToDb() {
+  // asynchronously write to DB
+}
+writeToDb(); // <- note we have no await here but probably the user intended to await on this!
+writeToDb(); // <- note we have no await here but probably the user intended to await on this!
+writeToDb(); // <- note we have no await here but probably the user intended to await on this!
+
 // XXX: Lav StorageTestDataIntializer, GenericStorage/Storage, LocalStorage
 
 export default class StorageService {
@@ -20,8 +32,8 @@ export default class StorageService {
     const list = await this.loadMany<Category>(CATEGORY_STORE_KEY);
     return list.sort((a, b) => (a.index > b.index ? 1 : -1));
   }
-  public static async loadItemLists(): Promise<ItemList[]> {
-    const list = await this.loadMany<ItemList>(ITEM_LIST_STORE_KEY);
+  public static async loadItemLists(): Promise<ShoppingList[]> {
+    const list = await this.loadMany<ShoppingList>(ITEM_LIST_STORE_KEY);
     return list.sort((a, b) => (a.index > b.index ? 1 : -1));
   }
 
@@ -33,12 +45,12 @@ export default class StorageService {
     return await this.loadMany<LibraryItem>(LIBRARY_DATA_STORE_KEY);
   }
 
-  public static async saveItemList(itemList: ItemList) {
+  public static async saveItemList(itemList: ShoppingList) {
     await this.save(ITEM_LIST_STORE_KEY, itemList);
   }
 
-  public static async saveItemLists(itemList: ItemList[]) {
-    await this.saveMany<ItemList>(ITEM_LIST_STORE_KEY, itemList);
+  public static async saveItemLists(itemList: ShoppingList[]) {
+    await this.saveMany<ShoppingList>(ITEM_LIST_STORE_KEY, itemList);
   }
 
   public static async saveLibraryItems(libraryItems: LibraryItem[]) {

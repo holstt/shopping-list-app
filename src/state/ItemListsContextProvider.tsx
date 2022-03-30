@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import AppData from "../AppData";
-import ItemList from "../models/ItemList";
+import ShoppingList from "../models/ShoppingList";
 import LibraryItem from "../models/LibraryItem";
 import StorageService from "../services/StorageService";
 import { CategoriesContext } from "./CategoriesContext";
 import { ItemListsContext } from "./ItemListsContext";
 
 interface Props {
-  initItemLists: ItemList[];
+  initItemLists: ShoppingList[];
   startListId: string | null;
   onActiveListChanged: (index: string) => void;
   children: React.ReactNode;
@@ -28,7 +28,7 @@ export default function ItemListsContextProvider({
       console.log(
         "ChecklistScreen: No initial lists in global store. Creating a default list..."
       );
-      const firstList = new ItemList("Default List", [], 0);
+      const firstList = new ShoppingList("Default List", [], 0);
 
       startListId = firstList.id;
       return [firstList];
@@ -36,7 +36,7 @@ export default function ItemListsContextProvider({
     return initItemLists;
   };
 
-  const [itemLists, setLists] = useState<ItemList[]>(createInitItemLists);
+  const [itemLists, setLists] = useState<ShoppingList[]>(createInitItemLists);
   // const [appData, setAppData] = useState<AppData>(initAppData);
   console.log("ItemListsContext render");
 
@@ -93,9 +93,14 @@ export default function ItemListsContextProvider({
     });
   };
 
-  const updateItemList = (listUpdated: ItemList) =>
+  // Reload all lists from storage
+  const reload = async () => {
+    setLists(await StorageService.loadItemLists());
+  };
+
+  const updateItemList = (listUpdated: ShoppingList) =>
     setLists((prev) => {
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       StorageService.saveItemList(listUpdated);
       return prev.map((list) =>
         list.id === listUpdated.id ? listUpdated : list
@@ -103,9 +108,9 @@ export default function ItemListsContextProvider({
     });
 
   // XXX: Genalisér. Samme logik som ListsView
-  const addItemList = (listToAdd: ItemList) =>
+  const addItemList = (listToAdd: ShoppingList) =>
     setLists((prev) => {
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       StorageService.saveItemList(listToAdd);
       return [...prev, listToAdd];
     });
@@ -114,12 +119,12 @@ export default function ItemListsContextProvider({
     setLists((prev) => {
       let newList = prev.filter((item) => item.id !== listToDeleteId);
       setActiveListIndex(0);
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       StorageService.deleteLibraryItem(listToDeleteId);
 
       // Handle if deletion results in empty list.
       if (newList.length === 0) {
-        const firstList = new ItemList("My First List", [], 0);
+        const firstList = new ShoppingList("My First List", [], 0);
         newList = [firstList];
         StorageService.saveItemList(firstList);
       }
@@ -139,6 +144,7 @@ export default function ItemListsContextProvider({
         hasNextList: getHasNextList(),
         goToPrevList,
         goToNextList,
+        reload,
       }}
     >
       {children}

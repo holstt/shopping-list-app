@@ -19,14 +19,14 @@ export default function CategoriesContextProvider({
   // XXX: Genalisér. Samme logik som ListsView
   const addCategory = (categoryToAdd: Category) =>
     setCategories((prev) => {
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       StorageService.saveCategory(categoryToAdd);
       return [...prev, categoryToAdd];
     });
 
   const editCategory = (categoryToEdit: Category) =>
     setCategories((prev) => {
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       StorageService.saveCategory(categoryToEdit);
       return prev.map((item) =>
         item.id === categoryToEdit.id ? categoryToEdit : item
@@ -35,7 +35,7 @@ export default function CategoriesContextProvider({
 
   const deleteCategory = (categoryToDeleteId: string) =>
     setCategories((prev) => {
-      // tslint:disable-next-line: no-floating-promises
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       StorageService.deleteLibraryItem(categoryToDeleteId);
       return prev.filter((item) => item.id !== categoryToDeleteId);
     });

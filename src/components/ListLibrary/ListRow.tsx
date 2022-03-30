@@ -13,12 +13,12 @@ import {
 } from "react-native-gesture-handler";
 
 import React, { useRef } from "react";
-import ItemList from "../../models/ItemList";
+import ShoppingList from "../../models/ShoppingList";
 
 interface Props {
-  onDeleteButtonPress: (list: ItemList) => void;
-  onListPress: (list: ItemList) => void;
-  list: ItemList;
+  onDeleteButtonPress: (list: ShoppingList) => void;
+  onListPress: (list: ShoppingList) => void;
+  list: ShoppingList;
   isLastElement?: boolean;
 }
 // XXX: Lav generic component for  denne og ItemRow?
@@ -38,7 +38,7 @@ export default function ListRow({
     isLastElement ? styles.containerLast : null,
   ];
 
-  const confirmDelete = (listToDelete: ItemList) => {
+  const confirmDelete = (listToDelete: ShoppingList) => {
     return Alert.alert(
       `Are you sure you want to delete the list '${listToDelete.title}' permanently?`,
       "",
