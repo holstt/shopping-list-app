@@ -40,11 +40,11 @@ export default class StorageTestDataInitializer {
 
     // Default library of items
     const testLibraryItems = [
-      new LibraryItem("LibItem1", testCategories[0]),
-      new LibraryItem("LibItem2", testCategories[1]),
-      new LibraryItem("LibItem3", testCategories[2]),
-      new LibraryItem("LibItem4", testCategories[3]),
-      new LibraryItem("LibItem5", testCategories[4]),
+      new LibraryItem("LibItem1", 1, testCategories[0]),
+      new LibraryItem("LibItem2", 2, testCategories[1]),
+      new LibraryItem("LibItem3", 3, testCategories[2]),
+      new LibraryItem("LibItem4", 4, testCategories[3]),
+      new LibraryItem("LibItem5", 5, testCategories[4]),
     ];
     await StorageService.saveLibraryItems(testLibraryItems);
 
@@ -52,7 +52,7 @@ export default class StorageTestDataInitializer {
       ListItem.fromNew("Item1", testCategories[0]),
       ListItem.fromNew("Item2", testCategories[1]),
       ListItem.fromNew("Item3"),
-      ListItem.fromLibraryItem(testLibraryItems[0]), // XXX: Test dette!
+      // ListItem.fromLibraryItem(testLibraryItems[0]), // XXX: Test dette!
     ];
 
     const testItems2 = [

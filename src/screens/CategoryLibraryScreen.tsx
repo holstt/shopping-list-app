@@ -8,6 +8,7 @@ import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import Category from "../models/Category";
 import { CategoriesContext } from "../state/CategoriesContext";
 import { RootStackParamList } from "../RootNavigator";
+import Autocomplete from "react-native-autocomplete-input";
 
 type Props = BottomTabScreenProps<RootStackParamList, "CategoryLibraryScreen">;
 
@@ -20,13 +21,13 @@ export default function CategoryLibraryScreen({ navigation, route }: Props) {
   ));
 
   return (
-    <View style={style.container}>
+    <View style={styles.container}>
       <Text style={{ fontSize: 50 }}>Categories</Text>
       <ScrollView>{categoryListComponent}</ScrollView>
     </View>
   );
 }
 
-const style = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {},
 });

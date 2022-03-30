@@ -1,15 +1,17 @@
 import AppLoading from "expo-app-loading";
-import StorageService from "./src/services/StorageService";
-import LibraryItemsContextProvider from "./src/state/LibraryItemsContextProvider";
-import CategoriesContextProvider from "./src/state/CategoriesContextProvider";
-import ItemListsContextProvider from "./src/state/ItemListsContextProvider";
-import useLocalStorageData from "./src/hooks/useLocalStorageData";
-import RootNavigator from "./src/RootNavigator";
+import StorageService from "./services/StorageService";
+import LibraryItemsContextProvider from "./state/LibraryItemsContextProvider";
+import CategoriesContextProvider from "./state/CategoriesContextProvider";
+import ItemListsContextProvider from "./state/ItemListsContextProvider";
+import useLocalStorageData from "./hooks/useLocalStorageData";
+import RootNavigator from "./RootNavigator";
 
 // Use Reactotron dev tool
 if (__DEV__) {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  import("./ReactotronConfig").then(() => console.log("Reactotron Configured"));
+  import("../ReactotronConfig").then(() =>
+    console.log("Reactotron Configured")
+  );
 }
 
 export default function App() {
@@ -49,15 +51,15 @@ export default function App() {
 
   return (
     <CategoriesContextProvider initCategories={data.categories}>
-      <LibraryItemsContextProvider initLibraryItems={data.libraryItems}>
-        <ItemListsContextProvider
-          startListId={appData ? appData.lastActiveListId : null} // XXX: Fix appdata
-          onActiveListChanged={onActiveListIdChanged}
-          initItemLists={data.itemLists}
-        >
+      <ItemListsContextProvider
+        startListId={appData ? appData.lastActiveListId : null} // XXX: Fix appdata
+        onActiveListChanged={onActiveListIdChanged}
+        initItemLists={data.itemLists}
+      >
+        <LibraryItemsContextProvider initLibraryItems={data.libraryItems}>
           <RootNavigator />
-        </ItemListsContextProvider>
-      </LibraryItemsContextProvider>
+        </LibraryItemsContextProvider>
+      </ItemListsContextProvider>
     </CategoriesContextProvider>
   );
 }

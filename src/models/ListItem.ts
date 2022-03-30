@@ -25,13 +25,6 @@ export default class ListItem {
     return new ListItem(title, category);
   }
 
-  updateLibraryItemReference(libraryItem: LibraryItem) {
-    // Update all props dependent on library item // XXX: Find bedre løsning
-    this.title = libraryItem.title;
-    this.category = libraryItem.category;
-    this.id = libraryItem.id;
-  }
-
   private constructor(
     title: string,
     category: Category | null = null,

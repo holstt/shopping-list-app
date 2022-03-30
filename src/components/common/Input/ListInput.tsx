@@ -1,8 +1,9 @@
 import { ReactElement } from "react";
-import { StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View, Text } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import Category from "../../../models/Category";
 import CategoryPicker from "./CategoryPicker";
+import CustomAutocomplete from "./MyAutocompleter";
 
 interface Props {
   categories: Category[];
@@ -20,7 +21,7 @@ export default function ListInput({
   return (
     <View>
       <View style={styles.inputContainer}>
-        {inputComponent}
+        <View>{inputComponent}</View>
         {categoryToDisplay && ( // XXX: Component?
           <View
             style={[

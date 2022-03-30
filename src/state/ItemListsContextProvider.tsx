@@ -95,6 +95,7 @@ export default function ItemListsContextProvider({
 
   // Reload all lists from storage
   const reload = async () => {
+    console.log("Reloading item lists");
     setLists(await StorageService.loadItemLists());
   };
 

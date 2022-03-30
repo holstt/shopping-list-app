@@ -7,42 +7,72 @@ import AppData from "../AppData";
 import { overlay } from "reactotron-react-native";
 import LibraryItem from "../models/LibraryItem";
 
-// const ITEM_STORE_KEY = "listItem";
-const CATEGORY_STORE_KEY = "category";
-const ITEM_LIST_STORE_KEY = "itemList";
 const APP_DATA_STORE_KEY = "appData";
-const LIBRARY_DATA_STORE_KEY = "libraryItem";
-
-async function writeToDb2() {
-  // asynchronously write to DB
-}
-writeToDb2(); // <- note we have no await here but probably the user intended to await on this!
-
-async function writeToDb() {
-  // asynchronously write to DB
-}
-writeToDb(); // <- note we have no await here but probably the user intended to await on this!
-writeToDb(); // <- note we have no await here but probably the user intended to await on this!
-writeToDb(); // <- note we have no await here but probably the user intended to await on this!
+const CATEGORY_STORE_KEY = "category";
+const LIST_ITEM_STORE_KEY = "listItem";
+const LIBRARY_ITEM_STORE_KEY = "libraryItem";
+const ITEM_LIST_STORE_KEY = "itemList";
 
 // XXX: Lav StorageTestDataIntializer, GenericStorage/Storage, LocalStorage
-
 export default class StorageService {
+  // public static async loadLibraryItem(key : string): Promise<LibraryItem | null> {
+  //   return await this.loadFromExactKey(key);
+  // }
+
   public static async loadCategories(): Promise<Category[]> {
     const list = await this.loadMany<Category>(CATEGORY_STORE_KEY);
     return list.sort((a, b) => (a.index > b.index ? 1 : -1));
   }
   public static async loadItemLists(): Promise<ShoppingList[]> {
-    const list = await this.loadMany<ShoppingList>(ITEM_LIST_STORE_KEY);
-    return list.sort((a, b) => (a.index > b.index ? 1 : -1));
+    const lists = await this.loadMany<ShoppingList>(ITEM_LIST_STORE_KEY);
+
+    // Load library references for each item in lists.
+    // await StorageService.syncProps(lists); // XXX: Find ud af om feature giver mening
+
+    return lists.sort((a, b) => (a.index > b.index ? 1 : -1));
   }
 
-  // public static async loadListItems(): Promise<ListItem[]> {
-  //   return await this.loadMany<ListItem>(ITEM_STORE_KEY);
-  // }
+  // Sync props that reference other entity. //XXX: Brug relational db i stedet
+  private static async syncProps(lists: ShoppingList[]) {
+    for (let i = 0; i < lists.length; i++) {
+      const list = lists[i];
+      for (let i = 0; i < list.items.length; i++) {
+        const item = list.items[i];
+        if (item.libraryItemRefenceId) {
+          const librayItemRef = await this.load<LibraryItem>(
+            LIBRARY_ITEM_STORE_KEY,
+            item.libraryItemRefenceId
+          );
+          // Ensure not deleted
+          if (librayItemRef) {
+            console.log("hej");
+            this.updateLibraryItemReference(item, librayItemRef);
+          } else {
+            console.log("Removing af reference");
+            this.removeLibraryItemReference(item);
+          }
+        }
+      }
+    }
+  }
+
+  public static removeLibraryItemReference(item: ListItem) {
+    item.libraryItemRefenceId = null;
+  }
+
+  public static updateLibraryItemReference(
+    item: ListItem,
+    libraryItem: LibraryItem
+  ) {
+    // Update all props dependent on library item // XXX: Find bedre løsning
+    item.title = libraryItem.title;
+    item.category = libraryItem.category;
+    item.id = libraryItem.id;
+  }
 
   public static async loadLibraryItems(): Promise<LibraryItem[]> {
-    return await this.loadMany<LibraryItem>(LIBRARY_DATA_STORE_KEY);
+    const items = await this.loadMany<LibraryItem>(LIBRARY_ITEM_STORE_KEY);
+    return items.sort((a, b) => (a.index > b.index ? 1 : -1));
   }
 
   public static async saveItemList(itemList: ShoppingList) {
@@ -67,7 +97,7 @@ export default class StorageService {
     //   });
     // });
 
-    await this.saveMany(LIBRARY_DATA_STORE_KEY, libraryItems);
+    await this.saveMany(LIBRARY_ITEM_STORE_KEY, libraryItems);
     // await this.saveMany(ITEM_LIST_STORE_KEY, lists);
   }
 
@@ -82,12 +112,12 @@ export default class StorageService {
     //   });
     // });
 
-    await this.save(LIBRARY_DATA_STORE_KEY, libraryItem);
+    await this.save(LIBRARY_ITEM_STORE_KEY, libraryItem);
     // await this.saveMany(ITEM_LIST_STORE_KEY, lists);
   }
 
   public static async deleteLibraryItem(id: string) {
-    await this.delete(LIBRARY_DATA_STORE_KEY, id);
+    await this.delete(LIBRARY_ITEM_STORE_KEY, id);
   }
 
   public static async deleteCategory(id: string) {
@@ -115,7 +145,7 @@ export default class StorageService {
       return appData;
     }
 
-    const existingAppData = await this.loadWithKey<AppData>(keys[0]);
+    const existingAppData = await this.loadFromExactKey<AppData>(keys[0]);
     if (existingAppData) {
       return existingAppData;
     } else {
@@ -135,7 +165,7 @@ export default class StorageService {
   }
 
   // If client have the key.
-  public static async loadWithKey<T>(key: string): Promise<T | null> {
+  public static async loadFromExactKey<T>(key: string): Promise<T | null> {
     const json = await AsyncStorage.getItem(key);
     const item: T | null = json != null ? JSON.parse(json) : null;
 
@@ -155,7 +185,7 @@ export default class StorageService {
     );
     const jsonObjects = await AsyncStorage.multiGet(keys);
 
-    // Make array of items from parsing value
+    // Make array of items by parsing value at second index
     const items: T[] = jsonObjects.map((o) => (o[1] ? JSON.parse(o[1]) : null));
     return items;
   }

@@ -7,10 +7,12 @@ export default class LibraryItem {
   id: string;
   title: string;
   category: Category | null;
+  index: number;
 
-  constructor(title: string, category: Category | null = null) {
+  constructor(title: string, index: number, category: Category | null = null) {
     this.id = uuid.v4().toString();
     this.title = title;
     this.category = category;
+    this.index = index;
   }
 }

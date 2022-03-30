@@ -20,6 +20,10 @@ import { CategoriesContext } from "../state/CategoriesContext";
 import { ItemListsContext } from "../state/ItemListsContext";
 import ListInput from "../components/common/Input/ListInput";
 import { RootStackParamList } from "../RootNavigator";
+import ChecklistListInput, {
+  InputMode,
+} from "../components/common/Input/ChecklistListInput";
+import { LibraryItemsContext } from "../state/LibraryItemsContext";
 
 type Props = BottomTabScreenProps<RootStackParamList, "ChecklistScreen">;
 
@@ -34,13 +38,15 @@ export default function CheckListScreen({ navigation, route }: Props) {
     goToNextList,
   } = useContext(ItemListsContext);
 
+  const { libraryItems } = useContext(LibraryItemsContext);
+
   console.log("Checklist rerender with list: " + activeItemList.id);
 
   // XXX: Lav custom hooks til det her
   // Mode only active when input for add new item is visible
   const [isAddItemMode, setIsAddItemMode] = useState(false);
   const [isEditItemMode, setIsEditItemMode] = useState(false);
-  const textInputRef = useRef<TextInput | null>();
+  // const textInputRef = useRef<TextInput | null>();
   // XXX: Egen comp?? Context?
   const [currentEditItem, setCurrentEditItem] = useState<ListItem | null>(null);
   const [currentEditItemCategory, setCurrentEditItemCategory] =
@@ -92,6 +98,7 @@ export default function CheckListScreen({ navigation, route }: Props) {
     setIsEditItemMode(true);
     setCurrentEditItem(item);
     setCurrentEditItemCategory(item.category);
+    console.log("Set all on pressed");
   };
 
   const onCategoryPress = (category: Category) => {
@@ -113,82 +120,22 @@ export default function CheckListScreen({ navigation, route }: Props) {
   };
 
   // Handle item submitted
-  const onSubmitAddItem = (
-    event: NativeSyntheticEvent<TextInputSubmitEditingEventData>
-  ) => {
-    // Do nothing if empty text
-    if (!event?.nativeEvent?.text || "") return;
-
-    // Clear text input after item submitted
-    textInputRef?.current?.clear();
-
+  const onSubmitAddItem = (newItem: ListItem) => {
     // Notify and pass new item to parent
-    addItemToList(
-      ListItem.fromNew(event.nativeEvent.text, currentEditItemCategory)
-    );
+    addItemToList(newItem);
   };
 
   // XXX: Genbrug fra add item func
-  const onSubmitEditItem = (
-    event: NativeSyntheticEvent<TextInputSubmitEditingEventData>
-  ) => {
+  const onSubmitEditItem = (text: string, category: Category | null) => {
     // Do nothing if empty text
-    if (!event?.nativeEvent?.text || "" || !currentEditItem) return;
-
-    // Clear text input after item submitted
-    textInputRef?.current?.clear();
+    // if (!event?.nativeEvent?.text || "" || !currentEditItem) return;
 
     const editedItem: ListItem = Object.create(currentEditItem);
-    editedItem.title = event.nativeEvent.text;
+    editedItem.title = text;
     editedItem.category = currentEditItemCategory;
     // Notify and pass edit item to parent
     updateItemInList(editedItem);
   };
-
-  const addInput = (
-    <TextInput
-      style={styles.inputField}
-      placeholder="Add Item"
-      // Focus from start
-      autoFocus={true}
-      // Keep focus even after submit
-      blurOnSubmit={false}
-      // Turn off add item mode if not focused on input
-      onBlur={onAddItemModeEnded}
-      ref={(ref) => (textInputRef.current = ref)}
-      onSubmitEditing={onSubmitAddItem}
-    />
-  );
-
-  const editInput = (
-    <TextInput
-      style={styles.inputField}
-      // Focus from start
-      autoFocus={true}
-      defaultValue={currentEditItem?.title}
-      // Turn off add item mode if not focused on input
-      onBlur={onEditItemModeEnded}
-      onSubmitEditing={onSubmitEditItem}
-    />
-  );
-
-  const inputComponent =
-    (isAddItemMode && (
-      <ListInput
-        inputComponent={addInput}
-        categories={categories}
-        onCategoryPress={onCategoryPress}
-        categoryToDisplay={currentEditItemCategory}
-      ></ListInput>
-    )) ||
-    (isEditItemMode && (
-      <ListInput
-        inputComponent={editInput}
-        categories={categories}
-        onCategoryPress={onCategoryPress}
-        categoryToDisplay={currentEditItemCategory}
-      ></ListInput>
-    ));
 
   const renderListComponent = (fromItems: ListItem[]) => {
     return fromItems.map((item, i) => {
@@ -235,7 +182,21 @@ export default function CheckListScreen({ navigation, route }: Props) {
         ></UpDownButton>
       </View>
 
-      {inputComponent}
+      {/* {inputComponent} */}
+      {(isAddItemMode || isEditItemMode) && (
+        <ChecklistListInput
+          libraryItems={libraryItems}
+          categories={categories}
+          chosenCategory={currentEditItemCategory}
+          onCategoryPress={onCategoryPress}
+          text={currentEditItem ? currentEditItem.title : ""}
+          inputMode={isAddItemMode ? InputMode.ADD : InputMode.EDIT}
+          onAddItemModeEnded={onAddItemModeEnded}
+          onSubmitAddItem={onSubmitAddItem}
+          onEditItemModeEnded={onEditItemModeEnded}
+          onSubmitEditItem={onSubmitEditItem}
+        ></ChecklistListInput>
+      )}
       <ScrollView>{itemListComponent}</ScrollView>
       {!isAddItemMode && !isEditItemMode ? (
         <PlusButton onPress={() => setIsAddItemMode(true)}></PlusButton>
@@ -254,13 +215,6 @@ export default function CheckListScreen({ navigation, route }: Props) {
 const styles = StyleSheet.create({
   container: {
     height: "100%",
-  },
-  inputField: {
-    // XXX: Evt. global style for dette og item text
-    paddingTop: 7,
-    paddingBottom: 7,
-    color: colors.darkGrey,
-    fontSize: 20,
   },
 
   listHeaderContainer: {

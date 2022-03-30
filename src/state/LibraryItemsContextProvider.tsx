@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import LibraryItem from "../models/LibraryItem";
 import StorageService from "../services/StorageService";
+import { ItemListsContext } from "./ItemListsContext";
 import { LibraryItemsContext } from "./LibraryItemsContext";
 
 interface Props {
@@ -15,6 +16,8 @@ export default function LibraryItemsContextProvider({
   const [libraryItems, setLibraryItems] =
     useState<LibraryItem[]>(initLibraryItems);
 
+  const { reload: reloadItemLists } = useContext(ItemListsContext);
+
   // XXX: Genalisér. Samme logik som ListsView
   const addLibraryItem = (itemToAdd: LibraryItem) =>
     setLibraryItems((prev) => {
@@ -26,7 +29,7 @@ export default function LibraryItemsContextProvider({
   const editLibraryItem = (itemToEdit: LibraryItem) =>
     setLibraryItems((prev) => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      StorageService.saveLibraryItem(itemToEdit);
+      StorageService.saveLibraryItem(itemToEdit).then(() => reloadItemLists());
       return prev.map((item) =>
         item.id === itemToEdit.id ? itemToEdit : item
       );
@@ -35,7 +38,9 @@ export default function LibraryItemsContextProvider({
   const deleteLibraryItem = (itemToDeleteId: string) =>
     setLibraryItems((prev) => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      StorageService.deleteLibraryItem(itemToDeleteId);
+      StorageService.deleteLibraryItem(itemToDeleteId).then(() =>
+        reloadItemLists()
+      );
       return prev.filter((item) => item.id !== itemToDeleteId);
     });
 
