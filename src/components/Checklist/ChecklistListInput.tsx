@@ -8,12 +8,12 @@ import {
   NativeSyntheticEvent,
   TextInputSubmitEditingEventData,
 } from "react-native";
-import Category from "../../../models/Category";
-import CategoryPicker from "./CategoryPicker";
+import Category from "../../models/Category";
+import CategoryPicker from "../common/CategoryPicker";
 import CustomAutocomplete from "./MyAutocompleter";
-import colors from "../../../config/colors";
-import ListItem from "../../../models/ListItem";
-import LibraryItem from "../../../models/LibraryItem";
+import colors from "../../config/colors";
+import ListItem from "../../models/ListItem";
+import LibraryItem from "../../models/LibraryItem";
 
 // XXX: Genbrug fra ListInput
 export enum InputMode {
@@ -34,6 +34,7 @@ interface Props {
   libraryItems: LibraryItem[];
 }
 
+// XXX: Context maybe :)
 export default function ChecklistListInput({
   libraryItems,
   categories,
@@ -53,12 +54,13 @@ export default function ChecklistListInput({
     switch (inputMode) {
       case InputMode.ADD:
         // Clear text input after item submitted
-        textInputRef?.current?.clear();
+        textInputRef?.current?.clear(); //XX: Evt. error hvis ej
         // Notify and pass new item to parent
         onSubmitAddItem(ListItem.fromLibraryItem(libraryItem));
         break;
 
       case InputMode.EDIT:
+        console.log("Clearing edit input");
         // Clear text input after item submitted
         textInputRef?.current?.clear();
         onSubmitEditItem(libraryItem.title, libraryItem.category);
@@ -122,8 +124,9 @@ export default function ChecklistListInput({
             autoFocus={true}
             defaultValue={text}
             onChangeText={(text) => setCurrentInputText(text)}
+            ref={(ref) => (textInputRef.current = ref)}
             // Turn off add item mode if not focused on input
-            onBlur={onEditItemModeEnded}
+            // onBlur={onEditItemModeEnded}
             onSubmitEditing={handleSubmitEditItem}
           />
         );

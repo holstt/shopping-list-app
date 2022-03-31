@@ -8,7 +8,7 @@ import {
   NativeSyntheticEvent,
   TextInputSubmitEditingEventData,
 } from "react-native";
-import PlusButton from "../components/common/Input/PlusButton";
+import PlusButton from "../components/common/PlusButton";
 
 import { useState, useContext } from "react";
 import ItemList from "../models/ShoppingList";

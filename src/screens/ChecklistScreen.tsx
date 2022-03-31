@@ -14,16 +14,17 @@ import ListItem from "../models/ListItem";
 import { useState, useRef, useContext } from "react";
 import colors from "../config/colors";
 import UpDownButton from "../components/Checklist/UpDownButton";
-import PlusButton from "../components/common/Input/PlusButton";
+import PlusButton from "../components/common/PlusButton";
 import Category from "../models/Category";
 import { CategoriesContext } from "../state/CategoriesContext";
 import { ItemListsContext } from "../state/ItemListsContext";
-import ListInput from "../components/common/Input/ListInput";
+import ListInput from "../components/common/ListInput";
 import { RootStackParamList } from "../RootNavigator";
 import ChecklistListInput, {
   InputMode,
-} from "../components/common/Input/ChecklistListInput";
+} from "../components/Checklist/ChecklistListInput";
 import { LibraryItemsContext } from "../state/LibraryItemsContext";
+import { CountType } from "../components/Checklist/Counter";
 
 type Props = BottomTabScreenProps<RootStackParamList, "ChecklistScreen">;
 
@@ -40,14 +41,13 @@ export default function CheckListScreen({ navigation, route }: Props) {
 
   const { libraryItems } = useContext(LibraryItemsContext);
 
-  console.log("Checklist rerender with list: " + activeItemList.id);
-
   // XXX: Lav custom hooks til det her
   // Mode only active when input for add new item is visible
   const [isAddItemMode, setIsAddItemMode] = useState(false);
   const [isEditItemMode, setIsEditItemMode] = useState(false);
   // const textInputRef = useRef<TextInput | null>();
   // XXX: Egen comp?? Context?
+  // XXX: Hvorfor ikke slå sammen?
   const [currentEditItem, setCurrentEditItem] = useState<ListItem | null>(null);
   const [currentEditItemCategory, setCurrentEditItemCategory] =
     useState<Category | null>(null);
@@ -71,6 +71,7 @@ export default function CheckListScreen({ navigation, route }: Props) {
       items: [item, ...activeItemList.items],
     });
 
+  // XXX: Skidt ej prev?
   const updateItemInList = (updatedItem: ListItem) =>
     updateItemList({
       ...activeItemList,
@@ -121,20 +122,40 @@ export default function CheckListScreen({ navigation, route }: Props) {
 
   // Handle item submitted
   const onSubmitAddItem = (newItem: ListItem) => {
+    setCurrentEditItem(null);
+    setCurrentEditItemCategory(null);
     // Notify and pass new item to parent
     addItemToList(newItem);
   };
 
   // XXX: Genbrug fra add item func
   const onSubmitEditItem = (text: string, category: Category | null) => {
-    // Do nothing if empty text
-    // if (!event?.nativeEvent?.text || "" || !currentEditItem) return;
-
     const editedItem: ListItem = Object.create(currentEditItem);
     editedItem.title = text;
     editedItem.category = currentEditItemCategory;
     // Notify and pass edit item to parent
     updateItemInList(editedItem);
+    onEditItemModeEnded(); //XXX: Burde slåes sammen?
+  };
+
+  const onPressCounter = (id: string, countType: CountType) => {
+    const itemFound = activeItemList.items.find((item) => item.id === id);
+    if (!itemFound) {
+      throw new Error("Count item was not found: " + id);
+    }
+
+    switch (countType) {
+      case CountType.INCREMENT:
+        updateItemInList({ ...itemFound, quantity: ++itemFound.quantity });
+        break;
+
+      case CountType.DECREMENT:
+        if (itemFound.quantity - 1 < 1) {
+          return;
+        }
+        updateItemInList({ ...itemFound, quantity: --itemFound.quantity });
+        break;
+    }
   };
 
   const renderListComponent = (fromItems: ListItem[]) => {
@@ -147,6 +168,7 @@ export default function CheckListScreen({ navigation, route }: Props) {
           onCheckButtonPress={onItemCheckToggled}
           onItemPress={onItemPress}
           onRemoveItem={deleteItemInList}
+          onPressCounter={onPressCounter}
         ></ItemRow>
       );
     });

@@ -1,9 +1,9 @@
 import { ReactElement } from "react";
 import { ScrollView, StyleSheet, View, Text } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
-import Category from "../../../models/Category";
+import Category from "../../models/Category";
 import CategoryPicker from "./CategoryPicker";
-import CustomAutocomplete from "./MyAutocompleter";
+import CustomAutocomplete from "../Checklist/MyAutocompleter";
 
 interface Props {
   categories: Category[];

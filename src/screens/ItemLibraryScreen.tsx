@@ -12,11 +12,11 @@ import {
   NativeSyntheticEvent,
   TextInputSubmitEditingEventData,
 } from "react-native";
-import PlusButton from "../components/common/Input/PlusButton";
+import PlusButton from "../components/common/PlusButton";
 import LibraryItem from "../models/LibraryItem";
 import LibraryItemRow from "../components/ItemLibrary/LibraryItemRow";
 import colors from "../config/colors";
-import ListInput from "../components/common/Input/ListInput";
+import ListInput from "../components/common/ListInput";
 import { RootStackParamList } from "../RootNavigator";
 
 type Props = BottomTabScreenProps<RootStackParamList, "ItemLibraryScreen">;
@@ -96,7 +96,11 @@ export default function ItemLibraryScreen({ navigation, route }: Props) {
 
     // Notify and pass new item to parent
     addLibraryItem(
-      new LibraryItem(event.nativeEvent.text, currentEditItemCategory)
+      new LibraryItem(
+        event.nativeEvent.text,
+        libraryItems.length,
+        currentEditItemCategory
+      )
     );
   };
 

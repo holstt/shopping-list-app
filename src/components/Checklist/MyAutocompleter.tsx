@@ -6,10 +6,10 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import Colors from "../../../config/colors";
-import Category from "../../../models/Category";
-import LibraryItem from "../../../models/LibraryItem";
-import ListItem from "../../../models/ListItem";
+import Colors from "../../config/colors";
+import Category from "../../models/Category";
+import LibraryItem from "../../models/LibraryItem";
+import ListItem from "../../models/ListItem";
 
 interface Props {
   query: string;

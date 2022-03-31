@@ -1,5 +1,5 @@
 import { StyleSheet, TouchableOpacity, Text } from "react-native";
-import Category from "../../../models/Category";
+import Category from "../../models/Category";
 
 interface Props {
   onPress: (category: Category) => void;

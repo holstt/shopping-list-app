@@ -1,5 +1,5 @@
 import { StyleSheet, View, ScrollView } from "react-native";
-import Category from "../../../models/Category";
+import Category from "../../models/Category";
 import CategorySelectButton from "./CategorySelectButton";
 
 interface Props {
