@@ -38,7 +38,6 @@ export default function App() {
     return (
       <AppLoading
         startAsync={loadData}
-        // onFinish={() => setIsDoneLoading(true)}
         onFinish={() => console.log("Loading done")}
         onError={console.warn}
       />

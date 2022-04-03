@@ -8,7 +8,17 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "lint": "eslint . --ext .ts --ext .tsx"
+    "lint": "eslint . --ext .ts --ext .tsx",
+    "test": "jest"
+  },
+  "jest": {
+    "preset": "jest-expo",
+    "transformIgnorePatterns": [
+      "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)"
+    ],
+    "setupFiles": [
+      "./test/jestSetupFile.ts"
+    ]
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "~1.15.0",
@@ -39,6 +49,7 @@
     "eslint-plugin-no-floating-promise": "^1.0.2",
     "lottie-react-native": "^5.0.1",
     "react-native-animated-loader": "0.0.9",
+    "react-test-renderer": "^17.0.2",
     "reactotron-react-native": "^5.0.1",
     "typescript": "^4.6.3"
   },

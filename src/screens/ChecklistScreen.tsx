@@ -1,24 +1,15 @@
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 
-import {
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  TextInput,
-  NativeSyntheticEvent,
-  TextInputSubmitEditingEventData,
-} from "react-native";
+import { StyleSheet, Text, View, ScrollView } from "react-native";
 import ShoppingItemRow from "../components/ShoppingListView/ShoppingItemRow";
 import ShoppingItem from "../models/ShoppingItem";
-import { useState, useRef, useContext, useEffect } from "react";
+import { useState, useContext, useReducer } from "react";
 import colors from "../config/colors";
 import UpDownButton from "../components/ShoppingListView/UpDownButton";
 import PlusButton from "../components/common/PlusButton";
 import Category from "../models/Category";
 import { CategoriesContext } from "../state/CategoriesContext";
 import { ItemListsContext } from "../state/ItemListsContext";
-import ListInput from "../components/common/ListInput";
 import { RootStackParamList } from "../RootNavigator";
 import ChecklistListInput, {
   InputMode,
@@ -27,6 +18,10 @@ import { LibraryItemsContext } from "../state/LibraryItemsContext";
 import { CountType } from "../components/ShoppingListView/Counter";
 
 type Props = BottomTabScreenProps<RootStackParamList, "ChecklistScreen">;
+
+// function checklistReducer(state, action) {
+
+// }
 
 export default function CheckListScreen({ navigation, route }: Props) {
   const { categories } = useContext(CategoriesContext);
@@ -134,8 +129,6 @@ export default function CheckListScreen({ navigation, route }: Props) {
   };
 
   const onEditItemModeEnded = () => {
-    // console.log("XXXX Edit mode ended!");
-
     setIsEditItemMode(false);
     setCurrentEditItem(null);
     setCurrentEditItemCategory(null);
