@@ -19,30 +19,35 @@ import {
 import React, { useState } from "react";
 
 import CheckButton from "./CheckButton";
-import ListItem from "../../models/ListItem";
+import ShoppingItem from "../../models/ShoppingItem";
 import Colors from "../../config/colors";
 import Counter, { CountType } from "./Counter";
+import Category from "../../models/Category";
 
 // TODO
 // - Evt. icon size matcher ej med circle da ej kvadrat dim
 
-interface ItemProps {
-  item: ListItem;
-  onCheckButtonPress: (item: ListItem) => void;
-  onItemPress: (item: ListItem) => void;
+interface Props {
+  item: ShoppingItem;
+  onCheckButtonPress: (item: ShoppingItem) => void;
+  onItemPress: (item: ShoppingItem) => void;
   isLastElement?: boolean;
   onRemoveItem: (itemId: string) => void;
   onPressCounter: (id: string, countType: CountType) => void;
+  hasPrevItemCategory: boolean;
+  hasNextItemCategory: boolean;
 }
 
-export default function ItemRow({
+export default function ShoppingItemRow({
   item,
   onCheckButtonPress,
   onItemPress,
   isLastElement,
   onRemoveItem,
   onPressCounter,
-}: ItemProps) {
+  hasPrevItemCategory,
+  hasNextItemCategory,
+}: Props) {
   // Resolve styles
   const container = [
     styles.containerBase,
@@ -52,6 +57,14 @@ export default function ItemRow({
   const itemTextStyle = [
     styles.itemTextBase,
     item.isChecked ? styles.itemTextChecked : null,
+  ];
+  // console.log("has prev cat " + hasPrevItemCategory);
+  // console.log("has next cat " + hasNextItemCategory);
+
+  const categoryStyle = [
+    styles.categoryColorRectangleBase,
+    hasPrevItemCategory && styles.categoryColorRectangleHasPrev,
+    hasNextItemCategory && styles.categoryColorRectangleHasNext,
   ];
 
   const renderSwipeToDelete = (
@@ -99,7 +112,7 @@ export default function ItemRow({
               <Counter onPress={onPressCounter} id={item.id}></Counter>
               <View
                 style={[
-                  styles.categoryColorRectangle,
+                  categoryStyle,
                   { backgroundColor: item.category?.color },
                 ]}
               ></View>
@@ -115,21 +128,22 @@ const styles = StyleSheet.create({
   containerBase: {
     // backgroundColor: "lightgrey",
     flexDirection: "row",
-    borderTopColor: "#d5d8e3",
     alignItems: "center",
-    borderLeftColor: "transparent",
-    borderRightColor: "transparent",
-    // paddingTop: 7,
-    // paddingBottom: 7,
+
     paddingLeft: 5,
+
+    borderColor: "transparent",
     borderWidth: 1,
-    // height: 80,
-    borderBottomColor: "transparent",
+    borderTopColor: "#d5d8e3",
+  },
+  // Add a bottom border to the last item in the list
+  containerLast: {
+    borderBottomColor: "#d5d8e3",
   },
   quantityText: {
     color: "#7B7D7D",
     fontSize: 14,
-    marginLeft: 5,
+    // marginLeft: 5,
     padding: 0,
     margin: 0,
     includeFontPadding: false,
@@ -147,10 +161,7 @@ const styles = StyleSheet.create({
     // alignItems: "center",
     // backgroundColor: "blue",
   },
-  // Add a bottom border to the last item in the list
-  containerLast: {
-    borderBottomColor: "#d5d8e3",
-  },
+
   itemTextBase: {
     // backgroundColor: "red",
     color: "#454a52",
@@ -184,18 +195,20 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
 
-  categoryColorRectangle: {
-    // flex: 1,
-    // marginLeft: "auto",
-    // justifyContent: "flex-end",
-    // marginLeft: "auto",
-    // backgroundColor: "red",
+  categoryColorRectangleBase: {
     marginLeft: 30,
     borderTopLeftRadius: 8,
     borderBottomLeftRadius: 8,
     width: 13,
-    // height: 30,
     marginTop: 5,
     marginBottom: 5,
+  },
+  categoryColorRectangleHasPrev: {
+    marginTop: -1,
+    borderTopLeftRadius: 0,
+  },
+  categoryColorRectangleHasNext: {
+    marginBottom: -1,
+    borderBottomLeftRadius: 0,
   },
 });

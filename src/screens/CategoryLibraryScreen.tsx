@@ -1,5 +1,5 @@
 import { Text, StyleSheet, View, ScrollView } from "react-native";
-import ListItem from "../models/ListItem";
+import ShoppingItem from "../models/ShoppingItem";
 import { useContext, useState } from "react";
 import StorageService from "../services/StorageService";
 import ItemList from "../models/ShoppingList";

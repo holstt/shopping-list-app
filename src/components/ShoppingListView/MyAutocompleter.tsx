@@ -9,7 +9,7 @@ import {
 import Colors from "../../config/colors";
 import Category from "../../models/Category";
 import LibraryItem from "../../models/LibraryItem";
-import ListItem from "../../models/ListItem";
+import ShoppingItem from "../../models/ShoppingItem";
 
 interface Props {
   query: string;
@@ -22,8 +22,6 @@ export default function CustomAutocomplete({
   items,
   onItemPress,
 }: Props) {
-  console.log("render auto complete: " + query);
-
   const filterData = (query: string) => {
     return items.filter((item) =>
       item.title.toLowerCase().startsWith(query.toLowerCase())
@@ -53,23 +51,6 @@ export default function CustomAutocomplete({
       <ScrollView keyboardShouldPersistTaps="always" style={styles.itemList}>
         {itemsComponent}
       </ScrollView>
-
-      {/* <Autocomplete
-        // // style={styles.autocomplete}
-        containerStyle={styles.autocompleteContainer}
-        inputContainerStyle={styles.inputContainerStyle}
-        listContainerStyle={styles.listContainerStyle}
-        listStyle={styles.listStyle}
-        data={data}
-        value={query}
-        onChangeText={(text) => setQuery(text)}
-        flatListProps={{
-          // keyExtractor: (_, idx) => idx,
-          renderItem: ({ item }) => (
-            <Text style={styles.textItem}>{item.title}</Text>
-            ),
-          }}
-        /> */}
     </View>
   );
 }
@@ -81,6 +62,7 @@ const styles = StyleSheet.create({
     marginLeft: -2,
     marginRight: -2,
   },
+  // // Android does not support overflows -> necessary to wrap the autocomplete into a absolute positioned view.
 
   itemList: {
     width: "100%",
@@ -116,46 +98,4 @@ const styles = StyleSheet.create({
     marginTop: 4,
     marginBottom: 4,
   },
-
-  // // Android does not support overflows -> necessary to wrap the autocomplete into a absolute positioned view.
-  // container: {
-  //   // backgroundColor: "red",
-  //   // width: "100%",
-  //   // padding: 5,
-
-  //   flex: 1,
-  //   left: 0,
-  //   position: "absolute",
-  //   right: 0,
-  //   top: 0,
-  //   zIndex: 1,
-  // },
-  // inputContainerStyle: {
-  //   // backgroundColor: "green",
-  // },
-  // autocompleteContainer: {
-  //   backgroundColor: "red",
-  //   padding: 0,
-  //   // margin: 5,
-  //   width: "80%",
-  // },
-  // listContainerStyle: {
-  //   // backgroundColor: "blue",
-  //   padding: 0,
-  //   marginLeft: -10, // XXX: Men hvorfor?
-  //   marginRight: -10, // XXX: Men hvorfor?
-  //   // width: 100,
-  //   // borderWidth: 1,
-  // },
-  // listStyle: {
-  //   // backgroundColor: "purple",
-  //   // padding: 5,
-  //   // margin: 50,
-  //   // borderWidth: 10,
-  // },
-  // textItem: {
-  //   // backgroundColor: "red",
-  //   paddingBottom: 5,
-  //   fontSize: 20,
-  // },
 });

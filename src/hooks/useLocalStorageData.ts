@@ -21,7 +21,7 @@ export default function useLocalStorageData() {
   const loadData = async () => {
     if (__DEV__) {
       // Seed test data in dev environment
-      await StorageService.clearAllData();
+      await StorageService.clearAllData(); // Comment if want to persist data.
       await StorageTestDataInitializer.seedTestData();
     }
 

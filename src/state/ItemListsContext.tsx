@@ -11,7 +11,7 @@ interface ItemListState {
   hasNextList: boolean;
   goToNextList: () => void;
   goToPrevList: () => void;
-  reload: () => void;
+  reloadShoppingLists: () => void;
 }
 // Give initial empty values to avoid not null. // XXX: Fix senere med library
 export const ItemListsContext = createContext<ItemListState>({
@@ -31,5 +31,5 @@ export const ItemListsContext = createContext<ItemListState>({
   goToPrevList: () => {},
   // tslint:disable-next-line: no-empty
   goToNextList: () => {},
-  reload: () => {},
+  reloadShoppingLists: () => {},
 });

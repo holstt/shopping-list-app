@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, View, Text } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import Category from "../../models/Category";
 import CategoryPicker from "./CategoryPicker";
-import CustomAutocomplete from "../Checklist/MyAutocompleter";
+import CustomAutocomplete from "../ShoppingListView/MyAutocompleter";
 
 interface Props {
   categories: Category[];

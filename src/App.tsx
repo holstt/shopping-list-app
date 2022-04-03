@@ -46,7 +46,7 @@ export default function App() {
   }
 
   if (!data) {
-    throw new Error("Unable to load data from local storage due to an error");
+    throw new Error("Unable to load data from local storage.");
   }
 
   return (

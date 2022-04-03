@@ -16,7 +16,11 @@ export default function LibraryItemsContextProvider({
   const [libraryItems, setLibraryItems] =
     useState<LibraryItem[]>(initLibraryItems);
 
-  const { reload: reloadItemLists } = useContext(ItemListsContext);
+  // const { reloadShoppingLists } = useContext(ItemListsContext);
+
+  const updateLibraryItems = (libraryItems: LibraryItem[]) => {
+    setLibraryItems(libraryItems);
+  };
 
   // XXX: Genalisér. Samme logik som ListsView
   const addLibraryItem = (itemToAdd: LibraryItem) =>
@@ -29,7 +33,10 @@ export default function LibraryItemsContextProvider({
   const editLibraryItem = (itemToEdit: LibraryItem) =>
     setLibraryItems((prev) => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      StorageService.saveLibraryItem(itemToEdit).then(() => reloadItemLists());
+      // StorageService.saveLibraryItem(itemToEdit).then(() =>
+      //   reloadShoppingLists()
+      // );
+      StorageService.saveLibraryItem(itemToEdit);
       return prev.map((item) =>
         item.id === itemToEdit.id ? itemToEdit : item
       );
@@ -38,9 +45,11 @@ export default function LibraryItemsContextProvider({
   const deleteLibraryItem = (itemToDeleteId: string) =>
     setLibraryItems((prev) => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      StorageService.deleteLibraryItem(itemToDeleteId).then(() =>
-        reloadItemLists()
-      );
+      // StorageService.deleteLibraryItem(itemToDeleteId).then(() =>
+      //   reloadShoppingLists()
+      // );
+
+      StorageService.deleteLibraryItem(itemToDeleteId);
       return prev.filter((item) => item.id !== itemToDeleteId);
     });
 
@@ -51,6 +60,7 @@ export default function LibraryItemsContextProvider({
         addLibraryItem,
         editLibraryItem,
         deleteLibraryItem,
+        updateLibraryItems,
       }}
     >
       {children}

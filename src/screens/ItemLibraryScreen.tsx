@@ -2,7 +2,7 @@ import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import Category from "../models/Category";
 import { LibraryItemsContext } from "../state/LibraryItemsContext";
 import { CategoriesContext } from "../state/CategoriesContext";
-import { useContext, useRef, useState } from "react";
+import { useContext, useRef, useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -22,8 +22,13 @@ import { RootStackParamList } from "../RootNavigator";
 type Props = BottomTabScreenProps<RootStackParamList, "ItemLibraryScreen">;
 
 export default function ItemLibraryScreen({ navigation, route }: Props) {
-  const { deleteLibraryItem, addLibraryItem, editLibraryItem, libraryItems } =
-    useContext(LibraryItemsContext);
+  const {
+    deleteLibraryItem,
+    addLibraryItem,
+    editLibraryItem,
+    libraryItems,
+    updateLibraryItems,
+  } = useContext(LibraryItemsContext);
   const { categories } = useContext(CategoriesContext);
 
   const [isAddItemMode, setIsAddItemMode] = useState(false);
@@ -41,6 +46,17 @@ export default function ItemLibraryScreen({ navigation, route }: Props) {
   if (isEditItemMode) {
     items = libraryItems.filter((item) => item.id !== currentEditItem?.id);
   }
+
+  // XXX: Genbrug fra checklist, fix
+  const itemComparer = (a: LibraryItem, b: LibraryItem): number => {
+    if (a.category?.title === b.category?.title)
+      return a.title.localeCompare(b.title);
+    else if (a.category === null) return 1;
+    else if (b.category === null) return -1;
+    else return a.category.title.localeCompare(b.category.title);
+  };
+
+  libraryItems.sort(itemComparer);
 
   const onItemPress = (item: LibraryItem) => {
     setIsEditItemMode(true);
@@ -156,6 +172,12 @@ export default function ItemLibraryScreen({ navigation, route }: Props) {
       isLastElement={index === items.length - 1}
       item={item}
       key={item.id}
+      hasPrevItemCategory={
+        items[index - 1]?.category?.title === item.category?.title
+      }
+      hasNextItemCategory={
+        items[index + 1]?.category?.title === item.category?.title
+      }
     ></LibraryItemRow>
   ));
 

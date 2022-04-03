@@ -6,14 +6,15 @@ import StorageService from "../services/StorageService";
 import { CategoriesContext } from "./CategoriesContext";
 import { ItemListsContext } from "./ItemListsContext";
 
+// Global store for managing the item lists in the system.
 interface Props {
   initItemLists: ShoppingList[];
   startListId: string | null;
-  onActiveListChanged: (index: string) => void;
+  onActiveListChanged: (index: string) => void; // XXX: Bare update app data herfra??
   children: React.ReactNode;
 }
 
-// Global store for managing the item lists in the system.
+// XXX: Lave updateActiveList helper methods???
 
 // XXX: Samme som lists --> Lav generic!
 export default function ItemListsContextProvider({
@@ -145,7 +146,7 @@ export default function ItemListsContextProvider({
         hasNextList: getHasNextList(),
         goToPrevList,
         goToNextList,
-        reload,
+        reloadShoppingLists: reload,
       }}
     >
       {children}

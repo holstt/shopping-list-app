@@ -5,6 +5,7 @@ interface LibraryItemsState {
   addLibraryItem: (item: LibraryItem) => void;
   editLibraryItem: (item: LibraryItem) => void;
   deleteLibraryItem: (itemId: string) => void;
+  updateLibraryItems: (items: LibraryItem[]) => void;
   libraryItems: LibraryItem[];
 }
 
@@ -13,5 +14,6 @@ export const LibraryItemsContext = createContext<LibraryItemsState>({
   addLibraryItem: () => {},
   editLibraryItem: () => {},
   deleteLibraryItem: () => {},
+  updateLibraryItems: () => {},
   libraryItems: [],
 });

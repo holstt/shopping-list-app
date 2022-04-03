@@ -22,6 +22,8 @@ interface Props {
   onItemPress: (item: LibraryItem) => void;
   item: LibraryItem;
   isLastElement?: boolean;
+  hasPrevItemCategory: boolean;
+  hasNextItemCategory: boolean;
 }
 // XXX: Lav generic component for  denne og ItemRow?
 
@@ -30,6 +32,8 @@ export default function ListRow({
   onItemPress,
   item,
   isLastElement,
+  hasPrevItemCategory,
+  hasNextItemCategory,
 }: Props) {
   const swipableRowRef = useRef<Swipeable | null>(null);
 
@@ -37,6 +41,12 @@ export default function ListRow({
   const container = [
     styles.containerBase,
     isLastElement ? styles.containerLast : null,
+  ];
+
+  const categoryStyle = [
+    styles.categoryColorRectangleBase,
+    hasPrevItemCategory && styles.categoryColorRectangleHasPrev,
+    hasNextItemCategory && styles.categoryColorRectangleHasNext,
   ];
 
   // XXX: Ansvar?
@@ -84,10 +94,7 @@ export default function ListRow({
           >
             <Text style={styles.itemTitleBase}>{item.title}</Text>
             <View
-              style={[
-                styles.categoryColorRectangle,
-                { backgroundColor: item.category?.color },
-              ]}
+              style={[categoryStyle, { backgroundColor: item.category?.color }]}
             ></View>
           </TouchableOpacity>
         </View>
@@ -100,17 +107,20 @@ const styles = StyleSheet.create({
   containerBase: {
     // backgroundColor: "lightgrey",
     flexDirection: "row",
-    borderTopColor: "#d5d8e3",
     alignItems: "center",
-    borderLeftColor: "transparent",
-    borderRightColor: "transparent",
-    paddingTop: 7,
-    paddingBottom: 7,
     paddingLeft: 5,
+
+    borderColor: "transparent",
     borderWidth: 1,
-    borderBottomColor: "transparent",
+    borderTopColor: "#d5d8e3",
+  },
+  // Add a bottom border to the last item in the list
+  containerLast: {
+    borderBottomColor: "#d5d8e3",
   },
   itemTitleBase: {
+    paddingTop: 7,
+    paddingBottom: 7,
     // backgroundColor: "red",
     color: "#454a52",
     fontSize: 20,
@@ -131,15 +141,20 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
 
-  // Add a bottom border to the last item in the list
-  containerLast: {
-    borderBottomColor: "#d5d8e3",
-  },
-  categoryColorRectangle: {
+  categoryColorRectangleBase: {
     marginLeft: "auto",
-    // backgroundColor: "red",
     borderTopLeftRadius: 8,
     borderBottomLeftRadius: 8,
     width: 13,
+    marginTop: 7,
+    marginBottom: 7,
+  },
+  categoryColorRectangleHasPrev: {
+    marginTop: -1,
+    borderTopLeftRadius: 0,
+  },
+  categoryColorRectangleHasNext: {
+    marginBottom: -1,
+    borderBottomLeftRadius: 0,
   },
 });

@@ -1,6 +1,6 @@
 import Category from "../models/Category";
 import Entity from "../models/Entity";
-import ListItem from "../models/ListItem";
+import ShoppingItem from "../models/ShoppingItem";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ShoppingList from "../models/ShoppingList";
 import AppData from "../AppData";
@@ -29,6 +29,10 @@ export default class StorageService {
     // Load library references for each item in lists.
     // await StorageService.syncProps(lists); // XXX: Find ud af om feature giver mening
 
+    lists.forEach((list) =>
+      list.items.sort((a, b) => (a.index > b.index ? 1 : -1))
+    );
+
     return lists.sort((a, b) => (a.index > b.index ? 1 : -1));
   }
 
@@ -56,12 +60,12 @@ export default class StorageService {
     }
   }
 
-  public static removeLibraryItemReference(item: ListItem) {
+  public static removeLibraryItemReference(item: ShoppingItem) {
     item.libraryItemRefenceId = null;
   }
 
   public static updateLibraryItemReference(
-    item: ListItem,
+    item: ShoppingItem,
     libraryItem: LibraryItem
   ) {
     // Update all props dependent on library item // XXX: Find bedre løsning

@@ -12,7 +12,7 @@ import Category from "../../models/Category";
 import CategoryPicker from "../common/CategoryPicker";
 import CustomAutocomplete from "./MyAutocompleter";
 import colors from "../../config/colors";
-import ListItem from "../../models/ListItem";
+import ShoppingItem from "../../models/ShoppingItem";
 import LibraryItem from "../../models/LibraryItem";
 
 // XXX: Genbrug fra ListInput
@@ -28,10 +28,11 @@ interface Props {
   inputMode: InputMode;
   text: string;
   onAddItemModeEnded: () => void;
-  onSubmitAddItem: (item: ListItem) => void;
+  onSubmitAddItem: (item: ShoppingItem) => void;
   onEditItemModeEnded: () => void;
   onSubmitEditItem: (text: string, category: Category | null) => void;
   libraryItems: LibraryItem[];
+  currentIndex: number;
 }
 
 // XXX: Context maybe :)
@@ -42,10 +43,11 @@ export default function ChecklistListInput({
   chosenCategory,
   text,
   inputMode,
-  onAddItemModeEnded,
   onSubmitAddItem,
-  onEditItemModeEnded,
   onSubmitEditItem,
+  onEditItemModeEnded,
+  onAddItemModeEnded,
+  currentIndex,
 }: Props) {
   const textInputRef = useRef<TextInput | null>();
   const [currentInputText, setCurrentInputText] = useState<string>(text);
@@ -56,7 +58,9 @@ export default function ChecklistListInput({
         // Clear text input after item submitted
         textInputRef?.current?.clear(); //XX: Evt. error hvis ej
         // Notify and pass new item to parent
-        onSubmitAddItem(ListItem.fromLibraryItem(libraryItem));
+        onSubmitAddItem(
+          ShoppingItem.fromLibraryItem(libraryItem, currentIndex + 1)
+        );
         break;
 
       case InputMode.EDIT:
@@ -80,7 +84,13 @@ export default function ChecklistListInput({
     textInputRef?.current?.clear();
 
     // Notify and pass new item to parent
-    onSubmitAddItem(ListItem.fromNew(event.nativeEvent.text, chosenCategory));
+    onSubmitAddItem(
+      ShoppingItem.fromNew(
+        event.nativeEvent.text,
+        currentIndex + 1,
+        chosenCategory
+      )
+    );
     setCurrentInputText("");
   };
 
@@ -126,7 +136,7 @@ export default function ChecklistListInput({
             onChangeText={(text) => setCurrentInputText(text)}
             ref={(ref) => (textInputRef.current = ref)}
             // Turn off add item mode if not focused on input
-            // onBlur={onEditItemModeEnded}
+            onBlur={onEditItemModeEnded}
             onSubmitEditing={handleSubmitEditItem}
           />
         );
