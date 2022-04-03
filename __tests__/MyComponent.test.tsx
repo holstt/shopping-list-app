@@ -1,9 +1,10 @@
 import React from "react";
 import renderer from "react-test-renderer";
-import App from "../src/App";
-
 import MyComponent from "../src/MyComponent";
 import CheckListScreen from "../src/screens/ChecklistScreen";
+
+// import App from "../src/App";
+// import CheckListScreen from "../src/screens/ChecklistScreen";
 
 // jest.mock("@expo/vector-icons/FontAwesome", () => "Icon");
 // jest.mock("@expo/vector-icons", () => ({
@@ -25,7 +26,7 @@ describe("MyComponent", () => {
 const navigation: any = {};
 const route: any = {};
 
-describe("MyComponent", () => {
+describe("ChecklistScreen", () => {
   it("Has 1 child", () => {
     const tree = renderer
       .create(
