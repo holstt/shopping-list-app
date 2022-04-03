@@ -12,16 +12,16 @@ import CheckListScreen from "../src/screens/ChecklistScreen";
 //   Feather: "",
 // }));
 
-describe("MyComponent", () => {
-  it("Has 1 child", () => {
-    const tree = renderer
-      .create(<MyComponent input="hej"></MyComponent>)
-      .toJSON();
+// describe("MyComponent", () => {
+//   it("Has 1 child", () => {
+//     const tree = renderer
+//       .create(<MyComponent input="hej"></MyComponent>)
+//       .toJSON();
 
-    //@ts-ignore
-    expect(tree.children.length).toBe(1);
-  });
-});
+//     //@ts-ignore
+//     expect(tree.children.length).toBe(1);
+//   });
+// });
 
 const navigation: any = {};
 const route: any = {};
