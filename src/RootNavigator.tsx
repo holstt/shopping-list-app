@@ -4,17 +4,16 @@ import { FontAwesome } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import ChecklistScreen from "./screens/ChecklistScreen";
+import ShoppingListScreen from "./screens/ShoppingListScreen";
 import ListLibraryScreen from "./screens/ListLibraryScreen";
 import ItemLibraryScreen from "./screens/ItemLibraryScreen";
 import CategoryLibraryScreen from "./screens/CategoryLibraryScreen";
 
 export type RootStackParamList = {
-  ChecklistScreen: {}; // XXX: Skal komme fra context
-  ListLibraryScreen: {};
-  // ItemLibraryScreen: { initItems: LibraryItem[]; initCategories: Category[] };
-  ItemLibraryScreen: {};
-  CategoryLibraryScreen: {}; // XXX: Skal komme fra context
+  ShoppingListScreen: undefined;
+  ListLibraryScreen: undefined;
+  ItemLibraryScreen: undefined;
+  CategoryLibraryScreen: undefined;
 };
 
 const Tab = createBottomTabNavigator<RootStackParamList>();
@@ -23,7 +22,7 @@ export default function RootNavigator() {
   return (
     <NavigationContainer>
       <Tab.Navigator
-        initialRouteName="ChecklistScreen"
+        initialRouteName="ShoppingListScreen"
         sceneContainerStyle={styles.container}
         screenOptions={{
           headerShown: false,
@@ -33,8 +32,8 @@ export default function RootNavigator() {
         }}
       >
         <Tab.Screen
-          name="ChecklistScreen"
-          component={ChecklistScreen}
+          name="ShoppingListScreen"
+          component={ShoppingListScreen}
           options={{
             title: "Shopping",
             tabBarIcon: ({ focused, color, size }) => (

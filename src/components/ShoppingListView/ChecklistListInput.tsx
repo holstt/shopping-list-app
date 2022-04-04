@@ -78,10 +78,14 @@ export default function ChecklistListInput({
     event: NativeSyntheticEvent<TextInputSubmitEditingEventData>
   ) => {
     // Do nothing if empty text
-    if (!event?.nativeEvent?.text || "") return;
+    if (!event?.nativeEvent?.text || "") {
+      console.log("Ignored a submitted empty text");
+      return;
+    }
 
     // Clear text input after item submitted
     textInputRef?.current?.clear();
+    console.log(onSubmitAddItem);
 
     // Notify and pass new item to parent
     onSubmitAddItem(
@@ -92,6 +96,7 @@ export default function ChecklistListInput({
       )
     );
     setCurrentInputText("");
+    console.log("after add");
   };
 
   // XXX: Genbrug fra add item func
@@ -112,17 +117,24 @@ export default function ChecklistListInput({
       case InputMode.ADD:
         return (
           <TextInput
+            value={"ItemAdded"}
             style={styles.inputField}
             placeholder="Add Item"
             // Focus from start
             autoFocus={true}
-            onChangeText={(text) => setCurrentInputText(text)}
+            onChangeText={(text) => {
+              console.log("ny tekst!");
+              setCurrentInputText(text);
+            }}
             // Keep focus even after submit
             blurOnSubmit={false}
             // Turn off add item mode if not focused on input
             onBlur={onAddItemModeEnded}
             ref={(ref) => (textInputRef.current = ref)}
-            onSubmitEditing={handleSubmitAddItem}
+            onSubmitEditing={(event) => {
+              console.log("der submittes!");
+              handleSubmitAddItem(event);
+            }}
           />
         );
 

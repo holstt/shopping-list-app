@@ -51,7 +51,9 @@ export default function ItemListsContextProvider({
       // Find item
       let index = itemLists.map((l) => l.id).indexOf(startListId);
       if (index === -1) {
-        console.warn("Start list id provided was not found. Defaults to 0");
+        console.warn(
+          `Start list id provided (${startListId}) was not found. Defaults to 0`
+        );
         index = 0;
       }
       return index;

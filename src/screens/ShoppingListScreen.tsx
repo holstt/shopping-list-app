@@ -17,13 +17,13 @@ import ChecklistListInput, {
 import { LibraryItemsContext } from "../state/LibraryItemsContext";
 import { CountType } from "../components/ShoppingListView/Counter";
 
-type Props = BottomTabScreenProps<RootStackParamList, "ChecklistScreen">;
+type Props = BottomTabScreenProps<RootStackParamList, "ShoppingListScreen">;
 
 // function checklistReducer(state, action) {
 
 // }
 
-export default function CheckListScreen({ navigation, route }: Props) {
+export default function ShoppingListScreen({ navigation, route }: Props) {
   const { categories } = useContext(CategoriesContext);
   const {
     updateItemList,
@@ -78,12 +78,14 @@ export default function CheckListScreen({ navigation, route }: Props) {
   items.sort(itemComparer);
 
   // XXX: Evt. wrap disse i context/hook
-  const addItemToList = (item: ShoppingItem) =>
+  const addItemToList = (item: ShoppingItem) => {
+    console.log("adding item to list: " + item.title);
     // XXX: Skidt ej at bruge prev?
     updateItemList({
       ...activeItemList,
       items: [...activeItemList.items, item],
     });
+  };
 
   // XXX: Skidt ej prev?
   const updateItemInList = (updatedItem: ShoppingItem) =>
@@ -109,11 +111,11 @@ export default function CheckListScreen({ navigation, route }: Props) {
   // XXX: Rykkes i hook.
   // When an item is pressed
   const onItemPress = (item: ShoppingItem) => {
+    console.log("Item pressed");
     // XXX: Setting multiple states?
     setIsEditItemMode(true);
     setCurrentEditItem(item);
     setCurrentEditItemCategory(item.category);
-    console.log("Set all on pressed");
   };
 
   const onCategoryPress = (category: Category) => {
@@ -124,11 +126,14 @@ export default function CheckListScreen({ navigation, route }: Props) {
   };
 
   const onAddItemModeEnded = () => {
+    console.log("add item mode ended");
     setIsAddItemMode(false);
     setCurrentEditItemCategory(null);
   };
 
   const onEditItemModeEnded = () => {
+    console.log("edit item mode ended");
+
     setIsEditItemMode(false);
     setCurrentEditItem(null);
     setCurrentEditItemCategory(null);
@@ -136,6 +141,7 @@ export default function CheckListScreen({ navigation, route }: Props) {
 
   // Handle item submitted
   const onSubmitAddItem = (newItem: ShoppingItem) => {
+    console.log("Checklist: on submit item");
     setCurrentEditItem(null);
     setCurrentEditItemCategory(null);
     // Notify and pass new item to parent
@@ -211,6 +217,9 @@ export default function CheckListScreen({ navigation, route }: Props) {
       )}
     </View>
   );
+
+  // console.log(isAddItemMode);
+  // console.log(isEditItemMode);
 
   return (
     <View style={styles.container}>

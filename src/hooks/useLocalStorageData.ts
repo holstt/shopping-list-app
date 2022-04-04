@@ -6,8 +6,8 @@ import ShoppingList from "../models/ShoppingList";
 import LibraryItem from "../models/LibraryItem";
 import AppData from "../AppData";
 
-interface InitStateProps {
-  itemLists: ShoppingList[];
+interface DataProps {
+  shoppingLists: ShoppingList[];
   categories: Category[];
   libraryItems: LibraryItem[];
 }
@@ -15,7 +15,7 @@ interface InitStateProps {
 // Loads the initial app state from local storage
 export default function useLocalStorageData() {
   const [isReady, setIsReady] = useState(false);
-  const [data, setDataState] = useState<InitStateProps>();
+  const [data, setDataState] = useState<DataProps>();
   const [appData, setAppData] = useState<AppData | null>(null);
 
   const loadData = async () => {
@@ -32,10 +32,12 @@ export default function useLocalStorageData() {
   const loadDataFromLocalStorage = async () => {
     console.log("Loading data from local storage...");
     setDataState({
-      itemLists: await StorageService.loadItemLists(),
+      shoppingLists: await StorageService.loadItemLists(),
       categories: await StorageService.loadCategories(),
       libraryItems: await StorageService.loadLibraryItems(),
     });
+
+    // XXX: Fix, ej sikkert loaded da async! -> Fixes når reducer
 
     setAppData(await StorageService.loadAppData());
     setIsReady(true);

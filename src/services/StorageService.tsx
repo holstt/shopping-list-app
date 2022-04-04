@@ -11,7 +11,7 @@ const APP_DATA_STORE_KEY = "appData";
 const CATEGORY_STORE_KEY = "category";
 const LIST_ITEM_STORE_KEY = "listItem";
 const LIBRARY_ITEM_STORE_KEY = "libraryItem";
-const ITEM_LIST_STORE_KEY = "itemList";
+const SHOPPING_LIST_STORE_KEY = "shoppingList";
 
 // XXX: Lav StorageTestDataIntializer, GenericStorage/Storage, LocalStorage
 export default class StorageService {
@@ -24,7 +24,7 @@ export default class StorageService {
     return list.sort((a, b) => (a.index > b.index ? 1 : -1));
   }
   public static async loadItemLists(): Promise<ShoppingList[]> {
-    const lists = await this.loadMany<ShoppingList>(ITEM_LIST_STORE_KEY);
+    const lists = await this.loadMany<ShoppingList>(SHOPPING_LIST_STORE_KEY);
 
     // Load library references for each item in lists.
     // await StorageService.syncProps(lists); // XXX: Find ud af om feature giver mening
@@ -80,11 +80,11 @@ export default class StorageService {
   }
 
   public static async saveItemList(itemList: ShoppingList) {
-    await this.save(ITEM_LIST_STORE_KEY, itemList);
+    await this.save(SHOPPING_LIST_STORE_KEY, itemList);
   }
 
   public static async saveItemLists(itemList: ShoppingList[]) {
-    await this.saveMany<ShoppingList>(ITEM_LIST_STORE_KEY, itemList);
+    await this.saveMany<ShoppingList>(SHOPPING_LIST_STORE_KEY, itemList);
   }
 
   public static async saveLibraryItems(libraryItems: LibraryItem[]) {
@@ -129,7 +129,7 @@ export default class StorageService {
   }
 
   public static async deleteItemList(id: string) {
-    await this.delete(ITEM_LIST_STORE_KEY, id);
+    await this.delete(SHOPPING_LIST_STORE_KEY, id);
   }
 
   public static async loadAppData(): Promise<AppData> {

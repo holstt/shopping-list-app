@@ -3,11 +3,16 @@ import { Feather } from "@expo/vector-icons";
 
 interface Props {
   onPress: () => void;
+  testID?: string;
 }
 
 export default function PlusButton({ onPress }: Props) {
   return (
-    <TouchableOpacity style={styles.plusButton} onPress={onPress}>
+    <TouchableOpacity
+      testID="add-item-button"
+      style={styles.plusButton}
+      onPress={onPress}
+    >
       <Feather name="plus" size={33} color="white" />
     </TouchableOpacity>
   );

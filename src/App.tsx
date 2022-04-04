@@ -5,14 +5,15 @@ import CategoriesContextProvider from "./state/CategoriesContextProvider";
 import ItemListsContextProvider from "./state/ItemListsContextProvider";
 import useLocalStorageData from "./hooks/useLocalStorageData";
 import RootNavigator from "./RootNavigator";
+import { View } from "react-native";
 
 // Use Reactotron dev tool
-if (__DEV__) {
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  import("../ReactotronConfig").then(() =>
-    console.log("Reactotron Configured")
-  );
-}
+// if (__DEV__) {
+//   // eslint-disable-next-line @typescript-eslint/no-floating-promises
+//   import("../ReactotronConfig").then(() =>
+//     console.log("Reactotron Configured")
+//   );
+// }
 
 export default function App() {
   const { loadData, isReady, data, appData, setAppData } =
@@ -49,16 +50,18 @@ export default function App() {
   }
 
   return (
-    <CategoriesContextProvider initCategories={data.categories}>
-      <ItemListsContextProvider
-        startListId={appData ? appData.lastActiveListId : null} // XXX: Fix appdata
-        onActiveListChanged={onActiveListIdChanged}
-        initItemLists={data.itemLists}
-      >
-        <LibraryItemsContextProvider initLibraryItems={data.libraryItems}>
-          <RootNavigator />
-        </LibraryItemsContextProvider>
-      </ItemListsContextProvider>
-    </CategoriesContextProvider>
+    <View testID="root-view">
+      <CategoriesContextProvider initCategories={data.categories}>
+        <ItemListsContextProvider
+          startListId={appData ? appData.lastActiveListId : null} // XXX: Fix appdata
+          onActiveListChanged={onActiveListIdChanged}
+          initItemLists={data.shoppingLists}
+        >
+          <LibraryItemsContextProvider initLibraryItems={data.libraryItems}>
+            <RootNavigator />
+          </LibraryItemsContextProvider>
+        </ItemListsContextProvider>
+      </CategoriesContextProvider>
+    </View>
   );
 }
