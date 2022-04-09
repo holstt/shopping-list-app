@@ -8,6 +8,7 @@ import ShoppingListScreen from "./screens/ShoppingListScreen";
 import ListLibraryScreen from "./screens/ListLibraryScreen";
 import ItemLibraryScreen from "./screens/ItemLibraryScreen";
 import CategoryLibraryScreen from "./screens/CategoryLibraryScreen";
+import Constants from "expo-constants";
 
 export type RootStackParamList = {
   ShoppingListScreen: undefined;
@@ -25,6 +26,7 @@ export default function RootNavigator() {
         initialRouteName="ShoppingListScreen"
         sceneContainerStyle={styles.container}
         screenOptions={{
+          // tabBarHideOnKeyboard: true,
           headerShown: false,
           tabBarStyle: {
             paddingBottom: 2,
@@ -83,7 +85,7 @@ export default function RootNavigator() {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
-    paddingTop: StatusBar.currentHeight,
+    paddingTop: Constants.statusBarHeight + 10,
     backgroundColor: "white",
   },
 });

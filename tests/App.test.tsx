@@ -2,11 +2,10 @@ import App from "../src/App";
 // import renderer from "react-test-renderer";
 import { render, waitFor } from "@testing-library/react-native";
 
-it("should be able to render", async () => {
+it("renders correctly", async () => {
   // Start rendering component
-  const { findByTestId } = render(<App />);
+  const component = render(<App />);
 
-  // Wait for correct component to appear
-  const navigator = await findByTestId("root-view");
-  expect(navigator).toBeTruthy();
+  await component.findByText("Item1");
+  expect(component.toJSON()).toMatchSnapshot();
 });

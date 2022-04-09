@@ -1,6 +1,5 @@
 import React from "react";
 import renderer from "react-test-renderer";
-import MyComponent from "../src/MyComponent";
 import TestComponent from "./TestComponent";
 
 import {

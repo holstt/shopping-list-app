@@ -6,6 +6,7 @@ import ShoppingList from "../models/ShoppingList";
 import AppData from "../AppData";
 import { overlay } from "reactotron-react-native";
 import LibraryItem from "../models/LibraryItem";
+import { Platform } from "react-native";
 
 const APP_DATA_STORE_KEY = "appData";
 const CATEGORY_STORE_KEY = "category";
@@ -23,7 +24,7 @@ export default class StorageService {
     const list = await this.loadMany<Category>(CATEGORY_STORE_KEY);
     return list.sort((a, b) => (a.index > b.index ? 1 : -1));
   }
-  public static async loadItemLists(): Promise<ShoppingList[]> {
+  public static async loadShoppingLists(): Promise<ShoppingList[]> {
     const lists = await this.loadMany<ShoppingList>(SHOPPING_LIST_STORE_KEY);
 
     // Load library references for each item in lists.
@@ -49,10 +50,8 @@ export default class StorageService {
           );
           // Ensure not deleted
           if (librayItemRef) {
-            console.log("hej");
             this.updateLibraryItemReference(item, librayItemRef);
           } else {
-            console.log("Removing af reference");
             this.removeLibraryItemReference(item);
           }
         }
@@ -201,6 +200,7 @@ export default class StorageService {
       JSON.stringify(o),
     ]);
 
+    console.log("> (Async Storage) MULTI SAVED: " + store);
     await AsyncStorage.multiSet(keyValuePairs);
   }
 
@@ -208,7 +208,7 @@ export default class StorageService {
     const key = store + ":" + id;
     await AsyncStorage.removeItem(key);
 
-    console.log("Object deleted: " + key);
+    console.log("> (Async Storage) DELETED: " + key);
   }
 
   // tslint:disable-next-line: no-any
@@ -217,10 +217,19 @@ export default class StorageService {
     const jsonValue = JSON.stringify(object);
     await AsyncStorage.setItem(key, jsonValue);
 
-    console.log("Object saved: " + key);
+    console.log("> (Async Storage) SAVED: " + key);
   }
 
   public static async clearAllData() {
-    await AsyncStorage.clear();
+    const asyncStorageKeys = await AsyncStorage.getAllKeys();
+    if (asyncStorageKeys.length > 0) {
+      if (Platform.OS === "android") {
+        await AsyncStorage.clear();
+      }
+      if (Platform.OS === "ios") {
+        await AsyncStorage.multiRemove(asyncStorageKeys);
+      }
+      await AsyncStorage.clear();
+    }
   }
 }

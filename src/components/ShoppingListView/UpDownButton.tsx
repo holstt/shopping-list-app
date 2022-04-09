@@ -43,11 +43,21 @@ export default function UpDownButton({
 
 const styles = StyleSheet.create({
   upDownButtonContainer: {
+    // backgroundColor: "blue",
     marginLeft: "auto",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    flex: 1,
+    // flexBasis: 1,
+    // flexGrow: 1,
+    // flexShrink: 1,
+    // alignItems: "center",
+    // justifyContent: "center",
   },
   logo: {
-    fontSize: 26,
+    fontSize: 32,
     color: colors.lightGrey,
+    // padding: 10,
   },
   logoDisabled: {
     color: colors.lightGreyDisabled,

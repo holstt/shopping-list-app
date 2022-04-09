@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import LibraryItem from "../models/LibraryItem";
 import StorageService from "../services/StorageService";
-import { ItemListsContext } from "./ItemListsContext";
+import { ShoppingListsContext } from "./ShoppingListsContext";
 import { LibraryItemsContext } from "./LibraryItemsContext";
 
 interface Props {

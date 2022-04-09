@@ -56,20 +56,16 @@ export default function CustomAutocomplete({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    // flex: 1,
-    // backgroundColor: "red",
-    marginLeft: -2,
-    marginRight: -2,
-  },
-  // // Android does not support overflows -> necessary to wrap the autocomplete into a absolute positioned view.
+  container: {},
 
+  // // Android does not support overflows -> necessary to wrap the autocomplete into a absolute positioned view.
   itemList: {
+    zIndex: 1, // TODO: Not working on iOS
+    // elevation: 1,
     width: "100%",
     // backgroundColor: "#FBFCFC",
     backgroundColor: "white",
     position: "absolute",
-    zIndex: 1,
     borderWidth: 1,
     borderColor: Colors.lightGreyDisabled,
     borderTopWidth: 0,
@@ -84,6 +80,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   itemTextButton: {
+    zIndex: 1,
+    elevation: 1,
     flex: 1,
     // backgroundColor: "lightgrey",
     flexDirection: "row",

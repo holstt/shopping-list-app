@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import Category from "../../models/Category";
 import CategoryPicker from "../common/CategoryPicker";
-import CustomAutocomplete from "./MyAutocompleter";
+import CustomAutocomplete from "./CustomAutoCompleter";
 import colors from "../../config/colors";
 import ShoppingItem from "../../models/ShoppingItem";
 import LibraryItem from "../../models/LibraryItem";
@@ -36,15 +36,15 @@ interface Props {
 }
 
 // XXX: Context maybe :)
-export default function ChecklistListInput({
+export default function ShoppingListInput({
   libraryItems,
   categories,
   onCategoryPress,
   chosenCategory,
   text,
   inputMode,
-  onSubmitAddItem,
-  onSubmitEditItem,
+  onSubmitAddItem, // XXX: Fra context??
+  onSubmitEditItem, // XXX: Fra context??
   onEditItemModeEnded,
   onAddItemModeEnded,
   currentIndex,
@@ -64,7 +64,6 @@ export default function ChecklistListInput({
         break;
 
       case InputMode.EDIT:
-        console.log("Clearing edit input");
         // Clear text input after item submitted
         textInputRef?.current?.clear();
         onSubmitEditItem(libraryItem.title, libraryItem.category);
@@ -85,7 +84,6 @@ export default function ChecklistListInput({
 
     // Clear text input after item submitted
     textInputRef?.current?.clear();
-    console.log(onSubmitAddItem);
 
     // Notify and pass new item to parent
     onSubmitAddItem(
@@ -96,7 +94,6 @@ export default function ChecklistListInput({
       )
     );
     setCurrentInputText("");
-    console.log("after add");
   };
 
   // XXX: Genbrug fra add item func
@@ -112,18 +109,16 @@ export default function ChecklistListInput({
     setCurrentInputText("");
   };
 
-  const inputComponent = (() => {
+  const textInputComponent = (() => {
     switch (inputMode) {
       case InputMode.ADD:
         return (
           <TextInput
-            value={"ItemAdded"}
             style={styles.inputField}
             placeholder="Add Item"
             // Focus from start
             autoFocus={true}
             onChangeText={(text) => {
-              console.log("ny tekst!");
               setCurrentInputText(text);
             }}
             // Keep focus even after submit
@@ -132,7 +127,6 @@ export default function ChecklistListInput({
             onBlur={onAddItemModeEnded}
             ref={(ref) => (textInputRef.current = ref)}
             onSubmitEditing={(event) => {
-              console.log("der submittes!");
               handleSubmitAddItem(event);
             }}
           />
@@ -156,16 +150,16 @@ export default function ChecklistListInput({
   })();
 
   return (
-    <View>
+    <View style={styles.container}>
       <View style={styles.inputContainer}>
-        <View>{inputComponent}</View>
-        {chosenCategory && ( // XXX: Component?
+        {textInputComponent}
+        {chosenCategory && (
           <View
             style={[
               styles.categoryColorRectangle,
               { backgroundColor: chosenCategory.color },
             ]}
-          ></View>
+          />
         )}
       </View>
       {currentInputText !== "" && (
@@ -184,6 +178,7 @@ export default function ChecklistListInput({
 }
 
 const styles = StyleSheet.create({
+  container: {},
   categoryColorRectangle: {
     // backgroundColor: "blue",
     marginLeft: "auto",

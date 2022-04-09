@@ -1,6 +1,5 @@
 import React, { ReactElement, ReactNode } from "react";
 // import renderer from "react-test-renderer";
-import MyComponent from "../src/MyComponent";
 import ShoppingListScreen from "../src/screens/ShoppingListScreen";
 import {
   render,
@@ -13,7 +12,7 @@ import {
   RenderAPI,
   within,
 } from "@testing-library/react-native";
-import ItemListsContextProvider from "../src/state/ItemListsContextProvider";
+import ShoppingListsContextProvider from "../src/state/ShoppingListsContextProvider";
 import CategoriesContextProvider from "../src/state/CategoriesContextProvider";
 import LibraryItemsContextProvider from "../src/state/LibraryItemsContextProvider";
 import ShoppingItem from "../src/models/ShoppingItem";
@@ -44,15 +43,14 @@ const data = {
 
 const wrapInContexts = (component: ReactElement): ReactElement => (
   <CategoriesContextProvider initCategories={data.categories}>
-    <ItemListsContextProvider
-      startListId={data.shoppingLists[1].id}
-      onActiveListChanged={() => {}}
-      initItemLists={data.shoppingLists}
+    <ShoppingListsContextProvider
+      initialCurrentListId={data.shoppingLists[1].id}
+      initialShoppingLists={data.shoppingLists}
     >
       <LibraryItemsContextProvider initLibraryItems={data.libraryItems}>
         {component}
       </LibraryItemsContextProvider>
-    </ItemListsContextProvider>
+    </ShoppingListsContextProvider>
   </CategoriesContextProvider>
 );
 
@@ -70,7 +68,7 @@ describe("ShoppingListScreen", () => {
   });
 
   afterEach(() => {
-    AsyncStorage.multiSet.mockReset();
+    jest.resetAllMocks();
   });
 
   it("should render correct list title", () => {
@@ -95,11 +93,11 @@ describe("ShoppingListScreen", () => {
     fireEvent(input, "onBlur");
     // Ensure add item mode exited
     expect(renderApi.queryByPlaceholderText("Add Item")).toBeNull();
-    // Expect one save to local storage // XXX: Skal andet sted
-    expect(AsyncStorage.multiSet).toBeCalledTimes(1);
+    // Expect initial save + 1 to add the new item  // XXX: Skal andet sted
+    expect(AsyncStorage.multiSet).toBeCalledTimes(2);
   });
 
-  // XXX: Opdel dette
+  // // XXX: Opdel dette
   it("should be able to edit and render edited item", () => {
     const existingItem = renderApi.getByText("TestItem2");
     // Pres on item to edit
@@ -115,7 +113,7 @@ describe("ShoppingListScreen", () => {
     expect(renderApi.queryByDisplayValue("TestItem2")).toBeNull();
     // Expect item with new title in list
     expect(renderApi.queryByText("EditedItem")).toBeTruthy();
-    // Expect one save to local storage // XXX: Skal andet sted
-    expect(AsyncStorage.multiSet).toBeCalledTimes(1);
+    // Expect initial save + 1 to add the new item  // XXX: Skal andet sted
+    expect(AsyncStorage.multiSet).toBeCalledTimes(2);
   });
 });

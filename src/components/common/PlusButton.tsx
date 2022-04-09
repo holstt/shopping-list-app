@@ -21,8 +21,8 @@ export default function PlusButton({ onPress }: Props) {
 const styles = StyleSheet.create({
   plusButton: {
     backgroundColor: "#2473E9",
-    height: 70,
-    width: 70,
+    height: 60,
+    width: 60,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 50,

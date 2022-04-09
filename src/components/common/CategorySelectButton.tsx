@@ -12,7 +12,7 @@ export default function CategorySelectButton({ onPress, category }: Props) {
       style={[styles.button, { backgroundColor: category.color }]}
       onPress={() => onPress(category)}
     >
-      <Text numberOfLines={2} style={[styles.categoryCircle]}>
+      <Text numberOfLines={2} style={[styles.categoryReactangle]}>
         {category.title}
       </Text>
     </TouchableOpacity>
@@ -26,9 +26,10 @@ const styles = StyleSheet.create({
     width: 80,
     marginRight: 7,
   },
-  categoryCircle: {
+  categoryReactangle: {
     flex: 1,
-    color: "#FFF6F4",
+    color: "#FFFFFF",
+    fontWeight: "bold",
     padding: 10,
     // paddingBottom: 1,
     // paddingTop: 1,

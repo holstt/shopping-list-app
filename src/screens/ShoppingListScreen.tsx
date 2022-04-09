@@ -9,30 +9,38 @@ import UpDownButton from "../components/ShoppingListView/UpDownButton";
 import PlusButton from "../components/common/PlusButton";
 import Category from "../models/Category";
 import { CategoriesContext } from "../state/CategoriesContext";
-import { ItemListsContext } from "../state/ItemListsContext";
+import {
+  ShoppingListsContext,
+  useShoppingListsContext,
+} from "../state/ShoppingListsContext";
 import { RootStackParamList } from "../RootNavigator";
-import ChecklistListInput, {
+import ShoppingListInput, {
   InputMode,
-} from "../components/ShoppingListView/ChecklistListInput";
+} from "../components/ShoppingListView/ShoppingListInput";
 import { LibraryItemsContext } from "../state/LibraryItemsContext";
 import { CountType } from "../components/ShoppingListView/Counter";
+import ShoppingList from "../models/ShoppingList";
+import { ActionKind } from "../state/reducers/shoppingListsReducer";
 
 type Props = BottomTabScreenProps<RootStackParamList, "ShoppingListScreen">;
 
-// function checklistReducer(state, action) {
-
-// }
-
 export default function ShoppingListScreen({ navigation, route }: Props) {
   const { categories } = useContext(CategoriesContext);
-  const {
-    updateItemList,
-    activeItemList,
-    hasPrevList,
-    hasNextList,
-    goToPrevList,
-    goToNextList,
-  } = useContext(ItemListsContext);
+  const { state, dispatch } = useShoppingListsContext();
+
+  // XXX: Genbrug fra context
+  const currentList = state.allLists[state.currentListIndex];
+  const hasPrevList = state.currentListIndex - 1 >= 0;
+  const hasNextList = state.currentListIndex + 1 <= state.allLists.length - 1;
+
+  // Create list if no lists in app state.
+  if (!currentList) {
+    console.log("No current list");
+    const firstList = new ShoppingList("My First List", [], 0);
+    // Add list to global store and wait for rerender with new state.
+    dispatch({ type: ActionKind.ADD_LIST, payload: { inputList: firstList } });
+    return null;
+  }
 
   const { libraryItems } = useContext(LibraryItemsContext);
 
@@ -41,28 +49,22 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
   const [isAddItemMode, setIsAddItemMode] = useState(false);
   const [isEditItemMode, setIsEditItemMode] = useState(false);
 
-  // console.log(
-  //   "mode -> Add item: " + isAddItemMode + ", Edit item: " + isEditItemMode
-  // );
-
-  // const textInputRef = useRef<TextInput | null>();
   // XXX: Egen comp?? Context?
   // XXX: Hvorfor ikke slå sammen?
   const [currentEditItem, setCurrentEditItem] = useState<ShoppingItem | null>(
     null
   );
-  const [currentEditItemCategory, setCurrentEditItemCategory] =
-    useState<Category | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null
+  );
 
-  let items: ShoppingItem[] | null = null;
+  let items: ShoppingItem[];
 
   // Item should be hidden from list if it is being edited.
   if (isEditItemMode) {
-    items = activeItemList.items.filter(
-      (item) => item.id !== currentEditItem?.id
-    );
+    items = currentList.items.filter((item) => item.id !== currentEditItem?.id);
   } else {
-    items = activeItemList.items;
+    items = currentList.items;
   }
 
   // XXX: Ansvar?
@@ -77,37 +79,6 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
 
   items.sort(itemComparer);
 
-  // XXX: Evt. wrap disse i context/hook
-  const addItemToList = (item: ShoppingItem) => {
-    console.log("adding item to list: " + item.title);
-    // XXX: Skidt ej at bruge prev?
-    updateItemList({
-      ...activeItemList,
-      items: [...activeItemList.items, item],
-    });
-  };
-
-  // XXX: Skidt ej prev?
-  const updateItemInList = (updatedItem: ShoppingItem) =>
-    updateItemList({
-      ...activeItemList,
-      items: activeItemList.items.map((item) =>
-        item.id === updatedItem.id ? updatedItem : item
-      ),
-    });
-
-  const deleteItemInList = (itemToDeleteId: string) =>
-    updateItemList({
-      ...activeItemList,
-      items: activeItemList.items.filter((item) => item.id !== itemToDeleteId),
-    });
-
-  const onItemCheckToggled = (itemToggled: ShoppingItem) => {
-    const itemUpdated: ShoppingItem = Object.create(itemToggled);
-    itemUpdated.isChecked = !itemToggled.isChecked;
-    updateItemInList(itemUpdated);
-  };
-
   // XXX: Rykkes i hook.
   // When an item is pressed
   const onItemPress = (item: ShoppingItem) => {
@@ -115,20 +86,27 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
     // XXX: Setting multiple states?
     setIsEditItemMode(true);
     setCurrentEditItem(item);
-    setCurrentEditItemCategory(item.category);
+    setSelectedCategory(item.category);
   };
 
   const onCategoryPress = (category: Category) => {
     // If category pressed is same as current, then remove the category
-    setCurrentEditItemCategory((prev) =>
-      prev?.id !== category.id ? category : null
-    );
+    setSelectedCategory((prev) => (prev?.id !== category.id ? category : null));
+  };
+
+  const onItemCheckToggled = (itemToggled: ShoppingItem) => {
+    const itemUpdated: ShoppingItem = Object.create(itemToggled);
+    itemUpdated.isChecked = !itemToggled.isChecked;
+    dispatch({
+      type: ActionKind.UPDATE_ITEM,
+      payload: { inputItem: itemUpdated },
+    });
   };
 
   const onAddItemModeEnded = () => {
     console.log("add item mode ended");
     setIsAddItemMode(false);
-    setCurrentEditItemCategory(null);
+    setSelectedCategory(null);
   };
 
   const onEditItemModeEnded = () => {
@@ -136,44 +114,58 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
 
     setIsEditItemMode(false);
     setCurrentEditItem(null);
-    setCurrentEditItemCategory(null);
+    setSelectedCategory(null);
   };
 
   // Handle item submitted
   const onSubmitAddItem = (newItem: ShoppingItem) => {
     console.log("Checklist: on submit item");
     setCurrentEditItem(null);
-    setCurrentEditItemCategory(null);
+    setSelectedCategory(null);
     // Notify and pass new item to parent
-    addItemToList(newItem);
+    dispatch({ type: ActionKind.ADD_ITEM, payload: { inputItem: newItem } });
   };
 
   // XXX: Genbrug fra add item func
   const onSubmitEditItem = (text: string, category: Category | null) => {
     const editedItem: ShoppingItem = Object.create(currentEditItem);
     editedItem.title = text;
-    editedItem.category = currentEditItemCategory;
+    editedItem.category = category;
     // Notify and pass edit item to parent
-    updateItemInList(editedItem);
+    dispatch({
+      type: ActionKind.UPDATE_ITEM,
+      payload: { inputItem: editedItem },
+    });
     onEditItemModeEnded(); //XXX: Burde slåes sammen?
   };
 
   const onPressCounter = (id: string, countType: CountType) => {
-    const itemFound = activeItemList.items.find((item) => item.id === id);
+    const itemFound = items.find((item) => item.id === id);
     if (!itemFound) {
       throw new Error("Count item was not found: " + id);
     }
 
     switch (countType) {
       case CountType.INCREMENT:
-        updateItemInList({ ...itemFound, quantity: ++itemFound.quantity });
+        dispatch({
+          type: ActionKind.UPDATE_ITEM,
+          payload: {
+            inputItem: { ...itemFound, quantity: ++itemFound.quantity },
+          },
+        });
         break;
 
       case CountType.DECREMENT:
+        // XXX: hvor placeres domæne validering for et item?
         if (itemFound.quantity - 1 < 1) {
           return;
         }
-        updateItemInList({ ...itemFound, quantity: --itemFound.quantity });
+        dispatch({
+          type: ActionKind.UPDATE_ITEM,
+          payload: {
+            inputItem: { ...itemFound, quantity: --itemFound.quantity },
+          },
+        });
         break;
     }
   };
@@ -187,7 +179,12 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
           isLastElement={index === fromItems.length - 1}
           onCheckButtonPress={onItemCheckToggled}
           onItemPress={onItemPress}
-          onRemoveItem={deleteItemInList}
+          onRemoveItem={(item) =>
+            dispatch({
+              type: ActionKind.REMOVE_ITEM,
+              payload: { inputItem: item },
+            })
+          }
           onPressCounter={onPressCounter}
           hasPrevItemCategory={
             fromItems[index - 1]?.category?.title === item.category?.title
@@ -218,18 +215,19 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
     </View>
   );
 
-  // console.log(isAddItemMode);
-  // console.log(isEditItemMode);
-
   return (
     <View style={styles.container}>
       <View style={styles.listHeaderContainer}>
         <Text numberOfLines={1} style={styles.listHeader}>
-          {activeItemList.title}
+          {currentList.title}
         </Text>
         <UpDownButton
-          onButtonUp={goToPrevList}
-          onButtonDown={goToNextList}
+          onButtonUp={() =>
+            dispatch({ type: ActionKind.GO_TO_PREV_LIST, payload: {} })
+          }
+          onButtonDown={() =>
+            dispatch({ type: ActionKind.GO_TO_NEXT_LIST, payload: {} })
+          }
           isUpButtonEnabled={hasPrevList}
           isDownButtonEnabled={hasNextList}
         ></UpDownButton>
@@ -237,10 +235,11 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
 
       {/* {inputComponent} */}
       {(isAddItemMode || isEditItemMode) && (
-        <ChecklistListInput
+        // XXX: Skal have context
+        <ShoppingListInput
           libraryItems={libraryItems}
           categories={categories}
-          chosenCategory={currentEditItemCategory}
+          chosenCategory={selectedCategory}
           onCategoryPress={onCategoryPress}
           text={currentEditItem ? currentEditItem.title : ""}
           inputMode={isAddItemMode ? InputMode.ADD : InputMode.EDIT}
@@ -248,8 +247,8 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
           onSubmitAddItem={onSubmitAddItem}
           onEditItemModeEnded={onEditItemModeEnded}
           onSubmitEditItem={onSubmitEditItem}
-          currentIndex={activeItemList.items.length - 1}
-        ></ChecklistListInput>
+          currentIndex={currentList.items.length - 1}
+        ></ShoppingListInput>
       )}
       <ScrollView>{itemListComponent}</ScrollView>
       {!isAddItemMode && !isEditItemMode ? (
@@ -272,13 +271,18 @@ const styles = StyleSheet.create({
   },
 
   listHeaderContainer: {
+    // backgroundColor: "red",
     flexDirection: "row",
     marginLeft: 5,
+    // marginBottom: 10,
+    alignItems: "center",
+    justifyContent: "center",
   },
   listHeader: {
+    flex: 4,
     color: colors.darkGrey,
     textAlign: "left",
-    fontSize: 40,
+    fontSize: 35,
     paddingBottom: 10,
   },
   doneHeader: {

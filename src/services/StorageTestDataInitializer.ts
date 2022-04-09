@@ -16,14 +16,14 @@ export default class StorageTestDataInitializer {
     console.log("Seeding test data....");
 
     const testColors = [
-      "#C9F1C6",
-      "#C4D5FE",
-      "#FFFEE3",
-      "#C9F4FE",
-      "#FED3F1",
-      "#FFB3C8",
-      "#EB7474",
-      "#FC6C85",
+      "#4BB2F9",
+      "#00C8FF",
+      "#634BF9",
+      "#53DA89",
+      "#5AD3CC",
+      "#BCE588",
+      "#F98A4B",
+      "#FF5D5D",
       "#1FDA6D",
       "#1F76DA",
       "#CC99FF",
@@ -33,13 +33,15 @@ export default class StorageTestDataInitializer {
     ];
 
     const testCategories = [
-      new Category("Meat", "#EB7474", 0),
-      new Category("Fruit & Vegetables", "#1FDA6D", 1),
+      new Category("Meat", "#FF5D5D", 0),
+      new Category("Fruit & Vegetables", "#16C60C", 1),
       new Category("Herbs & Spices", "#16F3B4", 2),
-      new Category("Seafood", "#1F76DA", 3),
+      new Category("Seafood", "#07C4F8", 3),
       new Category("Bread", "#F7E478", 4),
-      new Category("Dairy", "#B8C5D6", 5),
+      new Category("Dairy", "#F98A4B", 5),
+      new Category("Condiments", "#FC87E2", 6),
       new Category("Condiments", "#CC99FF", 6),
+      new Category("Condiments", "#838FA3", 7),
     ];
 
     // Default library of items

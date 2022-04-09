@@ -2,10 +2,13 @@ import AppLoading from "expo-app-loading";
 import StorageService from "./services/StorageService";
 import LibraryItemsContextProvider from "./state/LibraryItemsContextProvider";
 import CategoriesContextProvider from "./state/CategoriesContextProvider";
-import ItemListsContextProvider from "./state/ItemListsContextProvider";
-import useLocalStorageData from "./hooks/useLocalStorageData";
+import ShoppingListsContextProvider from "./state/ShoppingListsContextProvider";
+import useLocalStorageState from "./hooks/useLocalStorageState";
 import RootNavigator from "./RootNavigator";
-import { View } from "react-native";
+import { View, Text, StatusBar } from "react-native";
+import StorageTestDataInitializer from "./services/StorageTestDataInitializer";
+import * as SplashScreen from "expo-splash-screen";
+import { useEffect } from "react";
 
 // Use Reactotron dev tool
 // if (__DEV__) {
@@ -16,52 +19,39 @@ import { View } from "react-native";
 // }
 
 export default function App() {
-  const { loadData, isReady, data, appData, setAppData } =
-    useLocalStorageData();
+  console.log("App: Rendered");
+  StatusBar.setBarStyle("dark-content", true);
+  const { loading, storageState } = useLocalStorageState();
 
-  // Save updates to app data.
-  const onActiveListIdChanged = (id: string) => {
-    // XXX: Flyttes i context??
-    setAppData((prev) => {
-      if (!prev) {
-        throw new Error("AppData not set");
+  useEffect(() => {
+    void (async () => {
+      if (loading) {
+        await SplashScreen.preventAutoHideAsync();
+      } else {
+        // Hide when stopped loading.
+        await SplashScreen.hideAsync();
       }
+    })();
+  }, [loading]);
 
-      const newData = { ...prev, lastActiveListId: id };
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      StorageService.saveAppData(newData);
+  if (loading) return null;
 
-      return newData;
-    });
-  };
-
-  if (!isReady) {
-    return (
-      <AppLoading
-        startAsync={loadData}
-        onFinish={() => console.log("Loading done")}
-        onError={console.warn}
-      />
-    );
-  }
-
-  if (!data) {
-    throw new Error("Unable to load data from local storage.");
+  if (!storageState) {
+    throw new Error("Expected storage state to be initialized.");
   }
 
   return (
-    <View testID="root-view">
-      <CategoriesContextProvider initCategories={data.categories}>
-        <ItemListsContextProvider
-          startListId={appData ? appData.lastActiveListId : null} // XXX: Fix appdata
-          onActiveListChanged={onActiveListIdChanged}
-          initItemLists={data.shoppingLists}
+    <CategoriesContextProvider initCategories={storageState.categories}>
+      <ShoppingListsContextProvider
+        initialCurrentListId={storageState.appData.lastActiveListId} // XXX: Fix appdata
+        initialShoppingLists={storageState.shoppingLists}
+      >
+        <LibraryItemsContextProvider
+          initLibraryItems={storageState.libraryItems}
         >
-          <LibraryItemsContextProvider initLibraryItems={data.libraryItems}>
-            <RootNavigator />
-          </LibraryItemsContextProvider>
-        </ItemListsContextProvider>
-      </CategoriesContextProvider>
-    </View>
+          <RootNavigator />
+        </LibraryItemsContextProvider>
+      </ShoppingListsContextProvider>
+    </CategoriesContextProvider>
   );
 }

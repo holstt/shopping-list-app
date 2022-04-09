@@ -32,7 +32,7 @@ interface Props {
   onCheckButtonPress: (item: ShoppingItem) => void;
   onItemPress: (item: ShoppingItem) => void;
   isLastElement?: boolean;
-  onRemoveItem: (itemId: string) => void;
+  onRemoveItem: (item: ShoppingItem) => void;
   onPressCounter: (id: string, countType: CountType) => void;
   hasPrevItemCategory: boolean;
   hasNextItemCategory: boolean;
@@ -58,8 +58,6 @@ export default function ShoppingItemRow({
     styles.itemTextBase,
     item.isChecked ? styles.itemTextChecked : null,
   ];
-  // console.log("has prev cat " + hasPrevItemCategory);
-  // console.log("has next cat " + hasNextItemCategory);
 
   const categoryStyle = [
     styles.categoryColorRectangleBase,
@@ -74,7 +72,7 @@ export default function ShoppingItemRow({
     return (
       <View style={styles.swipedRow}>
         <Animated.View>
-          <TouchableOpacity onPress={() => onRemoveItem(item.id)}>
+          <TouchableOpacity onPress={() => onRemoveItem(item)}>
             <Text style={styles.removeButtonText}>Remove</Text>
           </TouchableOpacity>
         </Animated.View>

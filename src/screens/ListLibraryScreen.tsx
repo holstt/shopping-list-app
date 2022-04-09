@@ -12,19 +12,30 @@ import PlusButton from "../components/common/PlusButton";
 
 import { useState, useContext } from "react";
 import ItemList from "../models/ShoppingList";
-import ListRow from "../components/ListLibrary/ListRow";
+import ShoppingListRow from "../components/ListLibrary/ShoppingListRow";
 import colors from "../config/colors";
-import { ItemListsContext } from "../state/ItemListsContext";
+import {
+  ShoppingListsContext,
+  useShoppingListsContext,
+} from "../state/ShoppingListsContext";
 import { RootStackParamList } from "../RootNavigator";
+import { State } from "react-native-gesture-handler";
+import { ActionKind } from "../state/reducers/shoppingListsReducer";
 
 type Props = BottomTabScreenProps<RootStackParamList, "ListLibraryScreen">;
 
 export default function ListLibraryScreen({ route, navigation }: Props) {
   const [isEditListMode, setIsEditListMode] = useState(false);
+  const [isAddListMode, setIsAddItemMode] = useState(false);
   const [currentEditList, setCurrentEditList] = useState<ItemList | null>(null);
-  const [isAddItemMode, setIsAddItemMode] = useState(false);
 
-  const listsContext = useContext(ItemListsContext);
+  // const listsContext = useContext(ItemListsContext);
+
+  let {
+    state: { allLists: shoppingLists },
+    // eslint-disable-next-line prefer-const
+    dispatch,
+  } = useShoppingListsContext();
 
   const onListPress = (list: ItemList) => {
     setIsEditListMode(true);
@@ -38,18 +49,22 @@ export default function ListLibraryScreen({ route, navigation }: Props) {
     // Do nothing if empty text
     if (!event?.nativeEvent?.text || "" || !currentEditList) return;
 
-    // Notify and pass edit item to parent
-    listsContext.updateItemList({
-      ...currentEditList,
-      title: event.nativeEvent.text,
+    dispatch({
+      type: ActionKind.UPDATE_LIST,
+      payload: {
+        inputList: {
+          ...currentEditList,
+          title: event.nativeEvent.text,
+        },
+      },
     });
   };
 
-  let itemLists = listsContext.itemLists;
-
   // Item should be hidden from list if it is being edited.
   if (isEditListMode) {
-    itemLists = itemLists.filter((item) => item.id !== currentEditList?.id);
+    shoppingLists = shoppingLists.filter(
+      (item) => item.id !== currentEditList?.id
+    );
   }
 
   // Handle item submitted
@@ -57,15 +72,21 @@ export default function ListLibraryScreen({ route, navigation }: Props) {
     event: NativeSyntheticEvent<TextInputSubmitEditingEventData>
   ) => {
     // Do nothing if empty text
-    if (!event?.nativeEvent?.text || "") return;
+    if (!event?.nativeEvent?.text || "" || !currentEditList) return;
 
-    // Notify and pass new item to parent
-    listsContext.addItemList(
-      new ItemList(event.nativeEvent.text, [], itemLists.length)
-    );
+    dispatch({
+      type: ActionKind.ADD_LIST,
+      payload: {
+        inputList: new ItemList(
+          event.nativeEvent.text,
+          [],
+          shoppingLists.length
+        ),
+      },
+    });
   };
 
-  const addItemInput = (
+  const addListInput = (
     <TextInput
       style={styles.inputField}
       placeholder="Add List"
@@ -77,7 +98,7 @@ export default function ListLibraryScreen({ route, navigation }: Props) {
     />
   );
 
-  const editItemInput = (
+  const editListInput = (
     <TextInput
       style={styles.inputField}
       // Focus from start
@@ -90,10 +111,10 @@ export default function ListLibraryScreen({ route, navigation }: Props) {
   );
   // XXX: Skal i component
   // Resolve input
-  const inputComponent = isAddItemMode
-    ? addItemInput
+  const inputComponent = isAddListMode
+    ? addListInput
     : isEditListMode
-    ? editItemInput
+    ? editListInput
     : null;
 
   return (
@@ -101,24 +122,29 @@ export default function ListLibraryScreen({ route, navigation }: Props) {
       <Text style={styles.listHeader}>List Library</Text>
       {inputComponent}
       <ScrollView>{renderLists()}</ScrollView>
-      {!isAddItemMode ? (
+      {!isAddListMode ? (
         <PlusButton onPress={() => setIsAddItemMode(true)}></PlusButton>
       ) : null}
     </View>
   );
 
   function renderLists() {
-    return itemLists.map((l, i) => (
-      <ListRow
+    return shoppingLists.map((l, i) => (
+      <ShoppingListRow
         onDeleteButtonPress={(list) => {
           console.log("Call for delete");
-          listsContext.deleteItemList(list.id);
+          dispatch({
+            type: ActionKind.REMOVE_LIST,
+            payload: {
+              inputList: list,
+            },
+          });
         }}
         onListPress={onListPress}
-        isLastElement={i === itemLists.length - 1}
+        isLastElement={i === shoppingLists.length - 1}
         list={l}
         key={l.id}
-      ></ListRow>
+      ></ShoppingListRow>
     ));
   }
 }
