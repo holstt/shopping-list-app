@@ -6,7 +6,7 @@ import {
 import { StyleSheet, Text, View, ScrollView } from "react-native";
 import ShoppingItemRow from "../components/ShoppingListView/ShoppingItemRow";
 import ShoppingItem from "../models/ShoppingItem";
-import { useState, useContext } from "react";
+import { useState, useContext, useRef } from "react";
 import colors from "../config/colors";
 import Category from "../models/Category";
 import { CategoriesContext } from "../state/CategoriesContext";
@@ -24,6 +24,7 @@ import { ActionKind } from "../state/reducers/shoppingListsReducer";
 import ShoppingListHeader from "../components/ShoppingListView/ShoppingListHeader";
 import BackgroundCircle from "../components/ShoppingListView/BackgroundCircle";
 import { useNavigationContext } from "../state/NavigationContext";
+import { Swipeable } from "react-native-gesture-handler";
 
 type Props = BottomTabScreenProps<RootStackParamList, "ShoppingListScreen">;
 
@@ -45,6 +46,9 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
   const [isEditItemMode, setIsEditItemMode] = useState(false);
   const tabBarHeight = useBottomTabBarHeight();
   const isAddItemMode = addItemEventFiredOnScreen === "ShoppingListScreen"; // XXX: Skal ske i reducer??
+
+  const swipableRows = useRef<Swipeable[]>([]); // XXX: Evt. dict i stedet
+  const prevOpenedSwipableRow = useRef<Swipeable | null>(null);
 
   // XXX: Egen comp?? Context?
   // XXX: Hvorfor ikke slå sammen?
@@ -188,11 +192,24 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
       return true;
     };
 
+    const closePrevOpenSwipable = (index: number) => {
+      if (
+        prevOpenedSwipableRow.current &&
+        prevOpenedSwipableRow.current !== swipableRows.current[index]
+      ) {
+        prevOpenedSwipableRow.current.close();
+      }
+      prevOpenedSwipableRow.current = swipableRows.current[index];
+    };
+
     return fromItems.map((item, index) => {
       return (
         <View key={item.id}>
           {isNewCat(item.category) && gapComponent}
           <ShoppingItemRow
+            index={index}
+            onSwipeToDeletedStarted={closePrevOpenSwipable}
+            swipableRowRef={(ref) => (swipableRows.current[index] = ref)}
             key={item.id}
             item={item}
             isLastElement={index === fromItems.length - 1}
@@ -266,7 +283,9 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
         {/* <ScrollView style={{ marginBottom: 100 }}> */}
         <ScrollView>{itemListComponent}</ScrollView>
       </View>
-      <BackgroundCircle></BackgroundCircle>
+      {!(isAddItemMode || isEditItemMode) && (
+        <BackgroundCircle></BackgroundCircle>
+      )}
       {/* {!isAddItemMode && !isEditItemMode ? (
         <PlusButtonOld
           onPress={() => acknowledgeAddItemEvent()}

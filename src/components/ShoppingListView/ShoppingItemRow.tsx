@@ -16,7 +16,7 @@ import {
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
 
-import React, { useState } from "react";
+import React, { MutableRefObject, useState } from "react";
 
 import CheckButton from "./CheckButton";
 import ShoppingItem from "../../models/ShoppingItem";
@@ -37,9 +37,13 @@ interface Props {
   onPressCounter: (id: string, countType: CountType) => void;
   hasPrevItemCategory: boolean;
   hasNextItemCategory: boolean;
+  swipableRowRef: (ref: Swipeable) => void;
+  onSwipeToDeletedStarted: (index: number) => void;
+  index: number;
 }
 
 export default function ShoppingItemRow({
+  index,
   item,
   onCheckButtonPress,
   onItemPress,
@@ -49,6 +53,8 @@ export default function ShoppingItemRow({
   onPressCounter,
   hasPrevItemCategory,
   hasNextItemCategory,
+  swipableRowRef,
+  onSwipeToDeletedStarted,
 }: Props) {
   // Resolve styles
   const container = [
@@ -88,7 +94,12 @@ export default function ShoppingItemRow({
 
   return (
     <GestureHandlerRootView>
-      <Swipeable renderRightActions={renderSwipeToDelete}>
+      <Swipeable
+        ref={(ref) => ref && swipableRowRef(ref)}
+        renderRightActions={renderSwipeToDelete}
+        onSwipeableWillOpen={() => onSwipeToDeletedStarted(index)}
+        // leftThreshold={80}
+      >
         <View style={container}>
           <CheckButton
             isChecked={item.isChecked}
@@ -134,14 +145,15 @@ export default function ShoppingItemRow({
 
 const styles = StyleSheet.create({
   containerBase: {
-    // backgroundColor: "lightgrey",
     flexDirection: "row",
-    alignItems: "center",
-
+    backgroundColor: "#fff",
     paddingLeft: 8,
-
     borderColor: "transparent",
+
     // borderBottomWidth: 0,
+    // backgroundColor: "lightgrey",
+    // justifyContent: "center",
+    // alignItems: "center",
   },
   // Add bottom border to item if has another item below.
   containerHasNext: {
@@ -207,6 +219,7 @@ const styles = StyleSheet.create({
     color: "white",
     padding: 10,
     fontSize: 15,
+    // fontFamily: "sans-serif-medium",
   },
 
   categoryColorRectangleBase: {

@@ -44,6 +44,7 @@ export default function RootNavigator() {
         // tabBar=
         screenOptions={{
           // tabBarHideOnKeyboard: true,
+          // tabBarHideOnKeyboard: true,
           headerShown: false,
           // tabBarBackground: () => (
           //   <View style={{ backgroundColor: "green" }}></View>
@@ -103,6 +104,7 @@ export default function RootNavigator() {
           options={{
             title: "Lists",
             tabBarButton: (props) => (
+              // if(props.)
               <PlusButtonNew
                 {...props}
                 onPress={() => {
