@@ -1,6 +1,7 @@
 import { StyleSheet, View, TouchableOpacity } from "react-native";
 
 import { FontAwesome } from "@expo/vector-icons";
+import colors from "../../config/colors";
 
 interface ButtonProps {
   isChecked: boolean;
@@ -17,7 +18,7 @@ export default function CheckButton({ isChecked, onPress }: ButtonProps) {
       <FontAwesome
         name="check-circle"
         size={29} // XXX: Dynamisk?
-        color="#2d7ffa"
+        color={colors.blue}
       />
     </TouchableOpacity>
   );
@@ -40,7 +41,7 @@ const styles = StyleSheet.create({
     // backgroundColor: "red",
   },
   buttonDefault: {
-    borderColor: "#2d7ffa",
+    borderColor: colors.blue,
     borderWidth: 3,
     // Fill container
     width: "90%",

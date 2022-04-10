@@ -21,11 +21,8 @@ export default function ShoppingListsContextProvider({
   initialCurrentListId,
   children,
 }: Props) {
-  console.log("context rendered");
-
   // Try get index of start list.
   const getLastActiveListIndex = (startListId: string | null) => {
-    console.log("getting last index");
     if (!startListId) {
       return 0;
     } else {
@@ -63,6 +60,8 @@ export default function ShoppingListsContextProvider({
       });
     })();
   }, [state.currentListIndex]);
+
+  console.log("sdf");
 
   // // Reload all lists from storage
   // const reload = async () => {

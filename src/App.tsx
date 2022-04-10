@@ -9,6 +9,8 @@ import { View, Text, StatusBar } from "react-native";
 import StorageTestDataInitializer from "./services/StorageTestDataInitializer";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
+import { NavigationContext } from "@react-navigation/native";
+import NavigationContextProvider from "./state/NavigationContext";
 
 // Use Reactotron dev tool
 // if (__DEV__) {
@@ -20,7 +22,7 @@ import { useEffect } from "react";
 
 export default function App() {
   console.log("App: Rendered");
-  StatusBar.setBarStyle("dark-content", true);
+  StatusBar.setBarStyle("light-content", true);
   const { loading, storageState } = useLocalStorageState();
 
   useEffect(() => {
@@ -49,7 +51,9 @@ export default function App() {
         <LibraryItemsContextProvider
           initLibraryItems={storageState.libraryItems}
         >
-          <RootNavigator />
+          <NavigationContextProvider>
+            <RootNavigator />
+          </NavigationContextProvider>
         </LibraryItemsContextProvider>
       </ShoppingListsContextProvider>
     </CategoriesContextProvider>

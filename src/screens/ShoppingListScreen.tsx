@@ -1,53 +1,50 @@
-import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import {
+  BottomTabScreenProps,
+  useBottomTabBarHeight,
+} from "@react-navigation/bottom-tabs";
 
 import { StyleSheet, Text, View, ScrollView } from "react-native";
 import ShoppingItemRow from "../components/ShoppingListView/ShoppingItemRow";
 import ShoppingItem from "../models/ShoppingItem";
-import { useState, useContext, useReducer } from "react";
+import { useState, useContext } from "react";
 import colors from "../config/colors";
-import UpDownButton from "../components/ShoppingListView/UpDownButton";
-import PlusButton from "../components/common/PlusButton";
 import Category from "../models/Category";
 import { CategoriesContext } from "../state/CategoriesContext";
-import {
-  ShoppingListsContext,
-  useShoppingListsContext,
-} from "../state/ShoppingListsContext";
+import Constants from "expo-constants";
+
+import { useShoppingListsContext } from "../state/ShoppingListsContext";
 import { RootStackParamList } from "../RootNavigator";
 import ShoppingListInput, {
   InputMode,
 } from "../components/ShoppingListView/ShoppingListInput";
 import { LibraryItemsContext } from "../state/LibraryItemsContext";
-import { CountType } from "../components/ShoppingListView/Counter";
+import { CountType } from "../components/ShoppingListView/QuantityButtons";
 import ShoppingList from "../models/ShoppingList";
 import { ActionKind } from "../state/reducers/shoppingListsReducer";
+import ShoppingListHeader from "../components/ShoppingListView/ShoppingListHeader";
+import BackgroundCircle from "../components/ShoppingListView/BackgroundCircle";
+import { useNavigationContext } from "../state/NavigationContext";
 
 type Props = BottomTabScreenProps<RootStackParamList, "ShoppingListScreen">;
 
 export default function ShoppingListScreen({ navigation, route }: Props) {
+  console.log("ShoppingListScreen: Rendering");
+
   const { categories } = useContext(CategoriesContext);
   const { state, dispatch } = useShoppingListsContext();
+  const { addItemEventFiredOnScreen, acknowledgeAddItemEvent } =
+    useNavigationContext();
 
   // XXX: Genbrug fra context
   const currentList = state.allLists[state.currentListIndex];
-  const hasPrevList = state.currentListIndex - 1 >= 0;
-  const hasNextList = state.currentListIndex + 1 <= state.allLists.length - 1;
-
-  // Create list if no lists in app state.
-  if (!currentList) {
-    console.log("No current list");
-    const firstList = new ShoppingList("My First List", [], 0);
-    // Add list to global store and wait for rerender with new state.
-    dispatch({ type: ActionKind.ADD_LIST, payload: { inputList: firstList } });
-    return null;
-  }
-
   const { libraryItems } = useContext(LibraryItemsContext);
 
   // XXX: Lav custom hooks til det her
   // Mode only active when input for add new item is visible
-  const [isAddItemMode, setIsAddItemMode] = useState(false);
+  // const [isAddItemMode, setIsAddItemMode] = useState(false);
   const [isEditItemMode, setIsEditItemMode] = useState(false);
+  const tabBarHeight = useBottomTabBarHeight();
+  const isAddItemMode = addItemEventFiredOnScreen === "ShoppingListScreen"; // XXX: Skal ske i reducer??
 
   // XXX: Egen comp?? Context?
   // XXX: Hvorfor ikke slå sammen?
@@ -57,6 +54,15 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null
   );
+
+  // Create list if no lists in app state.
+  if (!currentList) {
+    console.log("No current list");
+    const firstList = new ShoppingList("My First List", [], 0);
+    // Add list to global store and wait for rerender with new state.
+    dispatch({ type: ActionKind.ADD_LIST, payload: { inputList: firstList } });
+    return null;
+  }
 
   let items: ShoppingItem[];
 
@@ -104,8 +110,7 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
   };
 
   const onAddItemModeEnded = () => {
-    console.log("add item mode ended");
-    setIsAddItemMode(false);
+    acknowledgeAddItemEvent();
     setSelectedCategory(null);
   };
 
@@ -145,6 +150,7 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
       throw new Error("Count item was not found: " + id);
     }
 
+    // XXX: Reducer??
     switch (countType) {
       case CountType.INCREMENT:
         dispatch({
@@ -171,28 +177,43 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
   };
 
   const renderListComponent = (fromItems: ShoppingItem[]) => {
+    let currentCategory: Category | null = fromItems[0]?.category;
+    const gapComponent = <View style={styles.gapColorFill}></View>;
+
+    const isNewCat = (cat: Category | null) => {
+      if (currentCategory?.id === cat?.id) {
+        return false;
+      }
+      currentCategory = cat;
+      return true;
+    };
+
     return fromItems.map((item, index) => {
       return (
-        <ShoppingItemRow
-          key={item.id}
-          item={item}
-          isLastElement={index === fromItems.length - 1}
-          onCheckButtonPress={onItemCheckToggled}
-          onItemPress={onItemPress}
-          onRemoveItem={(item) =>
-            dispatch({
-              type: ActionKind.REMOVE_ITEM,
-              payload: { inputItem: item },
-            })
-          }
-          onPressCounter={onPressCounter}
-          hasPrevItemCategory={
-            fromItems[index - 1]?.category?.title === item.category?.title
-          }
-          hasNextItemCategory={
-            fromItems[index + 1]?.category?.title === item.category?.title
-          }
-        ></ShoppingItemRow>
+        <View key={item.id}>
+          {isNewCat(item.category) && gapComponent}
+          <ShoppingItemRow
+            key={item.id}
+            item={item}
+            isLastElement={index === fromItems.length - 1}
+            isFirstItem={index === 0}
+            onCheckButtonPress={onItemCheckToggled}
+            onItemPress={onItemPress}
+            onRemoveItem={(item) =>
+              dispatch({
+                type: ActionKind.REMOVE_ITEM,
+                payload: { inputItem: item },
+              })
+            }
+            onPressCounter={onPressCounter}
+            hasPrevItemCategory={
+              fromItems[index - 1]?.category?.title === item.category?.title
+            }
+            hasNextItemCategory={
+              fromItems[index + 1]?.category?.title === item.category?.title
+            }
+          ></ShoppingItemRow>
+        </View>
       );
     });
   };
@@ -215,46 +236,44 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
     </View>
   );
 
+  // XXX: Top container i
   return (
+    // <LinearGradient colors={["#0769D1", "#2E90F8"]}>
     <View style={styles.container}>
-      <View style={styles.listHeaderContainer}>
-        <Text numberOfLines={1} style={styles.listHeader}>
-          {currentList.title}
-        </Text>
-        <UpDownButton
-          onButtonUp={() =>
-            dispatch({ type: ActionKind.GO_TO_PREV_LIST, payload: {} })
-          }
-          onButtonDown={() =>
-            dispatch({ type: ActionKind.GO_TO_NEXT_LIST, payload: {} })
-          }
-          isUpButtonEnabled={hasPrevList}
-          isDownButtonEnabled={hasNextList}
-        ></UpDownButton>
+      <View style={styles.topContainer}>
+        <ShoppingListHeader></ShoppingListHeader>
+        {/* {inputComponent} */}
+        {(isAddItemMode || isEditItemMode) && (
+          // XXX: Skal have context
+          <ShoppingListInput
+            libraryItems={libraryItems}
+            categories={categories}
+            chosenCategory={selectedCategory}
+            onCategoryPress={onCategoryPress}
+            text={currentEditItem ? currentEditItem.title : ""}
+            inputMode={isAddItemMode ? InputMode.ADD : InputMode.EDIT}
+            onAddItemModeEnded={onAddItemModeEnded}
+            onSubmitAddItem={onSubmitAddItem}
+            onEditItemModeEnded={onEditItemModeEnded}
+            onSubmitEditItem={onSubmitEditItem}
+            currentIndex={currentList.items.length - 1}
+          ></ShoppingListInput>
+        )}
       </View>
-
-      {/* {inputComponent} */}
-      {(isAddItemMode || isEditItemMode) && (
-        // XXX: Skal have context
-        <ShoppingListInput
-          libraryItems={libraryItems}
-          categories={categories}
-          chosenCategory={selectedCategory}
-          onCategoryPress={onCategoryPress}
-          text={currentEditItem ? currentEditItem.title : ""}
-          inputMode={isAddItemMode ? InputMode.ADD : InputMode.EDIT}
-          onAddItemModeEnded={onAddItemModeEnded}
-          onSubmitAddItem={onSubmitAddItem}
-          onEditItemModeEnded={onEditItemModeEnded}
-          onSubmitEditItem={onSubmitEditItem}
-          currentIndex={currentList.items.length - 1}
-        ></ShoppingListInput>
-      )}
-      <ScrollView>{itemListComponent}</ScrollView>
-      {!isAddItemMode && !isEditItemMode ? (
-        <PlusButton onPress={() => setIsAddItemMode(true)}></PlusButton>
-      ) : null}
+      <View
+        style={[styles.itemListContainer, { marginBottom: tabBarHeight + 78 }]}
+      >
+        {/* <ScrollView style={{ marginBottom: 100 }}> */}
+        <ScrollView>{itemListComponent}</ScrollView>
+      </View>
+      <BackgroundCircle></BackgroundCircle>
+      {/* {!isAddItemMode && !isEditItemMode ? (
+        <PlusButtonOld
+          onPress={() => acknowledgeAddItemEvent()}
+        ></PlusButtonOld>
+      ) : null} */}
     </View>
+    // </LinearGradient>
   );
 
   // Reorder items. Put checked items at bottom
@@ -268,23 +287,78 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
 const styles = StyleSheet.create({
   container: {
     height: "100%",
+
+    // TODO: Flyt til global container.
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingTop: Constants.statusBarHeight,
+    backgroundColor: colors.backgroundBlue,
+
+    // backgroundColor: "transparent",
+    // backgroundColor: colors.blue,
+    // borderRadius: 20,
+  },
+  gapColorFill: {
+    backgroundColor: colors.backgroundBlue,
+    height: 4,
+  },
+  topContainer: {
+    marginBottom: 15,
+  },
+  itemListContainer: {
+    // height: "80%",
+    // flex: 1, // Uncomment to fill view
+    overflow: "hidden",
+    borderRadius: 15,
+    // marginBottom: 300,
+    // borderTopLeftRadius: 15,
+    // borderTopRightRadius: 15,
+    backgroundColor: "white",
+
+    // Shadow
+    // shadowColor: "#000",
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 0,
+    // },
+    // shadowOpacity: 0.25,
+    // shadowRadius: 3.5,
+    // elevation: 10,
   },
 
   listHeaderContainer: {
-    // backgroundColor: "red",
     flexDirection: "row",
-    marginLeft: 5,
+
+    // marginLeft: 5,
+    // marginBottom: 10,
+    // padding: 5,
     // marginBottom: 10,
     alignItems: "center",
     justifyContent: "center",
   },
-  listHeader: {
+  listNameContainer: {
+    // backgroundColor: "blue",
+    // flexDirection: "row",
     flex: 4,
-    color: colors.darkGrey,
-    textAlign: "left",
-    fontSize: 35,
-    paddingBottom: 10,
+    marginRight: 10,
+    // alignItems: "center",
   },
+  listHeaderText: {
+    backgroundColor: "#005AB2",
+    borderRadius: 30,
+    // borderWidth: 1,
+    // borderColor: "#4797E9",
+    padding: 10,
+    paddingLeft: 15,
+    color: "white",
+    // fontFamily: "sans-serif",
+    // fontFamily: "sans-serif-medium",
+    fontSize: 24,
+  },
+  inputContainer: {
+    flexDirection: "row",
+  },
+
   doneHeader: {
     color: colors.lightGrey,
     textAlign: "left",
@@ -300,8 +374,5 @@ const styles = StyleSheet.create({
     width: 13,
     marginTop: 7,
     marginBottom: 7,
-  },
-  inputContainer: {
-    flexDirection: "row",
   },
 });

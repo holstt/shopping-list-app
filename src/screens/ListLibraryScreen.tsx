@@ -5,10 +5,11 @@ import {
   StyleSheet,
   ScrollView,
   TextInput,
+  TouchableOpacity,
   NativeSyntheticEvent,
   TextInputSubmitEditingEventData,
 } from "react-native";
-import PlusButton from "../components/common/PlusButton";
+import PlusButtonOld from "../components/common/PlusButtonOld";
 
 import { useState, useContext } from "react";
 import ItemList from "../models/ShoppingList";
@@ -25,6 +26,7 @@ import { ActionKind } from "../state/reducers/shoppingListsReducer";
 type Props = BottomTabScreenProps<RootStackParamList, "ListLibraryScreen">;
 
 export default function ListLibraryScreen({ route, navigation }: Props) {
+  console.log("ListLibraryScreen: Rendering");
   const [isEditListMode, setIsEditListMode] = useState(false);
   const [isAddListMode, setIsAddItemMode] = useState(false);
   const [currentEditList, setCurrentEditList] = useState<ItemList | null>(null);
@@ -122,14 +124,15 @@ export default function ListLibraryScreen({ route, navigation }: Props) {
       <Text style={styles.listHeader}>List Library</Text>
       {inputComponent}
       <ScrollView>{renderLists()}</ScrollView>
+      <View style={styles.viewTest}></View>
       {!isAddListMode ? (
-        <PlusButton onPress={() => setIsAddItemMode(true)}></PlusButton>
+        <PlusButtonOld onPress={() => setIsAddItemMode(true)}></PlusButtonOld>
       ) : null}
     </View>
   );
 
   function renderLists() {
-    return shoppingLists.map((l, i) => (
+    return shoppingLists.map((list, index) => (
       <ShoppingListRow
         onDeleteButtonPress={(list) => {
           console.log("Call for delete");
@@ -141,9 +144,9 @@ export default function ListLibraryScreen({ route, navigation }: Props) {
           });
         }}
         onListPress={onListPress}
-        isLastElement={i === shoppingLists.length - 1}
-        list={l}
-        key={l.id}
+        isLastElement={index === shoppingLists.length - 1}
+        list={list}
+        key={list.id}
       ></ShoppingListRow>
     ));
   }
@@ -151,7 +154,7 @@ export default function ListLibraryScreen({ route, navigation }: Props) {
 
 const styles = StyleSheet.create({
   container: {
-    height: "100%",
+    // height: "100%",
     // backgroundColor: "blue",
   },
   listHeader: {
@@ -165,5 +168,17 @@ const styles = StyleSheet.create({
     paddingBottom: 7,
     color: colors.darkGrey,
     fontSize: 20,
+  },
+  viewTest: {
+    marginLeft: 100,
+    width: 200,
+    height: 400,
+    shadowColor: "black",
+    shadowOpacity: 0.99,
+    shadowOffset: { width: 0, height: 0 },
+    // shadowRadius: 50,
+    // borderWidth: 1,
+    elevation: 10,
+    backgroundColor: "green",
   },
 });

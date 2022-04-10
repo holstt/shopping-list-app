@@ -21,7 +21,9 @@ export function useShoppingListsContext() {
   const context = useContext(ShoppingListsContext);
 
   if (!context) {
-    throw new Error("Context was not wrapped in a provider");
+    throw new Error(
+      "Component was not wrapped in the required context provider"
+    );
   }
   return context;
 }

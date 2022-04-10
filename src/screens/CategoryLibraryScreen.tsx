@@ -14,6 +14,8 @@ type Props = BottomTabScreenProps<RootStackParamList, "CategoryLibraryScreen">;
 
 // TODO: Lav færdig når har generic components
 export default function CategoryLibraryScreen({ navigation, route }: Props) {
+  console.log("CategoryLibraryScreen: Rendering");
+
   const { categories } = useContext(CategoriesContext);
 
   const categoryListComponent = categories.map((cat) => (
@@ -29,5 +31,7 @@ export default function CategoryLibraryScreen({ navigation, route }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    backgroundColor: "white",
+  },
 });

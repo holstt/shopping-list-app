@@ -12,7 +12,7 @@ import {
   NativeSyntheticEvent,
   TextInputSubmitEditingEventData,
 } from "react-native";
-import PlusButton from "../components/common/PlusButton";
+import PlusButtonOld from "../components/common/PlusButtonOld";
 import LibraryItem from "../models/LibraryItem";
 import LibraryItemRow from "../components/ItemLibrary/LibraryItemRow";
 import colors from "../config/colors";
@@ -22,6 +22,7 @@ import { RootStackParamList } from "../RootNavigator";
 type Props = BottomTabScreenProps<RootStackParamList, "ItemLibraryScreen">;
 
 export default function ItemLibraryScreen({ navigation, route }: Props) {
+  console.log("ItemLibraryScreen: Rendering");
   const {
     deleteLibraryItem,
     addLibraryItem,
@@ -187,7 +188,7 @@ export default function ItemLibraryScreen({ navigation, route }: Props) {
       {inputComponent}
       <ScrollView>{itemsComponent}</ScrollView>
       {!isAddItemMode && !isEditItemMode ? (
-        <PlusButton onPress={() => setIsAddItemMode(true)}></PlusButton>
+        <PlusButtonOld onPress={() => setIsAddItemMode(true)}></PlusButtonOld>
       ) : null}
     </View>
   );

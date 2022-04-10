@@ -47,8 +47,8 @@ export default function useLocalStorageState() {
       appData: appData,
     });
 
-    setIsLoading(false);
     console.log("useLocalStorageState: State loaded!");
+    setIsLoading(false);
   };
 
   return { loading, storageState };

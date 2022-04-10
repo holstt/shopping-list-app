@@ -11,6 +11,9 @@ import Category from "../../models/Category";
 import LibraryItem from "../../models/LibraryItem";
 import ShoppingItem from "../../models/ShoppingItem";
 
+// Maximum items displayed in autocomplete list.
+const MAX_ITEMS = 6;
+
 interface Props {
   query: string;
   items: LibraryItem[];
@@ -28,7 +31,7 @@ export default function CustomAutocomplete({
     );
   };
 
-  const queryResult = filterData(query);
+  const queryResult = filterData(query).slice(0, MAX_ITEMS);
   const itemsComponent = queryResult.map((item) => (
     <View key={item.id}>
       <TouchableOpacity

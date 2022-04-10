@@ -21,7 +21,7 @@ import React, { useState } from "react";
 import CheckButton from "./CheckButton";
 import ShoppingItem from "../../models/ShoppingItem";
 import Colors from "../../config/colors";
-import Counter, { CountType } from "./Counter";
+import QuantityButtons, { CountType } from "./QuantityButtons";
 import Category from "../../models/Category";
 
 // TODO
@@ -32,6 +32,7 @@ interface Props {
   onCheckButtonPress: (item: ShoppingItem) => void;
   onItemPress: (item: ShoppingItem) => void;
   isLastElement?: boolean;
+  isFirstItem?: boolean;
   onRemoveItem: (item: ShoppingItem) => void;
   onPressCounter: (id: string, countType: CountType) => void;
   hasPrevItemCategory: boolean;
@@ -43,6 +44,7 @@ export default function ShoppingItemRow({
   onCheckButtonPress,
   onItemPress,
   isLastElement,
+  isFirstItem,
   onRemoveItem,
   onPressCounter,
   hasPrevItemCategory,
@@ -51,8 +53,11 @@ export default function ShoppingItemRow({
   // Resolve styles
   const container = [
     styles.containerBase,
-    isLastElement ? styles.containerLast : null,
+    // TEMP FIX: check !isLastElement as hasNextItemCategory is true if last item is null category (make Unknown cat?)
+    !isLastElement && hasNextItemCategory ? styles.containerHasNext : null,
   ];
+
+  // const container = styles.containerBase;
 
   const itemTextStyle = [
     styles.itemTextBase,
@@ -63,6 +68,7 @@ export default function ShoppingItemRow({
     styles.categoryColorRectangleBase,
     hasPrevItemCategory && styles.categoryColorRectangleHasPrev,
     hasNextItemCategory && styles.categoryColorRectangleHasNext,
+    isFirstItem && styles.categoryColorRectangleIsFirst,
   ];
 
   const renderSwipeToDelete = (
@@ -107,7 +113,11 @@ export default function ShoppingItemRow({
             </View>
 
             <View style={styles.rightContainer}>
-              <Counter onPress={onPressCounter} id={item.id}></Counter>
+              <QuantityButtons
+                onPress={onPressCounter}
+                id={item.id}
+                isDecrementButtonEnabled={item.quantity > 1} // XXX: Business logik. State med canDecrement
+              ></QuantityButtons>
               <View
                 style={[
                   categoryStyle,
@@ -128,16 +138,20 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
 
-    paddingLeft: 5,
+    paddingLeft: 8,
 
     borderColor: "transparent",
-    borderWidth: 1,
-    borderTopColor: "#d5d8e3",
+    // borderBottomWidth: 0,
   },
-  // Add a bottom border to the last item in the list
-  containerLast: {
+  // Add bottom border to item if has another item below.
+  containerHasNext: {
     borderBottomColor: "#d5d8e3",
+    // borderBottomColor: "red",
+    borderBottomWidth: 1,
   },
+  // containerFirst: {
+  //   borderWidth: 0,
+  // },
   quantityText: {
     color: "#7B7D7D",
     fontSize: 14,
@@ -150,6 +164,8 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     justifyContent: "flex-end",
+    // backgroundColor: "red",
+    // borderRadius: 20,
   },
   counter: {
     // marginRight: 1000,
@@ -195,8 +211,9 @@ const styles = StyleSheet.create({
 
   categoryColorRectangleBase: {
     marginLeft: 30,
-    borderTopLeftRadius: 8,
-    borderBottomLeftRadius: 8,
+    // borderTopRightRadius: 8,
+    borderTopLeftRadius: 3,
+    borderBottomLeftRadius: 3,
     width: 13,
     marginTop: 5,
     marginBottom: 5,
@@ -208,5 +225,8 @@ const styles = StyleSheet.create({
   categoryColorRectangleHasNext: {
     marginBottom: -1,
     borderBottomLeftRadius: 0,
+  },
+  categoryColorRectangleIsFirst: {
+    marginTop: 0,
   },
 });
