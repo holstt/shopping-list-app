@@ -6,11 +6,14 @@ import React, {
   useContext,
 } from "react";
 import ShoppingList from "../models/ShoppingList";
-import { Action, State } from "./reducers/shoppingListsReducer";
+import {
+  ShoppingListReducerAction,
+  ShoppingListReducerState,
+} from "./reducers/shoppingListsReducer";
 
 interface ShoppingListState {
-  state: State;
-  dispatch: Dispatch<Action>;
+  state: ShoppingListReducerState;
+  dispatch: Dispatch<ShoppingListReducerAction>;
 }
 // Give initial empty values to avoid not null. // XXX: Fix senere med library
 export const ShoppingListsContext = createContext<
@@ -22,7 +25,7 @@ export function useShoppingListsContext() {
 
   if (!context) {
     throw new Error(
-      "Component was not wrapped in the required context provider"
+      "Component was not wrapped in the required context provider: ShoppingListsContext"
     );
   }
   return context;

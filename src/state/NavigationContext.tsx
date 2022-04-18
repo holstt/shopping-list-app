@@ -22,7 +22,7 @@ export function useNavigationContext() {
 
   if (!context) {
     throw new Error(
-      "Component was not wrapped in the required context provider"
+      "Component was not wrapped in the required context provider: NavigationContext"
     );
   }
   return context;
@@ -32,6 +32,7 @@ interface Props {
   children: React.ReactNode;
 }
 
+// PROVIDER
 export default function NavigationContextProvider({ children }: Props) {
   const [addItemEventFiredOnScreen, setaddItemEventFiredOnScreen] = useState<
     keyof RootStackParamList | null

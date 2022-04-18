@@ -11,7 +11,6 @@ import {
   GestureResponderEvent,
 } from "react-native";
 import Colors from "../../config/colors";
-import { ActionKind } from "../../state/reducers/shoppingListsReducer";
 import { useShoppingListsContext } from "../../state/ShoppingListsContext";
 import UpDownButton from "./UpDownButton";
 
@@ -39,12 +38,8 @@ export default function ShoppingListHeader() {
         </Text>
       </View>
       <UpDownButton
-        onButtonUp={() =>
-          dispatch({ type: ActionKind.GO_TO_PREV_LIST, payload: {} })
-        }
-        onButtonDown={() =>
-          dispatch({ type: ActionKind.GO_TO_NEXT_LIST, payload: {} })
-        }
+        onButtonUp={() => dispatch({ type: "MOVED_TO_PREV_LIST" })}
+        onButtonDown={() => dispatch({ type: "MOVED_TO_NEXT_LIST" })}
         isUpButtonEnabled={hasPrevList}
         isDownButtonEnabled={hasNextList}
       ></UpDownButton>

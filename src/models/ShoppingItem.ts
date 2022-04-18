@@ -49,3 +49,12 @@ export default class ShoppingItem {
     this.quantity = 1;
   }
 }
+
+// Compares items by category and then by item title
+export const itemComparer = (a: ShoppingItem, b: ShoppingItem): number => {
+  if (a.category?.title === b.category?.title)
+    return a.title.localeCompare(b.title);
+  else if (a.category === null) return 1;
+  else if (b.category === null) return -1;
+  else return a.category.title.localeCompare(b.category.title);
+};

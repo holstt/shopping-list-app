@@ -21,7 +21,6 @@ import {
 } from "../state/ShoppingListsContext";
 import { RootStackParamList } from "../RootNavigator";
 import { State } from "react-native-gesture-handler";
-import { ActionKind } from "../state/reducers/shoppingListsReducer";
 
 type Props = BottomTabScreenProps<RootStackParamList, "ListLibraryScreen">;
 
@@ -52,13 +51,9 @@ export default function ListLibraryScreen({ route, navigation }: Props) {
     if (!event?.nativeEvent?.text || "" || !currentEditList) return;
 
     dispatch({
-      type: ActionKind.UPDATE_LIST,
-      payload: {
-        inputList: {
-          ...currentEditList,
-          title: event.nativeEvent.text,
-        },
-      },
+      type: "LIST_TITLE_CHANGED",
+      listId: currentEditList.id,
+      newTitle: event.nativeEvent.text,
     });
   };
 
@@ -77,14 +72,8 @@ export default function ListLibraryScreen({ route, navigation }: Props) {
     if (!event?.nativeEvent?.text || "" || !currentEditList) return;
 
     dispatch({
-      type: ActionKind.ADD_LIST,
-      payload: {
-        inputList: new ItemList(
-          event.nativeEvent.text,
-          [],
-          shoppingLists.length
-        ),
-      },
+      type: "LIST_ADDED",
+      list: new ItemList(event.nativeEvent.text, [], shoppingLists.length),
     });
   };
 
@@ -137,10 +126,8 @@ export default function ListLibraryScreen({ route, navigation }: Props) {
         onDeleteButtonPress={(list) => {
           console.log("Call for delete");
           dispatch({
-            type: ActionKind.REMOVE_LIST,
-            payload: {
-              inputList: list,
-            },
+            type: "LIST_REMOVED",
+            listId: list.id,
           });
         }}
         onListPress={onListPress}

@@ -17,6 +17,9 @@ import PlusButtonOld from "./components/common/PlusButtonOld";
 import PlusButtonNew from "./components/common/PlusButtonNew";
 import { useRef } from "react";
 import { useNavigationContext } from "./state/NavigationContext";
+import ShoppingListUIContextProvider, {
+  ShoppingListUIContext,
+} from "./state/ShoppingListUIContext";
 // import { useNavigationContext } from "./state/NavigationContext";
 
 export type RootStackParamList = {
@@ -32,6 +35,16 @@ const ButtonPlaceHolderScreen = () => null;
 
 const Tab = createBottomTabNavigator<RootStackParamList>();
 
+// Wrap in context local to this screen.
+const ShoppingListScreenWithContext = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  props: any // OK? Ej typed
+) => (
+  <ShoppingListUIContextProvider>
+    <ShoppingListScreen {...props}></ShoppingListScreen>
+  </ShoppingListUIContextProvider>
+);
+
 export default function RootNavigator() {
   const navigationRef = useRef<any>(); // XXX: Hvilken type??
   const { addItemEventFiredOnScreen, setaddItemEventFiredOnScreen } =
@@ -43,26 +56,9 @@ export default function RootNavigator() {
         sceneContainerStyle={styles.container}
         // tabBar=
         screenOptions={{
-          // tabBarHideOnKeyboard: true,
-          // tabBarHideOnKeyboard: true,
           headerShown: false,
-          // tabBarBackground: () => (
-          //   <View style={{ backgroundColor: "green" }}></View>
-          // ),
-          // headerTransparent: true,
-          // backg
-          // borderWidth: 0.5,
-          // borderBottomWidth: 1,
-          // backgroundColor: 'red',
-          // borderTopLeftRadius: 20,
-          // borderTopRightRadius: 20,
-          // borderColor: 'grey',
-          // position: 'absolute'
-
           tabBarStyle: {
-            // zIndex: 0,
             position: "absolute",
-            // marginBottom: 100,
             backgroundColor: "white",
             paddingBottom: 5,
             paddingTop: 5,
@@ -80,7 +76,7 @@ export default function RootNavigator() {
       >
         <Tab.Screen
           name="ShoppingListScreen"
-          component={ShoppingListScreen}
+          component={ShoppingListScreenWithContext}
           options={{
             title: "Shopping",
             tabBarIcon: ({ focused, color, size }) => (

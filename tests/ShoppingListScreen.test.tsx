@@ -24,6 +24,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // jest.mock("react-native-uuid", () => ({ v4: () => "mockid" }));
 
+// Test case
+// - with empty list, create init list
+// In input mode -> not visible in list
+// Sorted correctly
+
 function showType(comp: any) {
   expect(comp.type.displayName).toBe(1);
 }

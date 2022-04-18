@@ -34,7 +34,7 @@ interface Props {
   isLastElement?: boolean;
   isFirstItem?: boolean;
   onRemoveItem: (item: ShoppingItem) => void;
-  onPressCounter: (id: string, countType: CountType) => void;
+  onPressQuantity: (id: string, countType: CountType) => void;
   hasPrevItemCategory: boolean;
   hasNextItemCategory: boolean;
   swipableRowRef: (ref: Swipeable) => void;
@@ -50,7 +50,7 @@ export default function ShoppingItemRow({
   isLastElement,
   isFirstItem,
   onRemoveItem,
-  onPressCounter,
+  onPressQuantity: onPressCounter,
   hasPrevItemCategory,
   hasNextItemCategory,
   swipableRowRef,

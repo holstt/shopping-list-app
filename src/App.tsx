@@ -21,13 +21,14 @@ import NavigationContextProvider from "./state/NavigationContext";
 // }
 
 export default function App() {
-  console.log("App: Rendered");
+  console.log("App: Rendering");
   StatusBar.setBarStyle("light-content", true);
   const { loading, storageState } = useLocalStorageState();
 
   useEffect(() => {
     void (async () => {
       if (loading) {
+        // Do not hide the splash screen before app is fully loaded.
         await SplashScreen.preventAutoHideAsync();
       } else {
         // Hide when stopped loading.

@@ -1,48 +1,50 @@
+import Category from "../../models/Category";
 import ShoppingItem from "../../models/ShoppingItem";
 import ShoppingList from "../../models/ShoppingList";
+import { itemReducer, ItemReducerAction } from "./itemReducer";
 
-export enum ActionKind {
-  ADD_ITEM = "ADD_ITEM",
-  REMOVE_ITEM = "REMOVE_ITEM",
-  UPDATE_ITEM = "UPDATE_ITEM",
+export type ShoppingListReducerAction =
+  | { type: "ITEM_ADDED"; item: ShoppingItem }
+  | { type: "ITEM_REMOVED"; itemId: string }
+  | { type: "MOVED_TO_NEXT_LIST" }
+  | { type: "MOVED_TO_PREV_LIST" }
+  | { type: "LIST_ADDED"; list: ShoppingList }
+  | { type: "LIST_REMOVED"; listId: string }
+  | { type: "LIST_TITLE_CHANGED"; listId: string; newTitle: string }
+  | ItemReducerAction;
 
-  GO_TO_NEXT_LIST = "GO_TO_NEXT_LIST",
-  GO_TO_PREV_LIST = "GO_TO_PREV_LIST",
-
-  ADD_LIST = "ADD_LIST",
-  REMOVE_LIST = "REMOVE_LIST",
-  UPDATE_LIST = "UPDATE_LIST",
-}
-
-interface Payload {
-  inputItem: ShoppingItem;
-  inputList: ShoppingList;
-}
-
-export interface Action {
-  type: ActionKind;
-  payload: Partial<Payload>;
-}
-
-export interface State {
+export interface ShoppingListReducerState {
   allLists: ShoppingList[];
   currentListIndex: number;
 }
 
 export default function shoppingListReducer(
-  state: State,
-  { type, payload }: Action
-): State {
-  console.log("> (Reducer Action) " + type);
-  switch (type) {
-    case ActionKind.ADD_ITEM: {
-      if (!payload.inputItem) throw new Error("Expected payload");
-      const currentList = state.allLists[state.currentListIndex];
+  state: ShoppingListReducerState,
+  action: ShoppingListReducerAction
+): ShoppingListReducerState {
+  console.log("> (Reducer Action) " + action.type);
+  const currentList = state.allLists[state.currentListIndex];
+
+  switch (action.type) {
+    case "ITEM_ADDED": {
+      return {
+        ...state,
+        allLists: state.allLists.map((list) =>
+          list.id === currentList.id
+            ? {
+                ...currentList,
+                items: [...currentList.items, action.item],
+              }
+            : list
+        ),
+      };
+    }
+
+    case "ITEM_REMOVED": {
       const currentListUpdate = {
         ...currentList,
-        items: [...currentList.items, payload.inputItem],
+        items: currentList.items.filter((item) => item.id !== action.itemId),
       };
-
       return {
         ...state,
         allLists: state.allLists.map((list) =>
@@ -51,33 +53,14 @@ export default function shoppingListReducer(
       };
     }
 
-    case ActionKind.REMOVE_ITEM: {
-      if (!payload.inputItem) throw new Error("Expected payload");
-
-      const currentList = state.allLists[state.currentListIndex];
-
-      const currentListUpdate = {
-        ...currentList,
-        items: currentList.items.filter(
-          (item) => item.id !== payload.inputItem?.id
-        ),
-      };
-      return {
-        ...state,
-        allLists: state.allLists.map((list) =>
-          list.id === currentList.id ? currentListUpdate : list
-        ),
-      };
-    }
-
-    case ActionKind.UPDATE_ITEM: {
-      if (!payload.inputItem) throw new Error("Expected payload");
-      const currentList = state.allLists[state.currentListIndex];
-
+    case "ITEM_CHECKED_TOGGLED":
+    case "ITEM_CATEGORY_CHANGED":
+    case "ITEM_QUANTITY_CHANGED":
+    case "ITEM_TITLE_CHANGED": {
       const currentListUpdate = {
         ...currentList,
         items: currentList.items.map((item) =>
-          item.id === payload.inputItem?.id ? payload.inputItem : item
+          item.id === action.id ? itemReducer(item, action) : item
         ),
       };
       return {
@@ -88,7 +71,7 @@ export default function shoppingListReducer(
       };
     }
 
-    case ActionKind.GO_TO_PREV_LIST: {
+    case "MOVED_TO_PREV_LIST": {
       // Ensure has prev list.
       const newIndex = state.currentListIndex - 1;
       return {
@@ -97,7 +80,7 @@ export default function shoppingListReducer(
       };
     }
 
-    case ActionKind.GO_TO_NEXT_LIST: {
+    case "MOVED_TO_NEXT_LIST": {
       // Ensure has next list.
       const newIndex = state.currentListIndex + 1;
       return {
@@ -107,33 +90,28 @@ export default function shoppingListReducer(
       };
     }
 
-    case ActionKind.ADD_LIST:
-      if (!payload.inputList) throw new Error("Expected payload");
+    case "LIST_ADDED":
       return {
         ...state,
-        allLists: [...state.allLists, payload.inputList],
+        allLists: [...state.allLists, action.list],
       };
 
-    case ActionKind.REMOVE_LIST:
-      if (!payload.inputList) throw new Error("Expected payload");
+    case "LIST_REMOVED":
       return {
         ...state,
         currentListIndex: 0, // Reset list index
-        allLists: state.allLists.filter(
-          (list) => list.id !== payload.inputList?.id
-        ),
+        allLists: state.allLists.filter((list) => list.id !== action.listId),
       };
 
-    case ActionKind.UPDATE_LIST:
-      if (!payload.inputList) throw new Error("Expected payload");
+    case "LIST_TITLE_CHANGED":
       return {
         ...state,
         allLists: state.allLists.map((list) =>
-          list.id === payload.inputList?.id ? payload.inputList : list
+          list.id === action.listId ? { ...list, title: action.newTitle } : list
         ),
       };
 
-    default:
-      throw new Error("(Reducer error) No such type: " + type);
+    // default:
+    // throw new Error("(Reducer error) No such type: " + type);
   }
 }
