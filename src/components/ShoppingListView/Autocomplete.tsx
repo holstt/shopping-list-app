@@ -48,16 +48,11 @@ export default function Autocomplete({ suggestions, onItemPress }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    zIndex: 1, // TODO: Not working on iOS
-  },
+  container: {},
 
   // // Android does not support overflows -> necessary to wrap the autocomplete into a absolute positioned view.
   suggestionsList: {
     zIndex: 1, // TODO: Not working on iOS
-    // elevation: 1,
-
-    // elevation: 1,
     width: "100%",
     // backgroundColor: "#FBFCFC",
     backgroundColor: "white",
@@ -87,8 +82,6 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   suggestionTextButton: {
-    zIndex: 1,
-    elevation: 1,
     flex: 1,
     // backgroundColor: "lightgrey",
     flexDirection: "row",

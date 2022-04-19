@@ -148,7 +148,7 @@ export default function ShoppingListInput({
         return (
           <TextInput
             style={[
-              styles.inputTextField,
+              styles.textInput,
               showAutoComplete && styles.inputTextFieldWithAutocomplete,
             ]}
             placeholder="Add Item"
@@ -173,7 +173,7 @@ export default function ShoppingListInput({
         return (
           <TextInput
             style={[
-              styles.inputTextField,
+              styles.textInput,
               showAutoComplete && styles.inputTextFieldWithAutocomplete,
             ]}
             // Focus from start
@@ -190,22 +190,13 @@ export default function ShoppingListInput({
     }
   })();
 
-  const inputField = (
-    <View style={styles.input}>
-      {textInputComponent}
-      {showAutoComplete && (
-        <Autocomplete
-          onItemPress={onAutocompleteItemPress}
-          suggestions={queryResult}
-        ></Autocomplete>
-      )}
-    </View>
-  );
+  // const inputField = ;
 
   return (
     <View style={styles.container}>
       <View style={styles.inputContainer}>
-        {inputField}
+        <View style={styles.textInputContainer}>{textInputComponent}</View>
+
         {stateUi.selectedCategory && (
           <View
             style={[
@@ -215,6 +206,14 @@ export default function ShoppingListInput({
           />
         )}
       </View>
+      {/* Be careful moving this */}
+      {showAutoComplete && (
+        <Autocomplete
+          onItemPress={onAutocompleteItemPress}
+          suggestions={queryResult}
+        ></Autocomplete>
+      )}
+
       <CategoryPicker
         isHidden={showAutoComplete}
         categories={categories}
@@ -230,7 +229,7 @@ const styles = StyleSheet.create({
   container: {
     // backgroundColor: "red",
   },
-  input: {
+  textInputContainer: {
     margin: 10,
     // marginBottom: 0,
     flex: 1,
@@ -249,7 +248,7 @@ const styles = StyleSheet.create({
 
     backgroundColor: "white",
   },
-  inputTextField: {
+  textInput: {
     // XXX: Evt. global style for dette og item text
     paddingTop: 7,
     paddingBottom: 7,

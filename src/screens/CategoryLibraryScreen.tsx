@@ -42,8 +42,8 @@ export default function CategoryLibraryScreen({ navigation, route }: Props) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "white",
-    zIndex: 2000,
-    elevation: 2000,
+    // backgroundColor: "white",
+    // zIndex: 2000,
+    // elevation: 2000,
   },
 });
