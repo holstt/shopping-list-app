@@ -52,6 +52,8 @@ export default class StorageTestDataInitializer {
       new LibraryItem("Cheese", 3, testCategories[5]),
       new LibraryItem("Ketchup", 4, testCategories[6]),
       new LibraryItem("Oregano", 5, testCategories[2]),
+      new LibraryItem("Oregano", 5, testCategories[2]),
+      new LibraryItem("Oregano", 5, testCategories[2]),
       new LibraryItem("Carrots", 5, testCategories[1]),
       new LibraryItem("Beef", 5, testCategories[0]),
       new LibraryItem("Pulled Pork", 5, testCategories[0]),

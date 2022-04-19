@@ -14,10 +14,11 @@ export function itemReducer(
 ): ShoppingItem {
   switch (action.type) {
     case "ITEM_QUANTITY_CHANGED": {
-      const newQuantity = state.quantity + action.changedBy;
+      const newAccumulatedQuantity = state.quantity + action.changedBy;
       return {
         ...state,
-        quantity: newQuantity < 1 ? state.quantity : newQuantity,
+        quantity:
+          newAccumulatedQuantity < 1 ? state.quantity : newAccumulatedQuantity,
       };
     }
     case "ITEM_CATEGORY_CHANGED":

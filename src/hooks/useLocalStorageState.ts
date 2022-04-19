@@ -35,10 +35,13 @@ export default function useLocalStorageState() {
       "useLocalStorageState: Loading application state from local storage..."
     );
 
-    const shoppingLists = await StorageService.loadShoppingLists();
-    const categories = await StorageService.loadCategories();
-    const libraryItems = await StorageService.loadLibraryItems();
-    const appData = await StorageService.loadAppData();
+    const [shoppingLists, categories, libraryItems, appData] =
+      await Promise.all([
+        StorageService.loadShoppingLists(),
+        StorageService.loadCategories(),
+        StorageService.loadLibraryItems(),
+        StorageService.loadAppData(),
+      ]);
 
     setStorageState({
       shoppingLists: shoppingLists,

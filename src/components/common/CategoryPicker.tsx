@@ -5,15 +5,27 @@ import CategorySelectButton from "./CategorySelectButton";
 interface Props {
   categories: Category[];
   onCategoryPress: (category: Category) => void;
+  isHidden: boolean;
 }
 
-export default function CategoryPicker({ categories, onCategoryPress }: Props) {
+export default function CategoryPicker({
+  categories,
+  onCategoryPress,
+  isHidden,
+}: Props) {
+  isHidden = false; // XXX: Tag stilling til om nødvendigt
   return (
     // Do not blur if category buttons are clicked.
     <ScrollView keyboardShouldPersistTaps="always" horizontal={true}>
-      <View style={styles.categoryPickerContainer}>
+      <View
+        style={[
+          styles.categoryPickerContainer,
+          isHidden && styles.categoryPickerContainerHidden,
+        ]}
+      >
         {categories.map((cat) => (
           <CategorySelectButton
+            isDisabled={isHidden}
             key={cat.id}
             onPress={onCategoryPress}
             category={cat}
@@ -26,10 +38,18 @@ export default function CategoryPicker({ categories, onCategoryPress }: Props) {
 
 const styles = StyleSheet.create({
   categoryPickerContainer: {
-    // zIndex: 0,
-    // elevation: 0,
+    // backgroundColor: "red",
+    backgroundColor: "white",
+
     flexDirection: "row",
-    marginBottom: 20,
-    marginTop: 10,
+    paddingBottom: 10,
+    paddingLeft: 10,
+    // marginTop: 10,
+  },
+  categoryPickerContainerHidden: {
+    // opacity: 0.1,
+    backgroundColor: "transparent",
+
+    opacity: 0,
   },
 });

@@ -65,18 +65,11 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
   };
 
   // Renders a single shopping item.
-  const renderItem = (fromItems: ShoppingItem[]) => {
+  const renderItems = (fromItems: ShoppingItem[]) => {
     let currentCategory: Category | null = fromItems[0]?.category;
-    const gapComponent = <View style={styles.gapColorFill}></View>;
+    const gapComponent = <View style={styles.gapColorFillDefault}></View>;
 
-    const isNewCat = (cat: Category | null) => {
-      if (currentCategory?.id === cat?.id) {
-        return false;
-      }
-      currentCategory = cat;
-      return true;
-    };
-
+    // XXX: Flyttes ud.
     const closePrevOpenSwipable = (index: number) => {
       if (
         prevOpenedSwipableRow.current &&
@@ -87,6 +80,7 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
       prevOpenedSwipableRow.current = swipableRows.current[index];
     };
 
+    // Convert count type to number.
     const onPressQuantity = (id: string, countType: CountType) => {
       let result = 0;
 
@@ -102,7 +96,18 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
       dispatch({ type: "ITEM_QUANTITY_CHANGED", id, changedBy: result });
     };
 
+    // Check if category has changed since last element.
+    const isNewCat = (cat: Category | null) => {
+      if (currentCategory?.id === cat?.id) {
+        return false;
+      }
+      currentCategory = cat;
+      return true;
+    };
+
+    // XXX: I context
     return fromItems.map((item, index) => {
+      // Insert gap to seperate different categories.
       return (
         <View key={item.id}>
           {isNewCat(item.category) && gapComponent}
@@ -113,7 +118,8 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
             key={item.id}
             item={item}
             isLastElement={index === fromItems.length - 1}
-            isFirstItem={index === 0}
+            // If not none, then input will be part of list on top
+            isFirstItem={index === 0 && stateUi.inputMode === InputMode.NONE}
             onCheckButtonPress={(item) =>
               dispatch({
                 type: "ITEM_CHECKED_TOGGLED",
@@ -143,8 +149,8 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
   };
 
   const { unchecked, checked } = resolveItems(currentList.items);
-  const itemListUncheckedComponent = renderItem(unchecked);
-  const itemListCheckedComponent = renderItem(checked);
+  const itemListUncheckedComponent = renderItems(unchecked);
+  const itemListCheckedComponent = renderItems(checked);
 
   // XXX: Skal i component
   const itemListComponent = (
@@ -168,17 +174,16 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
         style={[styles.itemListContainer, { marginBottom: tabBarHeight + 78 }]}
       >
         {stateUi.inputMode !== InputMode.NONE && (
-          // XXX: Skal have context
           <ShoppingListInput
-            // onSubmitAddItem={onSubmitAddItem}
-            // onSubmitEditItem={onSubmitEditItem}
             currentIndex={currentList.items.length - 1}
           ></ShoppingListInput>
         )}
-        {/* <ScrollView style={{ marginBottom: 100 }}> */}
+        {stateUi.inputMode !== InputMode.NONE && ( // XXX: Lav view og slå sammen med ovenstående
+          <View style={[styles.gapColorFillDefault, { height: 6 }]}></View>
+        )}
         <ScrollView>{itemListComponent}</ScrollView>
       </View>
-      {stateUi.inputMode !== InputMode.NONE && (
+      {stateUi.inputMode === InputMode.NONE && (
         <BackgroundCircle></BackgroundCircle>
       )}
     </View>
@@ -206,11 +211,12 @@ const styles = StyleSheet.create({
     // backgroundColor: colors.blue,
     // borderRadius: 20,
   },
-  gapColorFill: {
+  gapColorFillDefault: {
     backgroundColor: colors.backgroundBlue,
-    height: 4,
+    height: 6,
   },
   topContainer: {
+    // marginBottom: 15,
     marginBottom: 15,
   },
   itemListContainer: {
@@ -221,7 +227,8 @@ const styles = StyleSheet.create({
     // marginBottom: 300,
     // borderTopLeftRadius: 15,
     // borderTopRightRadius: 15,
-    backgroundColor: "white",
+    // backgroundColor: "white",
+    // backgroundColor: "blue",
 
     // Shadow
     // shadowColor: "#000",

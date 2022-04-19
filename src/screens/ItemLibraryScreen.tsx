@@ -16,7 +16,7 @@ import PlusButtonOld from "../components/common/PlusButtonOld";
 import LibraryItem from "../models/LibraryItem";
 import LibraryItemRow from "../components/ItemLibrary/LibraryItemRow";
 import colors from "../config/colors";
-import ListInput from "../components/common/ListInput";
+import ItemInput from "../components/common/ItemInput";
 import { RootStackParamList } from "../RootNavigator";
 
 type Props = BottomTabScreenProps<RootStackParamList, "ItemLibraryScreen">;
@@ -150,20 +150,20 @@ export default function ItemLibraryScreen({ navigation, route }: Props) {
 
   const inputComponent =
     (isAddItemMode && (
-      <ListInput
+      <ItemInput
         inputComponent={addItemInput}
         categories={categories}
         onCategoryPress={onCategoryPress}
         categoryToDisplay={currentEditItemCategory}
-      ></ListInput>
+      ></ItemInput>
     )) ||
     (isEditItemMode && (
-      <ListInput
+      <ItemInput
         inputComponent={editItemInput}
         categories={categories}
         onCategoryPress={onCategoryPress}
         categoryToDisplay={currentEditItemCategory}
-      ></ListInput>
+      ></ItemInput>
     ));
 
   const itemsComponent = items.map((item, index) => (

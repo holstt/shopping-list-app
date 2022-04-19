@@ -27,6 +27,7 @@ import Category from "../../models/Category";
 // TODO
 // - Evt. icon size matcher ej med circle da ej kvadrat dim
 
+// XXX: Tilknyt context?
 interface Props {
   item: ShoppingItem;
   onCheckButtonPress: (item: ShoppingItem) => void;
@@ -147,13 +148,9 @@ const styles = StyleSheet.create({
   containerBase: {
     flexDirection: "row",
     backgroundColor: "#fff",
+    // backgroundColor: "red",
     paddingLeft: 8,
     borderColor: "transparent",
-
-    // borderBottomWidth: 0,
-    // backgroundColor: "lightgrey",
-    // justifyContent: "center",
-    // alignItems: "center",
   },
   // Add bottom border to item if has another item below.
   containerHasNext: {
@@ -161,9 +158,6 @@ const styles = StyleSheet.create({
     // borderBottomColor: "red",
     borderBottomWidth: 1,
   },
-  // containerFirst: {
-  //   borderWidth: 0,
-  // },
   quantityText: {
     color: "#7B7D7D",
     fontSize: 14,
@@ -176,16 +170,12 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     justifyContent: "flex-end",
-    // backgroundColor: "red",
-    // borderRadius: 20,
   },
   counter: {
     // marginRight: 1000,
   },
   textContainer: {
     justifyContent: "center",
-    // alignItems: "center",
-    // backgroundColor: "blue",
   },
 
   itemTextBase: {
@@ -193,8 +183,6 @@ const styles = StyleSheet.create({
     color: "#454a52",
     fontSize: 20,
     textAlign: "center",
-
-    // includeFontPadding: false,
   },
   itemTextButton: {
     flex: 1,
@@ -212,9 +200,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  // deleteButton: {
-  //   color: "red",
-  // },
   removeButtonText: {
     color: "white",
     padding: 10,
@@ -224,7 +209,6 @@ const styles = StyleSheet.create({
 
   categoryColorRectangleBase: {
     marginLeft: 30,
-    // borderTopRightRadius: 8,
     borderTopLeftRadius: 3,
     borderBottomLeftRadius: 3,
     width: 13,
@@ -232,14 +216,15 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   categoryColorRectangleHasPrev: {
-    marginTop: -1,
+    marginTop: -1, // Expand beyond container to let color touch prev
     borderTopLeftRadius: 0,
   },
   categoryColorRectangleHasNext: {
-    marginBottom: -1,
+    marginBottom: -1, // Expand beyond container to let color touch next
     borderBottomLeftRadius: 0,
   },
   categoryColorRectangleIsFirst: {
     marginTop: 0,
+    borderTopLeftRadius: 0,
   },
 });

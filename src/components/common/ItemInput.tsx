@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, View, Text } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import Category from "../../models/Category";
 import CategoryPicker from "./CategoryPicker";
-import CustomAutocomplete from "../ShoppingListView/CustomAutoCompleter";
+import Autocomplete from "../ShoppingListView/Autocomplete";
 
 interface Props {
   categories: Category[];
@@ -12,7 +12,7 @@ interface Props {
   inputComponent: ReactElement<TextInput>;
 }
 
-export default function ListInput({
+export default function ItemInput({
   categories,
   onCategoryPress,
   categoryToDisplay,
@@ -32,6 +32,7 @@ export default function ListInput({
         )}
       </View>
       <CategoryPicker
+        isHidden={false}
         categories={categories}
         onCategoryPress={onCategoryPress}
       ></CategoryPicker>
@@ -50,6 +51,7 @@ const styles = StyleSheet.create({
     marginBottom: 7,
   },
   inputContainer: {
+    // backgroundColor: "blue",
     flexDirection: "row",
   },
 });
